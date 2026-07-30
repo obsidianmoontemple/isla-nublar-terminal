@@ -76,6 +76,7 @@ nav button.active, nav button:hover {
     padding: 20px;
     flex-grow: 1;
     overflow-y: auto;
+    max-height: calc(100vh - 120px);
     backdrop-filter: blur(10px);
     flex-direction: column;
     gap: 15px;

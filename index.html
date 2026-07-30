@@ -3,431 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL</title>
+    <title>ISLA NUBLAR // CONTROL TERMINAL</title>
     <style>
         :root {
-            --bg-base: #04070d;
-            --panel-bg: rgba(9, 15, 26, 0.92);
-            --border-glow: rgba(0, 243, 255, 0.25);
+            --bg-base: #05080f;
+            --panel-bg: #0b1320;
             --neon-cyan: #00f3ff;
             --neon-green: #00ff66;
             --neon-alert: #ff3366;
-            --neon-amber: #ffaa00;
             --text-main: #d0e1f9;
         }
-
         body {
             background-color: var(--bg-base);
             color: var(--text-main);
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 15px;
             height: 100vh;
             box-sizing: border-box;
-            overflow: hidden;
-            background-image: 
-                radial-gradient(circle at 50% 20%, #0d1b32 0%, #04070d 100%);
-        }
-
-        .app-container {
             display: flex;
             flex-direction: column;
-            height: 100%;
             gap: 15px;
         }
-
-        /* Top Bar */
-        .top-bar {
+        header {
             background: var(--panel-bg);
-            border: 1px solid var(--border-glow);
-            border-radius: 8px;
-            padding: 0 20px;
-            height: 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.05);
-            flex-shrink: 0;
-        }
-
-        .logo {
-            font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--neon-cyan);
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-        }
-
-        .nav-btn {
-            background: rgba(0, 243, 255, 0.05);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            color: var(--text-main);
-            padding: 6px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-        }
-
-        .nav-btn.active, .nav-btn:hover {
-            background: rgba(0, 243, 255, 0.2);
-            border-color: var(--neon-cyan);
-            color: #ffffff;
-            box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
-        }
-
-        .stats-ticker {
-            display: flex;
-            gap: 25px;
-            font-size: 0.85rem;
-        }
-
-        .ticker-item span {
-            color: var(--neon-cyan);
-            font-weight: bold;
-        }
-
-        /* View Layouts */
-        .view-section {
-            display: none;
-            flex-grow: 1;
-            gap: 15px;
-            overflow: hidden;
-        }
-
-        .view-section.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Generic Panels */
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-glow);
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .panel-header {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: var(--neon-cyan);
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0, 243, 255, 0.15);
-            padding-bottom: 8px;
-        }
-
-        /* Visual Island Sectors View */
-        .sector-view-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 15px;
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-
-        .sector-card {
-            background: rgba(0, 243, 255, 0.02);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .sector-preview-screen {
-            height: 140px;
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            display: flex;
-            align-items: flex-end;
-            padding: 10px;
-            border-bottom: 1px solid rgba(0, 243, 255, 0.15);
-        }
-
-        .sector-preview-screen::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, transparent 40%, rgba(4, 7, 13, 0.95) 100%);
-            pointer-events: none;
-        }
-
-        .sector-tag {
-            position: relative;
-            z-index: 2;
-            background: rgba(0, 0, 0, 0.75);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .sector-details {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 0.85rem;
-            flex-grow: 1;
-            justify-content: space-between;
-        }
-
-        .sector-row {
-            display: flex;
-            justify-content: space-between;
-            opacity: 0.9;
-        }
-
-        .sector-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 6px;
-        }
-
-        .sector-btn {
-            background: rgba(0, 243, 255, 0.08);
             border: 1px solid rgba(0, 243, 255, 0.3);
-            color: var(--text-main);
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.75rem;
-            flex-grow: 1;
-            text-align: center;
-        }
-
-        .sector-btn:hover {
-            background: rgba(0, 243, 255, 0.25);
-            border-color: var(--neon-cyan);
-            color: #fff;
-        }
-
-        /* Biosphere Roster Grid */
-        .dino-grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            overflow-y: auto;
-            flex-grow: 1;
-            padding: 5px;
-        }
-
-        .dino-card {
-            background: rgba(0, 243, 255, 0.03);
-            border: 1px solid rgba(0, 243, 255, 0.2);
-            border-radius: 8px;
             padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .dino-card.carnivore {
-            border-color: rgba(255, 51, 102, 0.4);
-        }
-
-        .dino-header {
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        nav button {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--text-main);
+            padding: 8px 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+        nav button.active {
+            background: var(--neon-cyan);
+            color: #000;
             font-weight: bold;
-            font-size: 1rem;
         }
-
-        .dino-badge {
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-
-        .progress-bar-container {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-            height: 6px;
-            width: 100%;
-            margin-top: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            background: var(--neon-green);
-            height: 100%;
-        }
-
-        /* Console Output */
-        .console-output {
-            background: #020408;
+        .view-panel {
+            display: none;
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 243, 255, 0.2);
             border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.8rem;
-            color: var(--neon-green);
-            height: 90px;
+            padding: 20px;
+            flex-grow: 1;
             overflow-y: auto;
-            white-space: pre-wrap;
+        }
+        .view-panel.active {
+            display: block;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
             margin-top: 15px;
+        }
+        .card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(0,243,255,0.2);
+            padding: 15px;
+            border-radius: 6px;
+        }
+        button.action-btn {
+            background: rgba(0,255,102,0.1);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        log-box {
+            background: #000;
+            color: var(--neon-green);
+            font-family: monospace;
+            padding: 10px;
+            border-radius: 4px;
+            display: block;
+            height: 80px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <!-- TOP STATUS BAR -->
-        <div class="top-bar">
-            <div class="logo">ISLA NUBLAR // MASTER CONTROL</div>
-            <div class="nav-tabs">
-                <button class="nav-btn active" onclick="switchView('sectorsView', this)">🌴 Island Sectors</button>
-                <button class="nav-btn" onclick="switchView('dinoView', this)">🦖 Biosphere Roster</button>
-                <button class="nav-btn" onclick="switchView('opsView', this)">⚙️ Control Desk</button>
-            </div>
-            <div class="stats-ticker">
-                <div class="ticker-item">GUESTS: <span id="statGuests">1,420</span></div>
-                <div class="ticker-item">ASSETS: <span style="color: var(--neon-green);">26</span></div>
-            </div>
-        </div>
+    <header>
+        <div><strong>ISLA NUBLAR CONTROL TERMINAL</strong></div>
+        <nav>
+            <button onclick="switchTab('sectors', event)" class="active">Sectors</button>
+            <button onclick="switchTab('biosphere', event)">Biosphere</button>
+            <button onclick="switchTab('ops', event)">Operations</button>
+        </nav>
+    </header>
 
-        <!-- VIEW 1: ISLAND SECTORS -->
-        <div id="sectorsView" class="view-section active">
-            <div class="panel" style="flex-grow: 1;">
-                <div class="panel-header">
-                    <span>Isla Nublar Sector Surveillance & Paddock Management</span>
-                    <span style="color: var(--neon-green);">ONLINE</span>
-                </div>
-                <div class="sector-view-grid">
-                    <div class="sector-card">
-                        <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop');">
-                            <span class="sector-tag">SECTOR 1: CANOPY</span>
-                        </div>
-                        <div class="sector-details">
-                            <div>
-                                <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-green);">Brachiosaurus</strong></div>
-                                <div class="sector-row"><span>Voltage:</span> <span id="sec1Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
-                            </div>
-                            <div class="sector-actions">
-                                <button class="sector-btn" onclick="boostVoltage(1)">⚡ Boost Voltage</button>
-                                <button class="sector-btn" onclick="feedSector('Sector 1 Canopy')">🌿 Feed Herd</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="sector-card" style="border-color: rgba(255, 51, 102, 0.4);">
-                        <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=600&auto=format&fit=crop');">
-                            <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">SECTOR 2: RAPTOR PEN</span>
-                        </div>
-                        <div class="sector-details">
-                            <div>
-                                <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-alert);">Velociraptor Pack</strong></div>
-                                <div class="sector-row"><span>Voltage:</span> <span id="sec2Voltage" style="color: var(--neon-cyan);">50,000V</span></div>
-                            </div>
-                            <div class="sector-actions">
-                                <button class="sector-btn" onclick="boostVoltage(2)">⚡ Boost Voltage</button>
-                                <button class="sector-btn" onclick="feedSector('Sector 2 Raptor Pen')">🥩 Drop Live Steer</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- SECTORS VIEW -->
+    <div id="sectors" class="view-panel active">
+        <h2>Island Sector Surveillance</h2>
+        <p>Monitor high-voltage containment grids and paddock statuses across Isla Nublar.</p>
+        <div class="card-grid">
+            <div class="card">
+                <h3>Sector 4: T-Rex Paddock</h3>
+                <p>Status: <span style="color: var(--neon-green);">Secure</span></p>
+                <p>Voltage: <span id="volt-rex">10,000V</span></p>
+                <button class="action-btn" onclick="boostGrid('rex')">Boost Voltage</button>
             </div>
-        </div>
-
-        <!-- VIEW 2: BIOSPHERE ROSTER -->
-        <div id="dinoView" class="view-section">
-            <div class="panel" style="flex-grow: 1;">
-                <div class="panel-header"><span>Live Wildlife & Biosphere Metrics</span></div>
-                <div class="dino-grid-container">
-                    <div class="dino-card carnivore">
-                        <div class="dino-header">
-                            <span>Tyrannosaurus Rex</span>
-                            <span class="dino-badge" style="color: var(--neon-alert); border: 1px solid rgba(255,51,102,0.3);">Apex</span>
-                        </div>
-                        <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 6px;">
-                            <div>Asset ID: <strong>TR-01</strong></div>
-                            <div>Health: <span style="color: var(--neon-green);">Optimal</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 3: CONTROL DESK -->
-        <div id="opsView" class="view-section">
-            <div class="panel" style="flex-grow: 1; justify-content: center; align-items: center; text-align: center; gap: 15px;">
-                <h3 style="color: var(--neon-cyan); margin: 0;">InGen Mainframe Operations Console</h3>
-                <button class="nav-btn" onclick="triggerLockdown()" style="border-color: var(--neon-alert); color: var(--neon-alert);">⚠️ EMERGENCY LOCKDOWN</button>
-            </div>
-        </div>
-
-        <!-- BOTTOM CONSOLE LOG -->
-        <div class="panel" style="flex-shrink: 0; padding: 10px 15px;">
-            <div class="panel-header" style="margin-bottom: 6px; border-bottom: none; padding-bottom: 0;"><span>System Log</span></div>
-            <div class="console-output" id="consoleOutput">
-[SYS_INIT] Mainframe operational. Click any tab or button to test controls.
+            <div class="card">
+                <h3>Sector 2: Raptor Pen</h3>
+                <p>Status: <span style="color: var(--neon-alert);">Alert</span></p>
+                <p>Voltage: <span id="volt-raptor">50,000V</span></p>
+                <button class="action-btn" onclick="boostGrid('raptor')">Boost Voltage</button>
             </div>
         </div>
     </div>
 
+    <!-- BIOSPHERE VIEW -->
+    <div id="biosphere" class="view-panel">
+        <h2>Biosphere & Wildlife Roster</h2>
+        <div class="card-grid">
+            <div class="card">
+                <h3>Tyrannosaurus Rex</h3>
+                <p>Specimen: TR-01 (Female)</p>
+                <p>Health: Optimal</p>
+            </div>
+            <div class="card">
+                <h3>Velociraptor</h3>
+                <p>Specimen: Pack of 3</p>
+                <p>Status: Active / High Intelligence</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- OPERATIONS VIEW -->
+    <div id="ops" class="view-panel">
+        <h2>Master Operations Desk</h2>
+        <p>Emergency controls and system configuration protocols.</p>
+        <button class="action-btn" style="border-color: var(--neon-alert); color: var(--neon-alert);" onclick="triggerAlarm()">Trigger Facility Alert</button>
+    </div>
+
+    <!-- SYSTEM LOG -->
+    <div style="background: var(--panel-bg); padding: 10px; border-radius: 6px; border: 1px solid rgba(0,243,255,0.2);">
+        <small style="color: var(--neon-cyan);">SYSTEM EVENT LOG:</small>
+        <span id="logOutput" class="log-box">[SYS_INIT] Terminal online and operating normally.</span>
+    </div>
+
     <script>
-        function switchView(viewId, btn) {
-            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            btn.classList.add('active');
-            logMessage(`NAV: Switched view to ${viewId}`);
+        function switchTab(tabId, evt) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+            writeLog(`Switched view to: ${tabId}`);
         }
 
-        function logMessage(text) {
-            const consoleOutput = document.getElementById('consoleOutput');
-            const timestamp = new Date().toLocaleTimeString();
-            consoleOutput.textContent += `\n[${timestamp}] ${text}`;
-            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        function boostGrid(target) {
+            const el = document.getElementById(`volt-${target}`);
+            el.textContent = "100,000V [MAX]";
+            writeLog(`SECURITY: Perimeter grid ${target} boosted to maximum capacity.`);
+            setTimeout(() => {
+                el.textContent = target === 'rex' ? "10,000V" : "50,000V";
+            }, 3000);
         }
 
-        function boostVoltage(sectorNum) {
-            const voltageElem = document.getElementById(`sec${sectorNum}Voltage`);
-            if(voltageElem) {
-                voltageElem.textContent = "15,000V [Boosted]";
-                voltageElem.style.color = "var(--neon-green)";
-                logMessage(`SECURITY: Sector ${sectorNum} fence voltage boosted.`);
-                setTimeout(() => {
-                    voltageElem.textContent = "10,000V [Optimal]";
-                    voltageElem.style.color = "var(--neon-cyan)";
-                }, 4000);
-            }
+        function triggerAlarm() {
+            writeLog("WARNING: Facility-wide security alert triggered!");
+            document.body.style.border = "2px solid #ff3366";
+            setTimeout(() => { document.body.style.border = "none"; }, 1000);
         }
 
-        function feedSector(sectorName) {
-            logMessage(`BIOSPHERE: Feeding sequence initiated for ${sectorName}.`);
-        }
-
-        function triggerLockdown() {
-            logMessage("🚨 WARNING: EMERGENCY LOCKDOWN ACTIVATED!");
-            document.body.style.boxShadow = "inset 0 0 50px rgba(255, 51, 102, 0.4)";
-            setTimeout(() => { document.body.style.boxShadow = "none"; }, 1000);
+        function writeLog(text) {
+            const log = document.getElementById('logOutput');
+            const time = new Date().toLocaleTimeString();
+            log.innerHTML += `<br>[${time}] ${text}`;
+            log.scrollTop = log.scrollHeight;
         }
     </script>
 </body>

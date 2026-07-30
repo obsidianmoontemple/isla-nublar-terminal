@@ -8,7 +8,10 @@ let labState = {
 };
 
 export function initGenetics(writeLog) {
-    setupLaserCanvas(0, false);
+    // Initial draw once DOM is active
+    setTimeout(() => {
+        setupLaserCanvas(0, false);
+    }, 100);
 
     window.mineAmber = function() {
         if (labState.isExtracting) return;
@@ -38,7 +41,7 @@ export function initGenetics(writeLog) {
                     statusEl.textContent = "READY";
                     statusEl.style.color = "var(--neon-cyan)";
                     labState.isExtracting = false;
-                }, 1500);
+                }, 1200);
             }
         }, 150);
     };

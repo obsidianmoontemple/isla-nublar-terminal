@@ -1,5 +1,6 @@
 let labState = {
     amberPoints: 50,
+    isExtracting: false,
     genomes: {
         "Stegosaurus": { integrity: 40, barId: "stegGenome", fillId: "stegGenomeBar" },
         "Dilophosaurus": { integrity: 20, barId: "diloGenome", fillId: "diloGenomeBar" }
@@ -7,21 +8,41 @@ let labState = {
 };
 
 export function initGenetics(writeLog) {
-    // Manual Amber Extraction Action
+    // Manual Laser Extraction Logic (No runaway timer)
     window.mineAmber = function() {
-        labState.amberPoints += 25;
-        updateAmberDisplay();
+        if (labState.isExtracting) return;
+        labState.isExtracting = true;
+
+        const statusEl = document.getElementById('laserBeamStatus');
+        const fillEl = document.getElementById('laserProgressFill');
         
-        const statusEl = document.getElementById('extractionStatus');
-        statusEl.textContent = "EXTRACTING +25🧬";
-        statusEl.style.color = "var(--neon-green)";
+        statusEl.textContent = "STATUS: LASER CUTTING";
+        statusEl.style.color = "var(--neon-amber)";
         
-        writeLog(`LAB EXTRACTION: Laser beam vaporized amber resin node. Yielded +25 extraction points.`);
+        writeLog(`LAB EXTRACTION: High-frequency laser engaged on amber sample core...`);
         
-        setTimeout(() => {
-            statusEl.textContent = "SYSTEM READY";
-            statusEl.style.color = "var(--neon-cyan)";
-        }, 1500);
+        let progress = 0;
+        const laserInterval = setInterval(() => {
+            progress += 25;
+            fillEl.style.width = progress + '%';
+
+            if (progress >= 100) {
+                clearInterval(laserInterval);
+                labState.amberPoints += 25;
+                updateAmberDisplay();
+
+                statusEl.textContent = "STATUS: EXTRACTION COMPLETE";
+                statusEl.style.color = "var(--neon-green)";
+                writeLog(`SUCCESS: Amber core processed! Yielded +25 extraction points.`);
+
+                setTimeout(() => {
+                    fillEl.style.width = '0%';
+                    statusEl.textContent = "STATUS: IDLE";
+                    statusEl.style.color = "var(--neon-cyan)";
+                    labState.isExtracting = false;
+                }, 1200);
+            }
+        }, 300);
     };
 
     window.spliceGenome = function(dinoName) {
@@ -45,31 +66,30 @@ export function initGenetics(writeLog) {
         document.getElementById(dino.fillId).style.width = `${dino.integrity}%`;
         
         updateAmberDisplay();
-        writeLog(`GENETICS: Spliced genetic code into ${dinoName} matrix. Viability now at ${dino.integrity}%.`);
+        writeLog(`GENETICS: Spliced extracted DNA into ${dinoName} matrix. Viability now at ${dino.integrity}%.`);
     };
 
-    window.startIncubation = function(dinoName, dinoType, barId, textId, statusId) {
+    window.startIncubation = function(dinoName, dinoType, barId, textId, displayId) {
         let dino = labState.genomes[dinoName];
         if (dino.integrity < 100) {
-            writeLog(`ABORT: Cannot incubate ${dinoName}. Genome integrity incomplete (${dino.integrity}%). Splice more DNA!`);
+            writeLog(`ABORT: Cannot incubate ${dinoName}. Genome has unmapped gaps (${dino.integrity}%). Splice required.`);
             return;
         }
 
         const bar = document.getElementById(barId);
         const textEl = document.getElementById(textId);
-        const statusEl = document.getElementById(statusId);
+        const displayEl = document.getElementById(displayId);
         
         if (!bar) return;
         
         if (bar.style.width && parseInt(bar.style.width) > 0 && parseInt(bar.style.width) < 100) {
-            writeLog(`LAB: Incubation chamber for ${dinoName} is already active.`);
+            writeLog(`LAB: Incubation pod for ${dinoName} is already active.`);
             return;
         }
 
-        writeLog(`LAB: Incubation sequence initiated for ${dinoName}. Pressurizing synthetic womb...`);
-        statusEl.textContent = "TANK: SYNTHESIZING";
-        statusEl.style.color = "var(--neon-green)";
-        statusEl.style.borderColor = "var(--neon-green)";
+        writeLog(`LAB: Incubation sequence initiated for ${dinoName}. Pressurizing synthetic growth tank...`);
+        displayEl.textContent = "[ GROWING EMBRYO ]";
+        displayEl.style.color = "var(--neon-green)";
 
         let progress = 0;
         const interval = setInterval(() => {
@@ -79,9 +99,8 @@ export function initGenetics(writeLog) {
             
             if (progress >= 100) {
                 clearInterval(interval);
-                statusEl.textContent = "TANK: MATURED";
-                statusEl.style.color = "var(--neon-cyan)";
-                statusEl.style.borderColor = "var(--neon-cyan)";
+                displayEl.textContent = "[ SPECIMEN HATCHED ]";
+                displayEl.style.color = "var(--neon-cyan)";
                 
                 const newId = dinoName.substring(0, 3).toUpperCase() + '-' + Math.floor(10 + Math.random() * 90);
                 
@@ -89,7 +108,7 @@ export function initGenetics(writeLog) {
                     window.addAsset({ name: dinoName, type: dinoType, id: newId, status: "Healthy / Secure" });
                 }
                 
-                writeLog(`SUCCESS: ${dinoName} specimen (${newId}) successfully hatched and logged to Biosphere Roster!`);
+                writeLog(`SUCCESS: Pure-strain ${dinoName} specimen (${newId}) successfully hatched and added to Roster!`);
             }
         }, 800);
     };

@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL v5.0</title>
+    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL v5.2</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/crt.css">
 </head>
 <body>
 
     <header>
-        <div class="logo">ISLA NUBLAR // MASTER CONTROL TERMINAL v5.0</div>
+        <div class="logo">ISLA NUBLAR // MASTER CONTROL TERMINAL v5.2</div>
         <nav>
             <button onclick="window.switchTab('sectors', event)" class="active">🌴 Sectors</button>
             <button onclick="window.switchTab('biosphere', event)">🦖 Biosphere Roster</button>
@@ -115,21 +115,23 @@
             </div>
         </div>
 
-        <!-- INTERACTIVE LASER AMBER EXTRACTION MATRIX -->
-        <div class="card" style="padding: 20px; background: rgba(255,170,0,0.04); border-color: rgba(255,170,0,0.4); flex-shrink: 0;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <!-- VISUAL INTERACTIVE LASER EXTRACTION CHAMBER -->
+        <div class="card" style="padding: 15px; background: rgba(255,170,0,0.03); border-color: rgba(255,170,0,0.4);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <div>
-                    <strong style="color: var(--neon-amber); letter-spacing: 1.5px; font-size: 0.95rem;">⚡ PRECISION LASER EXTRACTION BAY</strong>
-                    <div style="font-size: 0.75rem; opacity: 0.7; margin-top: 2px;">Isolate preserved mosquito DNA matrices from raw fossilized amber resin.</div>
+                    <strong style="color: var(--neon-amber); letter-spacing: 1px;">⚡ LIVE LASER EXTRACTION CHAMBER</strong>
+                    <div style="font-size: 0.75rem; opacity: 0.7;">Isolate prehistoric mosquito DNA matrices from raw fossilized amber resin.</div>
                 </div>
-                <div id="laserBeamStatus" style="font-family: monospace; font-size: 0.75rem; color: var(--neon-cyan); background: rgba(0,0,0,0.9); padding: 5px 10px; border-radius: 4px; border: 1px solid var(--neon-cyan);">STATUS: IDLE</div>
+                <div id="laserStatusText" style="font-family: monospace; font-size: 0.75rem; color: var(--neon-cyan); background: rgba(0,0,0,0.9); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--neon-cyan);">READY</div>
             </div>
-            
-            <!-- Laser Visual Progress Bar -->
-            <div class="progress-bar" style="height: 10px; margin-bottom: 15px;"><div id="laserProgressFill" class="progress-fill" style="width: 0%; background: var(--neon-amber); box-shadow: 0 0 12px var(--neon-amber);"></div></div>
 
-            <button class="action-btn" style="background: rgba(255,170,0,0.2); border-color: var(--neon-amber); color: var(--neon-amber); width: 100%; padding: 12px; font-size: 0.85rem; letter-spacing: 1px;" onclick="window.mineAmber()">
-                [ ACTIVATED LASER EXTRACTION // YIELD +25 🧬 ]
+            <!-- Live Laser Canvas Display -->
+            <div style="background: #020408; border: 1px solid rgba(255,170,0,0.3); border-radius: 6px; overflow: hidden; margin-bottom: 12px; position: relative; display: flex; justify-content: center; align-items: center;">
+                <canvas id="laserCanvas" width="500" height="130" style="display: block; width: 100%; max-height: 130px;"></canvas>
+            </div>
+
+            <button class="action-btn" style="background: rgba(255,170,0,0.2); border-color: var(--neon-amber); color: var(--neon-amber); width: 100%; padding: 10px; font-size: 0.85rem;" onclick="window.mineAmber()">
+                [ FIRE EXTRACTION LASER // HARVEST +25 🧬 ]
             </button>
         </div>
 
@@ -137,10 +139,10 @@
             
             <!-- Stegosaurus Lab Pod -->
             <div class="card">
-                <div style="height: 120px; background: #020408; border-bottom: 1px solid rgba(0,243,255,0.2); display: flex; align-items: center; justify-content: center; position: relative;">
+                <div style="height: 110px; background: #020408; border-bottom: 1px solid rgba(0,243,255,0.2); display: flex; align-items: center; justify-content: center;">
                     <div style="text-align: center; font-family: monospace;">
                         <div style="font-size: 0.7rem; color: var(--neon-cyan);">SPECIMEN POD // STG-09</div>
-                        <div id="stegTankDisplay" style="font-size: 1.1rem; color: var(--neon-amber); margin-top: 5px;">[ CRYOGENIC STANDBY ]</div>
+                        <div id="stegTankDisplay" style="font-size: 1rem; color: var(--neon-amber); margin-top: 4px;">[ STANDBY ]</div>
                     </div>
                 </div>
                 <div class="sector-details">
@@ -156,7 +158,7 @@
                     </div>
                     <div class="progress-bar"><div id="stegProgress" class="progress-fill"></div></div>
                     
-                    <div class="sector-actions" style="margin-top: 10px;">
+                    <div class="sector-actions" style="margin-top: 8px;">
                         <button class="sector-btn" onclick="window.spliceGenome('Stegosaurus')">🔬 Splice DNA (-30 🧬)</button>
                         <button class="sector-btn" style="border-color: var(--neon-green); color: var(--neon-green);" onclick="window.startIncubation('Stegosaurus', 'Herbivore', 'stegProgress', 'stegText', 'stegTankDisplay')">▶ Incubate</button>
                     </div>
@@ -165,10 +167,10 @@
 
             <!-- Dilophosaurus Lab Pod -->
             <div class="card carnivore">
-                <div style="height: 120px; background: #020408; border-bottom: 1px solid rgba(255,51,102,0.3); display: flex; align-items: center; justify-content: center; position: relative;">
+                <div style="height: 110px; background: #020408; border-bottom: 1px solid rgba(255,51,102,0.3); display: flex; align-items: center; justify-content: center;">
                     <div style="text-align: center; font-family: monospace;">
                         <div style="font-size: 0.7rem; color: var(--neon-alert);">SPECIMEN POD // DIL-04</div>
-                        <div id="diloTankDisplay" style="font-size: 1.1rem; color: var(--neon-amber); margin-top: 5px;">[ CRYOGENIC STANDBY ]</div>
+                        <div id="diloTankDisplay" style="font-size: 1rem; color: var(--neon-amber); margin-top: 4px;">[ STANDBY ]</div>
                     </div>
                 </div>
                 <div class="sector-details">
@@ -184,7 +186,7 @@
                     </div>
                     <div class="progress-bar"><div id="diloProgress" class="progress-fill"></div></div>
                     
-                    <div class="sector-actions" style="margin-top: 10px;">
+                    <div class="sector-actions" style="margin-top: 8px;">
                         <button class="sector-btn" onclick="window.spliceGenome('Dilophosaurus')">🔬 Splice DNA (-30 🧬)</button>
                         <button class="sector-btn" style="border-color: var(--neon-green); color: var(--neon-green);" onclick="window.startIncubation('Dilophosaurus', 'Carnivore', 'diloProgress', 'diloText', 'diloTankDisplay')">▶ Incubate</button>
                     </div>
@@ -207,7 +209,7 @@
     <!-- SYSTEM LOG -->
     <div class="log-container">
         <small style="color: var(--neon-cyan);">SYSTEM EVENT LOG:</small>
-        <div id="logOutput" class="log-box">[SYS_INIT] Terminal online. Interactive extraction matrix active.</div>
+        <div id="logOutput" class="log-box">[SYS_INIT] Terminal online. Canvas laser optics active.</div>
     </div>
 
     <!-- Import Core App Logic as ES Module -->

@@ -109,20 +109,50 @@
     <div id="genetics" class="view-panel">
         <div class="panel-header">
             <span>InGen Genetics Laboratory</span>
-            <span>Embryo Incubation Matrix</span>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span style="color: var(--neon-amber);">Amber Points: <strong id="amberCount">100</strong> 🧬</span>
+                <span>Embryo Incubation Matrix</span>
+            </div>
         </div>
         <div class="card-grid">
-            <div class="card">
-                <h3>Stegosaurus</h3>
-                <p style="font-size: 0.85rem; opacity: 0.8;">Type: Herbivore / Armor Plated</p>
-                <button class="action-btn" onclick="window.startIncubation('Stegosaurus', 'Herbivore', 'stegProgress')">Start Incubation</button>
-                <div class="progress-bar"><div id="stegProgress" class="progress-fill"></div></div>
+            <!-- Stegosaurus Card -->
+            <div class="card" id="card-Stegosaurus">
+                <div style="padding: 15px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0;">Stegosaurus</h3>
+                        <span style="font-size: 0.75rem; color: var(--neon-cyan);">HERBIVORE</span>
+                    </div>
+                    <p style="font-size: 0.85rem; opacity: 0.8; margin: 0;">Genome Integrity: <span id="stegGenome" style="color: var(--neon-amber);">40%</span></p>
+                    <div class="progress-bar"><div id="stegGenomeBar" class="progress-fill" style="width: 40%; background: var(--neon-amber);"></div></div>
+                    
+                    <p style="font-size: 0.85rem; opacity: 0.8; margin: 0;">Incubation Status:</p>
+                    <div class="progress-bar"><div id="stegProgress" class="progress-fill"></div></div>
+                    
+                    <div style="display: flex; gap: 8px; margin-top: auto;">
+                        <button class="sector-btn" onclick="window.spliceGenome('Stegosaurus')">🔬 Splice DNA (-30⚡)</button>
+                        <button class="action-btn" style="flex-grow: 1; font-size: 0.75rem;" onclick="window.startIncubation('Stegosaurus', 'Herbivore', 'stegProgress')">Incubate</button>
+                    </div>
+                </div>
             </div>
-            <div class="card carnivore">
-                <h3>Dilophosaurus</h3>
-                <p style="font-size: 0.85rem; opacity: 0.8;">Type: Pack Carnivore / Venomous</p>
-                <button class="action-btn" onclick="window.startIncubation('Dilophosaurus', 'Carnivore', 'diloProgress')">Start Incubation</button>
-                <div class="progress-bar"><div id="diloProgress" class="progress-fill"></div></div>
+
+            <!-- Dilophosaurus Card -->
+            <div class="card carnivore" id="card-Dilophosaurus">
+                <div style="padding: 15px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0;">Dilophosaurus</h3>
+                        <span style="font-size: 0.75rem; color: var(--neon-alert);">VENOMOUS PACK</span>
+                    </div>
+                    <p style="font-size: 0.85rem; opacity: 0.8; margin: 0;">Genome Integrity: <span id="diloGenome" style="color: var(--neon-amber);">20%</span></p>
+                    <div class="progress-bar"><div id="diloGenomeBar" class="progress-fill" style="width: 20%; background: var(--neon-amber);"></div></div>
+                    
+                    <p style="font-size: 0.85rem; opacity: 0.8; margin: 0;">Incubation Status:</p>
+                    <div class="progress-bar"><div id="diloProgress" class="progress-fill"></div></div>
+                    
+                    <div style="display: flex; gap: 8px; margin-top: auto;">
+                        <button class="sector-btn" onclick="window.spliceGenome('Dilophosaurus')">🔬 Splice DNA (-30⚡)</button>
+                        <button class="action-btn" style="flex-grow: 1; font-size: 0.75rem;" onclick="window.startIncubation('Dilophosaurus', 'Carnivore', 'diloProgress')">Incubate</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -140,7 +170,7 @@
     <!-- SYSTEM LOG -->
     <div class="log-container">
         <small style="color: var(--neon-cyan);">SYSTEM EVENT LOG:</small>
-        <div id="logOutput" class="log-box">[SYS_INIT] Terminal online. Modular framework loaded.</div>
+        <div id="logOutput" class="log-box">[SYS_INIT] Terminal online. Phase 2 Genetics Lab loaded.</div>
     </div>
 
     <!-- Import Core App Logic as ES Module -->

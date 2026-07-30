@@ -3,270 +3,456 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISLA NUBLAR // MASTER CONTROL SYSTEM</title>
+    <title>ISLA NUBLAR // OPERATIONS COMMAND</title>
     <style>
         :root {
-            --bg-color: #0d110d;
-            --panel-bg: #121c12;
-            --amber-primary: #ffb000;
-            --amber-dim: #5c3f00;
-            --crt-green: #33ff33;
-            --alert-red: #ff3333;
-            --border-color: #3d5a3d;
+            --bg-base: #090d16;
+            --panel-bg: rgba(13, 20, 35, 0.85);
+            --border-glow: rgba(0, 243, 255, 0.25);
+            --neon-cyan: #00f3ff;
+            --neon-blue: #0066ff;
+            --neon-green: #00ff66;
+            --neon-alert: #ff3366;
+            --neon-amber: #ffaa00;
+            --text-main: #c0d2e8;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--amber-primary);
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 15px;
             height: 100vh;
             box-sizing: border-box;
             overflow: hidden;
-            text-shadow: 0 0 4px rgba(255, 176, 0, 0.3);
+            background-image: 
+                radial-gradient(circle at 50% 50%, #101c38 0%, #090d16 100%);
         }
 
-        /* Retro CRT Scanline Overlay */
-        body::after {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
-            background-size: 100% 4px;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        .main-layout {
-            display: grid;
-            grid-template-columns: 3fr 2fr;
-            grid-template-rows: 50px 1fr 200px;
-            gap: 15px;
+        /* App Container */
+        .app-container {
+            display: flex;
+            flex-direction: column;
             height: 100%;
+            gap: 15px;
         }
 
         /* Top Bar */
         .top-bar {
-            grid-column: 1 / -1;
-            border: 2px solid var(--border-color);
-            background-color: var(--panel-bg);
-            padding: 10px 20px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
+            padding: 0 20px;
+            height: 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: bold;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.05);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-weight: 800;
             letter-spacing: 2px;
+            color: var(--neon-cyan);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .system-status {
-            color: var(--alert-red);
-            animation: blink 1.5s infinite;
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
         }
 
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
+        .nav-btn {
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
         }
 
-        /* Panels */
+        .nav-btn.active, .nav-btn:hover {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: var(--neon-cyan);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        .stats-ticker {
+            display: flex;
+            gap: 30px;
+            font-size: 0.9rem;
+        }
+
+        .ticker-item span {
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        /* View Container */
+        .view-section {
+            display: none;
+            flex-grow: 1;
+            gap: 15px;
+        }
+
+        .view-section.active {
+            display: grid;
+        }
+
+        /* Desk View Grid Layout */
+        #deskView {
+            grid-template-columns: 320px 1fr 350px;
+            grid-template-rows: 1fr 200px;
+        }
+
+        /* GIS Map View Grid Layout */
+        #gisView {
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        /* Generic Panels */
         .panel {
-            border: 2px solid var(--border-color);
-            background-color: var(--panel-bg);
+            background: var(--panel-bg);
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
             padding: 15px;
             display: flex;
             flex-direction: column;
+            backdrop-filter: blur(10px);
             position: relative;
-        }
-
-        .panel-title {
-            position: absolute;
-            top: -10px;
-            left: 15px;
-            background-color: var(--panel-bg);
-            padding: 0 5px;
-            font-size: 0.85rem;
-            color: var(--amber-primary);
-            letter-spacing: 1px;
-        }
-
-        /* Map Panel (Visualizing Dinos & Sectors) */
-        .map-screen {
-            flex-grow: 1;
-            background-color: #050805;
-            border: 1px inset var(--border-color);
-            font-family: monospace;
-            padding: 10px;
             overflow: hidden;
+        }
+
+        .panel-header {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--neon-cyan);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+            padding-bottom: 6px;
+        }
+
+        /* Left Panel: Actions */
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .action-btn {
+            background: rgba(0, 243, 255, 0.05);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            color: var(--text-main);
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 243, 255, 0.15);
+            border-color: var(--neon-cyan);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        /* GIS Sandbox Grid Specifics */
+        .gis-canvas-container {
+            flex-grow: 1;
+            background: #050811;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(12, 1fr);
+            gap: 2px;
+            padding: 10px;
+        }
+
+        .grid-cell {
+            background: rgba(0, 243, 255, 0.03);
+            border: 1px solid rgba(0, 243, 255, 0.08);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.15s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
         }
 
-        .ascii-map {
-            line-height: 1.1;
-            color: var(--crt-green);
-            text-shadow: 0 0 5px rgba(51, 255, 51, 0.5);
-            font-size: 0.9rem;
+        .grid-cell:hover {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: var(--neon-cyan);
         }
 
-        /* Command Line Terminal */
-        .terminal-screen {
-            flex-grow: 1;
-            overflow-y: auto;
-            background-color: #050805;
-            border: 1px inset var(--border-color);
-            padding: 10px;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-            margin-bottom: 10px;
-        }
+        /* Zone Types on Grid */
+        .grid-cell.road { background: rgba(255, 170, 0, 0.2); border-color: var(--neon-amber); color: var(--neon-amber); }
+        .grid-cell.fence { background: rgba(255, 51, 102, 0.2); border-color: var(--neon-alert); color: var(--neon-alert); }
+        .grid-cell.paddock { background: rgba(0, 255, 102, 0.15); border-color: var(--neon-green); color: var(--neon-green); }
+        .grid-cell.facility { background: rgba(0, 102, 255, 0.25); border-color: var(--neon-blue); color: var(--neon-blue); }
 
-        .input-area {
+        .zoning-tools {
             display: flex;
-            align-items: center;
-        }
-
-        .prompt {
-            margin-right: 8px;
-            color: var(--crt-green);
-        }
-
-        input[type="text"] {
-            background: transparent;
-            border: none;
-            color: var(--crt-green);
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.95rem;
-            outline: none;
-            width: 100%;
-        }
-
-        /* Telemetry & Biosphere Data */
-        .telemetry-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            flex-direction: column;
             gap: 10px;
+        }
+
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .tool-btn.active-tool {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.1);
+            color: #fff;
+        }
+
+        /* Right Panel: Biosphere */
+        .bio-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             font-size: 0.85rem;
         }
 
-        .data-box {
-            border: 1px dashed var(--border-color);
-            padding: 8px;
+        .progress-bar-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            height: 8px;
+            width: 100%;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--neon-green);
+            height: 100%;
+            width: 78%;
+        }
+
+        /* Bottom Console Log */
+        .console-panel {
+            grid-column: 1 / -1;
+        }
+
+        .console-output {
+            background: #050811;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            flex-grow: 1;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: var(--neon-green);
+            overflow-y: auto;
+            white-space: pre-wrap;
+            max-height: 120px;
         }
     </style>
 </head>
 <body>
 
-    <div class="main-layout">
-        <!-- TOP STATUS HEADER -->
+    <div class="app-container">
+        <!-- TOP STATUS BAR -->
         <div class="top-bar">
-            <span>InGen OS v2.21 // ISLA NUBLAR MAINFRAME</span>
-            <span>SEC_LEVEL: <span style="color: var(--amber-primary);">CHIEF ENGINEER</span></span>
-            <span>GRID STATUS: <span class="system-status">WARNING: PERIMETER ANOMALY</span></span>
+            <div class="logo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                ISLA NUBLAR // OPERATIONS COMMAND
+            </div>
+            <div class="nav-tabs">
+                <button class="nav-btn active" onclick="switchView('deskView', this)">Control Desk</button>
+                <button class="nav-btn" onclick="switchView('gisView', this)">Island GIS Map</button>
+            </div>
+            <div class="stats-ticker">
+                <div class="ticker-item">GUESTS: <span id="statGuests">1,420</span></div>
+                <div class="ticker-item">REVENUE: <span id="statRevenue">$42,800</span></div>
+                <div class="ticker-item">RATING: <span id="statRating" style="color: var(--neon-green);">4.8 / 5.0</span></div>
+            </div>
         </div>
 
-        <!-- LEFT PANEL: MAP & SECTOR MONITOR -->
-        <div class="panel">
-            <span class="panel-title">[VISUAL VECTOR MAP: SECTOR 4]</span>
-            <div class="map-screen">
-                <div class="ascii-map" id="asciiMap">
-                    <pre>
-    ,---.         __
-   /     \       /  \    [PADDOCK 9: T-REX]
-  | REX   |-----[FENCE]-- STATUS: ELECTRIFIED [10,000V]
-   \     /       \__/    DINO ID: TR-01 (FEMALE) - RESTING
-    `---'                
-      |
-    [ROAD]----(TOUR VEHICLE 04) [SPEED: 14 MPH]
-      |
-    ,---.         __
-   /     \       /  \    [PADDOCK 3: RAPTOR PEN]
-  |RAPTOR |-----[FENCE]-- STATUS: SECURE
-   \     /       \__/    DINO ID: VEL-01, 02, 03 - ACTIVE
-    `---'
-                    </pre>
+        <!-- VIEW 1: CONTROL DESK -->
+        <div id="deskView" class="view-section active">
+            <!-- Left Panel: Operations -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Park Operations</span>
+                </div>
+                <div class="action-list">
+                    <button class="action-btn" onclick="logMessage('Constructing new visitor pavilion...')">+ Build Visitor Pavilion</button>
+                    <button class="action-btn" onclick="logMessage('Laying down high-voltage perimeter fence...')">+ Extend Paddock Fence</button>
+                    <button class="action-btn" onclick="logMessage('Initiating InGen genetics incubation cycle...')">+ Incubate Dinosaur Embryo</button>
+                    <button class="action-btn" onclick="logMessage('Adjusting automated tour vehicle speed limits...')">⚙️ Adjust Tour Routes</button>
+                    <button class="action-btn" onclick="triggerLockdown()" style="border-color: var(--neon-alert); color: var(--neon-alert);">⚠️ EMERGENCY LOCKDOWN</button>
+                </div>
+            </div>
+
+            <!-- Center Panel: Overview Widget -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Sector Summary & Status</span>
+                </div>
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; color: rgba(255,255,255,0.5);">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+                    <p style="margin-top: 10px;">Switch to the <strong>Island GIS Map</strong> tab above to begin zoning roads, facilities, and dinosaur paddocks across Isla Nublar.</p>
+                </div>
+            </div>
+
+            <!-- Right Panel: Biosphere -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Biosphere & InGen Lab</span>
+                </div>
+                <div class="bio-stats">
+                    <div><strong>Total Biosphere Population:</strong> 26 Specimens</div>
+                    <div><span>Apex Carnivores: 6</span> | <span>Grazers: 20</span></div>
+                    <div>
+                        <strong>Genetics Lab Synthesis:</strong>
+                        <div class="progress-bar-container">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <span style="font-size: 0.75rem; opacity: 0.7;">Species: Velociraptor Hatching (78%)</span>
+                    </div>
+                    <div style="margin-top: auto; background: rgba(0,255,102,0.05); border: 1px solid rgba(0,255,102,0.2); padding: 8px; border-radius: 4px;">
+                        <strong style="color: var(--neon-green);">SYSTEM STATUS: OPTIMAL</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-main);">All containment grids holding normal voltage.</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT PANEL: TELEMETRY & SPECIES LOG -->
-        <div class="panel">
-            <span class="panel-title">[BIO-TELEMETRY & ASSET TRACKING]</span>
-            <div class="telemetry-grid">
-                <div class="data-box">
-                    <strong>TOTAL ASSETS:</strong> 24<br>
-                    - Herbivores: 18<br>
-                    - Carnivores: 6
+        <!-- VIEW 2: ISLAND GIS MAP (SANDBOX) -->
+        <div id="gisView" class="view-section">
+            <!-- Left Panel: Zoning Tools -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>GIS Zoning Palette</span>
                 </div>
-                <div class="data-box">
-                    <strong>WEATHER:</strong> Tropical Depression<br>
-                    <strong>WIND:</strong> 28 Knots SW<br>
-                    <strong>POWER:</strong> Main Grid Stable
+                <div class="zoning-tools">
+                    <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 5px;">Select a tool, then click grid cells on the map to zone:</div>
+                    <button class="tool-btn active-tool" onclick="setTool('road', this)">🚗 Tour Road / Path</button>
+                    <button class="tool-btn" onclick="setTool('fence', this)">⚡ High-Voltage Fence</button>
+                    <button class="tool-btn" onclick="setTool('paddock', this)">🦖 Dinosaur Paddock</button>
+                    <button class="tool-btn" onclick="setTool('facility', this)">🏢 Visitor Facility</button>
+                    <button class="tool-btn" onclick="setTool('clear', this)">🗑️ Demolish / Clear</button>
                 </div>
-                <div class="data-box" style="grid-column: span 2;">
-                    <strong>GENETICS LAB (INGEN):</strong><br>
-                    Embryo Incubation: 85% Complete<br>
-                    Target Species: <em>Brachiosaurus</em> batch #4
+                <div style="margin-top: auto; font-size: 0.8rem; background: rgba(0,243,255,0.03); border: 1px solid rgba(0,243,255,0.1); padding: 10px; border-radius: 6px;">
+                    <strong>Active Tool:</strong> <span id="activeToolName" style="color: var(--neon-cyan);">Tour Road / Path</span>
+                </div>
+            </div>
+
+            <!-- Center Panel: Interactive GIS Grid -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span>Isla Nublar Sector Grid // Sandbox View</span>
+                    <span id="gisCoords">COORD: [0,0]</span>
+                </div>
+                <div class="gis-canvas-container" id="gisGrid">
+                    <!-- Grid cells generated dynamically via JavaScript -->
                 </div>
             </div>
         </div>
 
-        <!-- BOTTOM PANEL: UNIX-STYLE COMMAND INTERFACE -->
-        <div class="panel" style="grid-column: 1 / -1;">
-            <span class="panel-title">[COMMAND LINE INTERFACE - CONSOLE 01]</span>
-            <div class="terminal-screen" id="output">
-                IRIX Interactive Shell v4.0.5
-                Copyright (c) 1993 Silicon Graphics, Inc.
-                Type 'help' to review manual commands.
+        <!-- BOTTOM PANEL: EVENT LOG (Shared across views) -->
+        <div class="panel console-panel">
+            <div class="panel-header">
+                <span>System Event Feed & Logs</span>
             </div>
-            <div class="input-area">
-                <span class="prompt">root@nublar-con:~#</span>
-                <input type="text" id="commandInput" autofocus autocomplete="off">
+            <div class="console-output" id="consoleOutput">
+[SYS_INIT] Connected to InGen Mainframe Cluster 04.
+[SEC_GRID] Perimeter fences running at stable 10,000V.
+[TOURISM] Daily park attendance targets exceeded by 14%.
             </div>
         </div>
     </div>
 
     <script>
-        const outputScreen = document.getElementById('output');
-        const commandInput = document.getElementById('commandInput');
+        let currentTool = 'road';
+        const consoleOutput = document.getElementById('consoleOutput');
 
-        commandInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const cmd = commandInput.value.trim();
-                appendOutput(`root@nublar-con:~# ${cmd}`);
-                processCommand(cmd.toLowerCase());
-                commandInput.value = '';
-                outputScreen.scrollTop = outputScreen.scrollHeight;
-            }
-        });
-
-        function appendOutput(text) {
-            outputScreen.textContent += `\n${text}`;
+        function switchView(viewId, btn) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            btn.classList.add('active');
         }
 
-        function processCommand(cmd) {
-            switch(cmd) {
-                case 'help':
-                    appendOutput("AVAILABLE COMMANDS:\n  status   - Run comprehensive security diagnostic\n  dinos    - Display live dinosaur asset list and health\n  lockdown - Initiate emergency containment protocol\n  clear    - Clear console screen");
-                    break;
-                case 'status':
-                    appendOutput("DIAGNOSTIC: All primary perimeter fences operational. Automated tour tracks clear. No unauthorized personnel detected in restricted zones.");
-                    break;
-                case 'dinos':
-                    appendOutput("ASSET ROSTER:\n  - Tyrannosaurus Rex (1) [Stable]\n  - Velociraptor (3) [Stable - Feeding Required in 4hrs]\n  - Triceratops (5) [Stable]\n  - Brachiosaurus (8) [Stable]");
-                    break;
-                case 'lockdown':
-                    appendOutput("WARNING: Lockdown command acknowledged. Diverting auxiliary power to Paddock 9 fences...");
-                    break;
-                case 'clear':
-                    outputScreen.textContent = "IRIX Interactive Shell v4.0.5\nCopyright (c) 1993 Silicon Graphics, Inc.";
-                    break;
-                default:
-                    appendOutput(`sh: command not found: ${cmd}. Type 'help' for available commands.`);
+        function setTool(tool, btn) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active-tool'));
+            btn.classList.add('active-tool');
+            document.getElementById('activeToolName').textContent = btn.textContent;
+        }
+
+        function logMessage(text) {
+            const timestamp = new Date().toLocaleTimeString();
+            consoleOutput.textContent += `\n[${timestamp}] ${text}`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function triggerLockdown() {
+            logMessage("🚨 WARNING: EMERGENCY LOCKDOWN ACTIVATED! Rerouting auxiliary power to all paddock grids.");
+            document.body.style.boxShadow = "inset 0 0 50px rgba(255, 51, 102, 0.3)";
+            setTimeout(() => { document.body.style.boxShadow = "none"; }, 1000);
+        }
+
+        // Initialize GIS Grid
+        const gisGrid = document.getElementById('gisGrid');
+        for (let r = 0; r < 12; r++) {
+            for (let c = 0; c < 12; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.dataset.row = r;
+                cell.dataset.col = c;
+                
+                cell.addEventListener('mouseenter', () => {
+                    document.getElementById('gisCoords').textContent = `COORD: [${r}, ${c}]`;
+                });
+
+                cell.addEventListener('click', () => {
+                    // Remove existing zone classes
+                    cell.classList.remove('road', 'fence', 'paddock', 'facility');
+                    if (currentTool !== 'clear') {
+                        cell.classList.add(currentTool);
+                        cell.textContent = currentTool[0].toUpperCase();
+                        logMessage(`GIS ZONING: Placed [${currentTool.toUpperCase}] at sector coordinate [${r}, ${c}]`);
+                    } else {
+                        cell.textContent = '';
+                        logMessage(`GIS ZONING: Cleared sector coordinate [${r}, ${c}]`);
+                    }
+                });
+
+                gisGrid.appendChild(cell);
             }
         }
     </script>

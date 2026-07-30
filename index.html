@@ -10,11 +10,11 @@
 <body>
 
     <header>
-        <div class="logo">ISLA NUBLAR // MASTER CONTROL TERMINAL</div>
+        <div class="logo">ISLA NUBLAR // MASTER CONTROL TERMINAL v4.2</div>
         <nav>
             <button onclick="window.switchTab('sectors', event)" class="active">🌴 Sectors</button>
             <button onclick="window.switchTab('biosphere', event)">🦖 Biosphere Roster</button>
-            <button onclick="window.switchTab('genetics', event)">🧬 InGen Lab</button>
+            <button onclick="window.switchTab('genetics', event)">🧬 InGen Lab & Extraction</button>
             <button onclick="window.switchTab('ops', event)">⚙️ Operations</button>
         </nav>
     </header>
@@ -105,44 +105,51 @@
         <div class="card-grid" id="rosterGrid"></div>
     </div>
 
-    <!-- GENETICS LAB VIEW -->
+    <!-- GENETICS LAB & EXTRACTION VIEW -->
     <div id="genetics" class="view-panel">
         <div class="panel-header">
-            <span>InGen Genetics Laboratory // Bio-Matrix Incubation</span>
+            <span>InGen Bio-Engineering & Fossil Extraction Matrix</span>
             <div style="display: flex; gap: 20px; align-items: center;">
-                <span style="color: var(--neon-amber); text-shadow: 0 0 8px rgba(255,170,0,0.4);">AMBER RESERVES: <strong id="amberCount">100</strong> 🧬</span>
-                <span id="labPowerStatus" style="color: var(--neon-green);">THERMAL STABLE</span>
+                <span style="color: var(--neon-amber); text-shadow: 0 0 10px rgba(255,170,0,0.6);">AMBER RESERVES: <strong id="amberCount">50</strong> 🧬</span>
+                <span style="color: var(--neon-cyan);">LAB STATUS: OPTIMAL</span>
             </div>
         </div>
+
+        <!-- AMBER MINING / EXTRACTION COMMAND CENTER -->
+        <div class="card" style="padding: 15px; background: rgba(255,170,0,0.03); border-color: rgba(255,170,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <strong style="color: var(--neon-amber); letter-spacing: 1px;">⚡ LASER AMBER EXTRACTION BAY</strong>
+                <span style="font-size: 0.75rem; opacity: 0.8;">Extract prehistoric DNA from fossilized resin nodes</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="action-btn" style="background: rgba(255,170,0,0.15); border-color: var(--neon-amber); color: var(--neon-amber); flex-grow: 1;" onclick="window.mineAmber()">⛏️ ENGAGE LASER EXTRACTION (+25 🧬)</button>
+                <div style="font-family: monospace; font-size: 0.8rem; color: var(--neon-cyan);" id="extractionStatus">SYSTEM READY</div>
+            </div>
+        </div>
+
         <div class="card-grid">
             
             <!-- Stegosaurus Lab Pod -->
             <div class="card">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(4,7,13,0.95)), url('https://images.unsplash.com/photo-1534567153574-2b12153a87f0?q=80&w=600&auto=format&fit=crop'); height: 160px;">
-                    <span class="sector-tag">SPECIMEN // STG-09</span>
-                    <div id="stegChamberStatus" style="position: absolute; right: 12px; bottom: 12px; font-size: 0.75rem; color: var(--neon-amber); font-family: monospace; background: rgba(0,0,0,0.8); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--neon-amber);">TANK: STANDBY</div>
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(4,7,13,0.95)), url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop'); height: 150px;">
+                    <span class="sector-tag">SPECIMEN // STG-09 (HERBIVORE)</span>
+                    <div id="stegChamberStatus" style="position: absolute; right: 10px; bottom: 10px; font-size: 0.7rem; color: var(--neon-amber); font-family: monospace; background: rgba(0,0,0,0.85); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--neon-amber);">TANK: STANDBY</div>
                 </div>
                 <div class="sector-details">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <strong style="font-size: 1rem; color: var(--text-main);">Stegosaurus</strong>
-                        <span style="font-size: 0.75rem; color: var(--neon-cyan);">HERBIVORE</span>
+                    <div class="sector-row" style="font-size: 0.75rem;">
+                        <span>Genome Viability:</span>
+                        <span id="stegGenome" style="color: var(--neon-amber);">40%</span>
                     </div>
-                    <div>
-                        <div class="sector-row" style="font-size: 0.75rem; margin-bottom: 3px;">
-                            <span>Genome Viability:</span>
-                            <span id="stegGenome" style="color: var(--neon-amber);">40%</span>
-                        </div>
-                        <div class="progress-bar"><div id="stegGenomeBar" class="progress-fill" style="width: 40%; background: var(--neon-amber);"></div></div>
+                    <div class="progress-bar"><div id="stegGenomeBar" class="progress-fill" style="width: 40%; background: var(--neon-amber);"></div></div>
+                    
+                    <div class="sector-row" style="font-size: 0.75rem;">
+                        <span>Incubation Progress:</span>
+                        <span id="stegText" style="color: var(--neon-green);">0%</span>
                     </div>
-                    <div>
-                        <div class="sector-row" style="font-size: 0.75rem; margin-bottom: 3px;">
-                            <span>Incubation Progress:</span>
-                            <span id="stegText" style="color: var(--neon-green);">0%</span>
-                        </div>
-                        <div class="progress-bar"><div id="stegProgress" class="progress-fill"></div></div>
-                    </div>
-                    <div class="sector-actions" style="margin-top: 10px;">
-                        <button class="sector-btn" onclick="window.spliceGenome('Stegosaurus')">🔬 Splice DNA (-30🧬)</button>
+                    <div class="progress-bar"><div id="stegProgress" class="progress-fill"></div></div>
+                    
+                    <div class="sector-actions" style="margin-top: 8px;">
+                        <button class="sector-btn" onclick="window.spliceGenome('Stegosaurus')">🔬 Splice DNA (-30 🧬)</button>
                         <button class="sector-btn" style="border-color: var(--neon-green); color: var(--neon-green);" onclick="window.startIncubation('Stegosaurus', 'Herbivore', 'stegProgress', 'stegText', 'stegChamberStatus')">▶ Incubate</button>
                     </div>
                 </div>
@@ -150,31 +157,25 @@
 
             <!-- Dilophosaurus Lab Pod -->
             <div class="card carnivore">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(4,7,13,0.95)), url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop'); height: 160px;">
-                    <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">SPECIMEN // DIL-04</span>
-                    <div id="diloChamberStatus" style="position: absolute; right: 12px; bottom: 12px; font-size: 0.75rem; color: var(--neon-amber); font-family: monospace; background: rgba(0,0,0,0.8); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--neon-amber);">TANK: STANDBY</div>
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(4,7,13,0.95)), url('https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&auto=format&fit=crop'); height: 150px;">
+                    <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">SPECIMEN // DIL-04 (VENOMOUS)</span>
+                    <div id="diloChamberStatus" style="position: absolute; right: 10px; bottom: 10px; font-size: 0.7rem; color: var(--neon-amber); font-family: monospace; background: rgba(0,0,0,0.85); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--neon-amber);">TANK: STANDBY</div>
                 </div>
                 <div class="sector-details">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <strong style="font-size: 1rem; color: var(--text-main);">Dilophosaurus</strong>
-                        <span style="font-size: 0.75rem; color: var(--neon-alert);">VENOMOUS CARNIVORE</span>
+                    <div class="sector-row" style="font-size: 0.75rem;">
+                        <span>Genome Viability:</span>
+                        <span id="diloGenome" style="color: var(--neon-amber);">20%</span>
                     </div>
-                    <div>
-                        <div class="sector-row" style="font-size: 0.75rem; margin-bottom: 3px;">
-                            <span>Genome Viability:</span>
-                            <span id="diloGenome" style="color: var(--neon-amber);">20%</span>
-                        </div>
-                        <div class="progress-bar"><div id="diloGenomeBar" class="progress-fill" style="width: 20%; background: var(--neon-amber);"></div></div>
+                    <div class="progress-bar"><div id="diloGenomeBar" class="progress-fill" style="width: 20%; background: var(--neon-amber);"></div></div>
+                    
+                    <div class="sector-row" style="font-size: 0.75rem;">
+                        <span>Incubation Progress:</span>
+                        <span id="diloText" style="color: var(--neon-green);">0%</span>
                     </div>
-                    <div>
-                        <div class="sector-row" style="font-size: 0.75rem; margin-bottom: 3px;">
-                            <span>Incubation Progress:</span>
-                            <span id="diloText" style="color: var(--neon-green);">0%</span>
-                        </div>
-                        <div class="progress-bar"><div id="diloProgress" class="progress-fill"></div></div>
-                    </div>
-                    <div class="sector-actions" style="margin-top: 10px;">
-                        <button class="sector-btn" onclick="window.spliceGenome('Dilophosaurus')">🔬 Splice DNA (-30🧬)</button>
+                    <div class="progress-bar"><div id="diloProgress" class="progress-fill"></div></div>
+                    
+                    <div class="sector-actions" style="margin-top: 8px;">
+                        <button class="sector-btn" onclick="window.spliceGenome('Dilophosaurus')">🔬 Splice DNA (-30 🧬)</button>
                         <button class="sector-btn" style="border-color: var(--neon-green); color: var(--neon-green);" onclick="window.startIncubation('Dilophosaurus', 'Carnivore', 'diloProgress', 'diloText', 'diloChamberStatus')">▶ Incubate</button>
                     </div>
                 </div>
@@ -196,7 +197,7 @@
     <!-- SYSTEM LOG -->
     <div class="log-container">
         <small style="color: var(--neon-cyan);">SYSTEM EVENT LOG:</small>
-        <div id="logOutput" class="log-box">[SYS_INIT] Terminal online. InGen visual incubation matrix engaged.</div>
+        <div id="logOutput" class="log-box">[SYS_INIT] Terminal online. High-tech InGen bio-matrix engaged.</div>
     </div>
 
     <!-- Import Core App Logic as ES Module -->

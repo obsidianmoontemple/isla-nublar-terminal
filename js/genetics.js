@@ -8,41 +8,39 @@ let labState = {
 };
 
 export function initGenetics(writeLog) {
-    // Manual Laser Extraction Logic (No runaway timer)
+    setupLaserCanvas(0, false);
+
     window.mineAmber = function() {
         if (labState.isExtracting) return;
         labState.isExtracting = true;
 
-        const statusEl = document.getElementById('laserBeamStatus');
-        const fillEl = document.getElementById('laserProgressFill');
-        
-        statusEl.textContent = "STATUS: LASER CUTTING";
+        const statusEl = document.getElementById('laserStatusText');
+        statusEl.textContent = "LASER CUTTING ACTIVE";
         statusEl.style.color = "var(--neon-amber)";
-        
-        writeLog(`LAB EXTRACTION: High-frequency laser engaged on amber sample core...`);
-        
+        writeLog(`EXTRACTION: Precision laser locked onto fossilized resin. Vaporizing amber matrix...`);
+
         let progress = 0;
-        const laserInterval = setInterval(() => {
-            progress += 25;
-            fillEl.style.width = progress + '%';
+        const interval = setInterval(() => {
+            progress += 10;
+            setupLaserCanvas(progress, true);
 
             if (progress >= 100) {
-                clearInterval(laserInterval);
+                clearInterval(interval);
                 labState.amberPoints += 25;
                 updateAmberDisplay();
 
-                statusEl.textContent = "STATUS: EXTRACTION COMPLETE";
+                statusEl.textContent = "MOSQUITO DNA ISOLATED (+25 🧬)";
                 statusEl.style.color = "var(--neon-green)";
-                writeLog(`SUCCESS: Amber core processed! Yielded +25 extraction points.`);
+                writeLog(`SUCCESS: Prehistoric DNA strand successfully extracted from amber core!`);
 
                 setTimeout(() => {
-                    fillEl.style.width = '0%';
-                    statusEl.textContent = "STATUS: IDLE";
+                    setupLaserCanvas(0, false);
+                    statusEl.textContent = "READY";
                     statusEl.style.color = "var(--neon-cyan)";
                     labState.isExtracting = false;
-                }, 1200);
+                }, 1500);
             }
-        }, 300);
+        }, 150);
     };
 
     window.spliceGenome = function(dinoName) {
@@ -50,7 +48,7 @@ export function initGenetics(writeLog) {
         if (!dino) return;
 
         if (labState.amberPoints < 30) {
-            writeLog(`LAB ERROR: Insufficient Amber reserves (${labState.amberPoints}/30). Use the Laser Extraction Bay above!`);
+            writeLog(`LAB ERROR: Insufficient Amber reserves (${labState.amberPoints}/30). Use the Laser Extraction Chamber above!`);
             return;
         }
 
@@ -112,6 +110,59 @@ export function initGenetics(writeLog) {
             }
         }, 800);
     };
+}
+
+function setupLaserCanvas(progress, cutting) {
+    const canvas = document.getElementById('laserCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw background grid lines
+    ctx.strokeStyle = "rgba(0, 243, 255, 0.05)";
+    ctx.lineWidth = 1;
+    for (let x = 0; x < canvas.width; x += 20) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+
+    // Draw Glowing Amber Nugget Block in Center
+    ctx.fillStyle = "rgba(255, 170, 0, 0.25)";
+    ctx.strokeStyle = "#ffaa00";
+    ctx.lineWidth = 2;
+    ctx.fillRect(150, 25, 200, 80);
+    ctx.strokeRect(150, 25, 200, 80);
+
+    // Draw Encapsulated Prehistoric Mosquito Silhouette inside amber
+    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    ctx.beginPath();
+    ctx.arc(250, 65, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#00f3ff";
+    ctx.font = "10px monospace";
+    ctx.fillText("🦟 SPECIMEN INCLUSION", 170, 70);
+
+    if (cutting) {
+        // Draw Laser Beam Cutting Across
+        let cutX = 150 + (2 * progress);
+        ctx.strokeStyle = "#ff3366";
+        ctx.lineWidth = 4;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "#ff3366";
+        ctx.beginPath();
+        ctx.moveTo(cutX, 20);
+        ctx.lineTo(cutX, 110);
+        ctx.stroke();
+        ctx.shadowBlur = 0; // reset
+
+        // Draw Sparks flying off the laser point
+        ctx.fillStyle = "#ffffff";
+        for (let i = 0; i < 6; i++) {
+            let sparkX = cutX + (Math.random() * 20 - 10);
+            let sparkY = 25 + Math.random() * 80;
+            ctx.fillRect(sparkX, sparkY, 3, 3);
+        }
+    }
 }
 
 function updateAmberDisplay() {

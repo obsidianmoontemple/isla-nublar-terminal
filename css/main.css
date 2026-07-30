@@ -15,12 +15,12 @@ body {
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
     padding: 15px;
-    height: 100vh;
+    min-height: 100vh;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    overflow: hidden;
+    overflow-y: auto; /* Allows the full page to scroll naturally */
     background-image: radial-gradient(circle at 50% 20%, #0d1b32 0%, #04070d 100%);
 }
 
@@ -74,10 +74,6 @@ nav button.active, nav button:hover {
     border: 1px solid var(--border-glow);
     border-radius: 8px;
     padding: 20px;
-    flex-grow: 1;
-    overflow-y: auto;
-    max-height: calc(100vh - 120px);
-    backdrop-filter: blur(10px);
     flex-direction: column;
     gap: 15px;
 }

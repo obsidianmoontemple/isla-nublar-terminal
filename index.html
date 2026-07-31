@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL v6.8</title>
+    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL v8.3 - SCALED RARITY GENOME VAULT</title>
     <style>
         :root {
             --bg-dark: #0b0f0b;
@@ -20,7 +20,7 @@
         body { background-color: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
         header { background: #0f170f; border-bottom: 2px solid var(--panel-border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 0.9rem; font-weight: bold; color: var(--neon-green); letter-spacing: 2px; }
+        .logo { font-size: 0.9rem; font-weight: bold; color: var(--neon-green); letter-spacing: 2px; cursor: pointer; }
         
         nav { display: flex; gap: 6px; flex-wrap: wrap; }
         nav button { background: #182418; color: var(--text-main); border: 1px solid var(--panel-border); padding: 6px 12px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; transition: all 0.2s; }
@@ -34,7 +34,8 @@
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
         .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
         
-        .sector-preview-screen { height: 110px; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 8px; }
+        .sector-preview-screen { height: 110px; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 8px; cursor: pointer; }
+        .sector-preview-screen:hover { filter: brightness(1.2); }
         .sector-tag { font-size: 0.7rem; background: rgba(0,0,0,0.8); padding: 3px 6px; border: 1px solid var(--neon-green); color: var(--neon-green); font-family: monospace; }
         
         .sector-details { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: space-between; }
@@ -49,15 +50,24 @@
 
         .log-container { background: #080c08; border-top: 2px solid var(--panel-border); padding: 10px 20px; font-family: monospace; font-size: 0.75rem; }
         .log-box { color: var(--neon-green); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        select.sector-select { background: #182418; color: var(--neon-cyan); border: 1px solid var(--panel-border); padding: 6px; font-family: monospace; font-size: 0.75rem; cursor: pointer; width: 100%; margin-top: 5px; }
+        .paddock-card { background: #101810; border: 1px dashed var(--neon-cyan); padding: 10px; border-radius: 4px; margin-top: 8px; }
+
+        .wu-container { display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
+        .wu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media(max-width: 768px) { .wu-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">ISLA NUBLAR // MASTER CONTROL TERMINAL v6.8</div>
+        <div class="logo" onclick="switchTab('sectors', event)">ISLA NUBLAR // MASTER CONTROL TERMINAL v8.3</div>
         <nav>
             <button onclick="switchTab('sectors', event)" class="active">🌴 Climate Sectors</button>
-            <button onclick="switchTab('biosphere', event)">🦖 Biosphere Registry (50 Cap)</button>
-            <button onclick="switchTab('genetics', event)">🧬 Lab & Extraction</button>
+            <button onclick="switchTab('biosphere', event)">🦖 Biosphere Registry</button>
+            <button onclick="switchTab('genetics', event)">🧬 Dr. Wu's Lab</button>
+            <button onclick="switchTab('genomeVault', event)">🧪 Genome Vault</button>
+            <button onclick="switchTab('miningScreen', event)">⛏️ Amber Mining Facility</button>
             <button onclick="switchTab('parkView', event)">🌐 Live Optic Feeds</button>
             <button onclick="switchTab('stations', event)">🎛️ Stations</button>
             <button onclick="switchTab('ops', event)">⚙️ Operations</button>
@@ -67,134 +77,298 @@
     <!-- CLIMATE & LOCATION SECTORS VIEW -->
     <div id="sectors" class="view-panel active">
         <div class="panel-header">
-            <span>Isla Nublar Climate & Location Zones</span>
+            <span>Isla Nublar Climate & Location Zones (Click preview for Paddock Sub-Enclosures)</span>
             <span style="color: var(--neon-green);">CLIMATE ZONES: 8 / 8 ACTIVE</span>
         </div>
         <div class="card-grid">
             <div class="card">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop');">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop');" onclick="openSectorDetail('Zone A: Canopy / Jungle')">
                     <span class="sector-tag">ZONE A: CANOPY / JUNGLE</span>
                 </div>
                 <div class="sector-details">
                     <div class="sector-row"><span>Voltage:</span> <span id="zone1Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
                     <div class="sector-actions">
                         <button class="sector-btn" onclick="boostClimateVoltage(1)">⚡ Boost</button>
-                        <button class="sector-btn" onclick="logMessage('Canopy climate irrigation toggled.')">💧 Irrigate</button>
+                        <button class="sector-btn" onclick="openSectorDetail('Zone A: Canopy / Jungle')">🏡 Paddocks & Census</button>
                     </div>
                 </div>
             </div>
             <div class="card carnivore">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=600&auto=format&fit=crop');">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=600&auto=format&fit=crop');" onclick="openSectorDetail('Zone B: Heavy Security Pen')">
                     <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">ZONE B: HEAVY SECURITY PEN</span>
                 </div>
                 <div class="sector-details">
                     <div class="sector-row"><span>Voltage:</span> <span id="zone2Voltage" style="color: var(--neon-cyan);">50,000V</span></div>
                     <div class="sector-actions">
                         <button class="sector-btn" onclick="boostClimateVoltage(2)">⚡ Boost</button>
-                        <button class="sector-btn" onclick="logMessage('Security lockdown verified.')">🛡️ Lock Grid</button>
+                        <button class="sector-btn" onclick="openSectorDetail('Zone B: Heavy Security Pen')">🏡 Paddocks & Census</button>
                     </div>
                 </div>
             </div>
             <div class="card">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop');">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop');" onclick="openSectorDetail('Zone C: Plains / Savannah')">
                     <span class="sector-tag">ZONE C: PLAINS / SAVANNAH</span>
                 </div>
                 <div class="sector-details">
                     <div class="sector-row"><span>Voltage:</span> <span id="zone3Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
                     <div class="sector-actions">
                         <button class="sector-btn" onclick="boostClimateVoltage(3)">⚡ Boost</button>
-                        <button class="sector-btn" onclick="logMessage('Plains feeding troughs replenished.')">🌿 Feed Herd</button>
+                        <button class="sector-btn" onclick="openSectorDetail('Zone C: Plains / Savannah')">🏡 Paddocks & Census</button>
                     </div>
                 </div>
             </div>
             <div class="card carnivore">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=600&auto=format&fit=crop');">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=600&auto=format&fit=crop');" onclick="openSectorDetail('Zone D: Volcanic Ridge')">
                     <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">ZONE D: VOLCANIC RIDGE</span>
                 </div>
                 <div class="sector-details">
                     <div class="sector-row"><span>Voltage:</span> <span id="zone4Voltage" style="color: var(--neon-cyan);">50,000V</span></div>
                     <div class="sector-actions">
                         <button class="sector-btn" onclick="boostClimateVoltage(4)">⚡ Boost</button>
-                        <button class="sector-btn" onclick="logMessage('Live bait dispenser triggered.')">🥩 Drop Bait</button>
+                        <button class="sector-btn" onclick="openSectorDetail('Zone D: Volcanic Ridge')">🏡 Paddocks & Census</button>
                     </div>
                 </div>
             </div>
             <div class="card">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop');">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop');" onclick="openSectorDetail('Zone E: Wetland Delta')">
                     <span class="sector-tag">ZONE E: WETLAND DELTA</span>
                 </div>
                 <div class="sector-details">
                     <div class="sector-row"><span>Voltage:</span> <span id="zone5Voltage" style="color: var(--neon-cyan);">20,000V</span></div>
                     <div class="sector-actions">
                         <button class="sector-btn" onclick="boostClimateVoltage(5)">⚡ Boost</button>
-                        <button class="sector-btn" onclick="logMessage('Delta water filtration active.')">🌊 Flush Delta</button>
+                        <button class="sector-btn" onclick="openSectorDetail('Zone E: Wetland Delta')">🏡 Paddocks & Census</button>
                     </div>
                 </div>
             </div>
             <div class="card">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=600&auto=format&fit=crop');">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=600&auto=format&fit=crop');" onclick="openSectorDetail('Zone F: Coastal Cliff Aviary')">
                     <span class="sector-tag">ZONE F: COASTAL CLIFF AVIARY</span>
                 </div>
                 <div class="sector-details">
                     <div class="sector-row"><span>Voltage:</span> <span id="zone6Voltage" style="color: var(--neon-cyan);">40,000V</span></div>
                     <div class="sector-actions">
                         <button class="sector-btn" onclick="boostClimateVoltage(6)">⚡ Boost</button>
-                        <button class="sector-btn" onclick="logMessage('Aviary dome checked.')">🛡️ Check Dome</button>
+                        <button class="sector-btn" onclick="openSectorDetail('Zone F: Coastal Cliff Aviary')">🏡 Paddocks & Census</button>
                     </div>
                 </div>
             </div>
             <div class="card" style="border-color: var(--neon-cyan);">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=600&auto=format&fit=crop');">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=600&auto=format&fit=crop');" onclick="openSectorDetail('Zone G: Deep Water Lagoon')">
                     <span class="sector-tag" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">ZONE G: DEEP WATER LAGOON</span>
                 </div>
                 <div class="sector-details">
                     <div class="sector-row"><span>Voltage:</span> <span id="zone7Voltage" style="color: var(--neon-cyan);">35,000V</span></div>
                     <div class="sector-actions">
                         <button class="sector-btn" onclick="boostClimateVoltage(7)">⚡ Boost</button>
-                        <button class="sector-btn" onclick="logMessage('Sub-aquatic sonar ping active.')">📡 Sonar Scan</button>
+                        <button class="sector-btn" onclick="openSectorDetail('Zone G: Deep Water Lagoon')">🏡 Paddocks & Census</button>
                     </div>
                 </div>
             </div>
             <div class="card" style="border-color: var(--neon-cyan);">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&w=600&auto=format&fit=crop');">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&w=600&auto=format&fit=crop');" onclick="openSectorDetail('Zone H: Glacial Tundra')">
                     <span class="sector-tag" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">ZONE H: GLACIAL TUNDRA</span>
                 </div>
                 <div class="sector-details">
                     <div class="sector-row"><span>Voltage:</span> <span id="zone8Voltage" style="color: var(--neon-cyan);">45,000V</span></div>
                     <div class="sector-actions">
                         <button class="sector-btn" onclick="boostClimateVoltage(8)">⚡ Boost</button>
-                        <button class="sector-btn" onclick="logMessage('Cryo-stabilizers verified.')">❄️ Chill Core</button>
+                        <button class="sector-btn" onclick="openSectorDetail('Zone H: Glacial Tundra')">🏡 Paddocks & Census</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- DEDICATED SECTOR PADDOCKS & CENSUS VIEW -->
+    <div id="sectorDetailView" class="view-panel">
+        <div class="panel-header">
+            <span id="selectedSectorTitle">Sector Sub-Enclosures (Paddocks) & Census</span>
+            <div>
+                <button class="sector-btn" style="padding: 4px 10px; margin-right: 10px;" onclick="switchTab('sectors', event)">⬅ Back to Zones</button>
+                <span style="color: var(--neon-amber);" id="sectorPopCount">Specimens: 0</span>
+            </div>
+        </div>
+        <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px;" id="sectorFilterButtons"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); padding: 10px; border: 1px solid var(--panel-border); border-radius: 4px;">
+            <span>Sub-Enclosure Paddocks</span>
+            <button class="sector-btn" style="max-width: 180px;" onclick="createPaddock()">➕ Create Paddock</button>
+        </div>
+        <div id="paddocksContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        <div style="background: #0d140d; border: 1px solid var(--panel-border); padding: 10px; border-radius: 4px; font-size: 0.8rem;" id="sectorCompatSummary">
+            <span>Sector Cohabitation Analysis: Scanning co-habitat threat indices...</span>
+        </div>
+        <div class="card-grid" id="sectorCensusGrid"></div>
+    </div>
+
     <!-- BIOSPHERE REGISTRY VIEW -->
     <div id="biosphere" class="view-panel">
         <div class="panel-header">
-            <span>Wildlife & Biosphere Registry (50 Species Level Cap)</span>
+            <span>Wildlife & Biosphere Registry (Hatch & Sector Assignment)</span>
             <span id="unlockedCount" style="color: var(--neon-green);">Discovered & Hatched: 50 / 50</span>
         </div>
         <div class="card-grid" id="masterRosterGrid"></div>
     </div>
 
-    <!-- GENETICS LAB -->
+    <!-- DR. WU'S GENETICS LAB & STATION -->
     <div id="genetics" class="view-panel">
         <div class="panel-header">
-            <span>InGen Bio-Engineering & Fossil Extraction Matrix</span>
-            <span style="color: var(--neon-amber);">AMBER RESERVES: <strong id="amberCount">50</strong> 🧬</span>
+            <span>Dr. Henry Wu's Laboratory & Gene-Splicing Terminal</span>
+            <span style="color: var(--neon-amber);">AMBER: <strong id="amberCount">50</strong> 🧬 | DNA: <strong id="dnaCount">120</strong> 🧪</span>
         </div>
-        <div class="card" style="padding: 15px;">
-            <strong style="color: var(--neon-amber);">⚡ LIVE LASER EXTRACTION CHAMBER</strong>
-            <div style="background: #020408; border: 1px solid rgba(255,170,0,0.3); height: 100px; margin: 10px 0; display:flex; align-items:center; justify-content:center;">
-                <canvas id="laserCanvas" width="400" height="90"></canvas>
+        
+        <div class="wu-container">
+            <div class="card" style="padding: 15px; border-color: var(--neon-cyan);">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;">
+                    <strong style="color: var(--neon-cyan);">🔬 DR. HENRY WU // LEAD GENETICIST WORKSTATION</strong>
+                    <span style="color: var(--neon-green);">Status: Splicing Costs Scaled by Rarity</span>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-main); margin-top: 8px;">
+                    Gene splicing costs scale dynamically based on specimen rarity (Level 1 Common = 40 DNA, Level 4/5 Epic/Apex = 100+ DNA). Check your <span style="color:var(--neon-cyan); cursor:pointer;" onclick="switchTab('genomeVault', event)">Genome Vault</span> for completion status.
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                    <div style="background:#0a100a; border:1px solid var(--panel-border); padding:8px; font-size:0.75rem;">
+                        <span>Total Spliced Specimens:</span> <strong id="splicedCount" style="color:var(--neon-cyan);">0</strong>
+                    </div>
+                    <div style="background:#0a100a; border:1px solid var(--panel-border); padding:8px; font-size:0.75rem;">
+                        <span>Active Hybrids:</span> <strong id="hybridCount" style="color:var(--neon-alert);">0</strong>
+                    </div>
+                    <div style="background:#0a100a; border:1px solid var(--panel-border); padding:8px; font-size:0.75rem;">
+                        <span>Lab Security Lockdown:</span> <strong style="color:var(--neon-green);">SECURE</strong>
+                    </div>
+                </div>
             </div>
-            <button class="action-btn" style="border-color: var(--neon-amber); color: var(--neon-amber);" onclick="mineAmber()">[ HARVEST +25 AMBER 🧬 ]</button>
+
+            <div class="wu-grid">
+                <!-- Genome Sequencing & Scaled Gene Splicing -->
+                <div class="card" style="padding: 15px;">
+                    <strong style="color: var(--neon-cyan);">🧬 SCALED GENOME SPLICING</strong>
+                    <p style="font-size: 0.75rem; color: var(--text-main); margin: 6px 0;" id="spliceCostLabel">Cost scales by specimen threat/rarity level.</p>
+                    
+                    <div style="display:flex; flex-direction:column; gap:8px; margin-top:5px;">
+                        <label style="font-size:0.75rem; color:var(--neon-cyan);">Select Target Specimen:</label>
+                        <select id="wuTargetSelect" class="sector-select" onchange="updateSpliceCostDisplay()">
+                        </select>
+
+                        <label style="font-size:0.75rem; color:var(--neon-cyan);">Select Splice Trait:</label>
+                        <select id="wuTraitSelect" class="sector-select">
+                            <option value="Amphibian Regeneration Matrix">Amphibian Regeneration Matrix (Rapid Health Recovery)</option>
+                            <option value="Cuttlefish Camouflage">Cuttlefish Camouflage (Adaptive Visual Stealth)</option>
+                            <option value="Viper Toxic Gland">Viper Toxic Gland (Enhanced Venom Potency)</option>
+                            <option value="Avian Growth Accelerator">Avian Growth Accelerator (Accelerated Mass)</option>
+                            <option value="Bioluminescent Chromatophores">Bioluminescent Chromatophores (Glowing Night Optic)</option>
+                        </select>
+
+                        <button class="sector-btn" style="border-color:var(--neon-cyan); color:var(--neon-cyan); margin-top:5px;" id="spliceExecBtn" onclick="executeGeneSplice()">[ EXECUTE SCALED SPLICING ]</button>
+                    </div>
+                </div>
+
+                <!-- Custom Hybrid Creation Deck -->
+                <div class="card" style="padding: 15px;">
+                    <strong style="color: var(--neon-alert);">⚠️ EXPERIMENTAL HYBRIDIZATION CHAMBER</strong>
+                    <p style="font-size: 0.75rem; color: var(--text-main); margin: 6px 0;">Combine base dinosaur templates with multi-species genetic donors to synthesize custom park apex hybrids (Cost: 100 Amber, 150 DNA).</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                        <div>
+                            <label style="font-size: 0.7rem; color: var(--neon-green);">Base Dinosaur:</label>
+                            <select id="hybridBase" class="sector-select">
+                                <option value="Velociraptor">Velociraptor</option>
+                                <option value="Tyrannosaurus Rex">Tyrannosaurus Rex</option>
+                                <option value="Spinosaurus">Spinosaurus</option>
+                                <option value="Stegosaurus">Stegosaurus</option>
+                                <option value="Triceratops">Triceratops</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.7rem; color: var(--neon-alert);">Primary Donor:</label>
+                            <select id="hybridDonor1" class="sector-select">
+                                <option value="Tree Frog (Thermal Cloak)">Tree Frog (Thermal Cloak)</option>
+                                <option value="Pit Viper (Infrared Vision)">Pit Viper (Infrared Vision)</option>
+                                <option value="Cuttlefish (Skin Texture)">Cuttlefish (Skin Texture)</option>
+                                <option value="Gorgonian Coral (Spines)">Gorgonian Coral (Spines)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.7rem; color: var(--neon-amber);">Secondary Donor:</label>
+                            <select id="hybridDonor2" class="sector-select">
+                                <option value="Basilisk Lizard (Water Walk)">Basilisk Lizard (Water Walk)</option>
+                                <option value="Wolverine (Bone Density)">Wolverine (Bone Density)</option>
+                                <option value="Electric Eel (Bio-Shock)">Electric Eel (Bio-Shock)</option>
+                                <option value="Scorpion (Stinger Tail)">Scorpion (Stinger Tail)</option>
+                            </select>
+                        </div>
+                        <button class="sector-btn" style="border-color:var(--neon-alert); color:var(--neon-alert); margin-top:5px;" onclick="breedAdvancedHybrid()">[ SYNTHESIZE HYBRID (-100 🧬, -150 🧪) ]</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- LIVE OPTIC FEEDS WITH UNIQUE BACKGROUNDS & PIXEL PHYSIOLOGIES -->
+    <!-- GENOME VAULT & INVENTORY VIEW -->
+    <div id="genomeVault" class="view-panel">
+        <div class="panel-header">
+            <span>InGen Biological Genome Vault & Extracted Payload Inventory</span>
+            <span style="color: var(--neon-cyan);">TOTAL UNIQUE STRANDS: <strong id="vaultCount">0</strong> / 50</span>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-main);">
+            All extracted dinosaur DNA fragments mined from the <span style="color:var(--neon-amber);" onclick="switchTab('miningScreen', event)">Amber Mining Facility</span> are stored here with rarity tiers.
+        </p>
+        <div class="card-grid" id="genomeVaultGrid"></div>
+    </div>
+
+    <!-- AMBER MINING FACILITY (DEDICATED GAMIFIED SCREEN) -->
+    <div id="miningScreen" class="view-panel">
+        <div class="panel-header">
+            <span>InGen Fossil Extraction & Amber Mining Facility</span>
+            <div>
+                <span style="color: var(--neon-amber); margin-right: 15px;">AMBER: <strong id="miningAmberCount">50</strong> 🧬</span>
+                <span style="color: var(--neon-cyan);">DNA: <strong id="miningDnaCount">120</strong> 🧪</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; flex: 1;">
+            <div class="card" style="padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="color: var(--neon-amber);">⚡ PRECISION EXTRACTION DRILL // LEVEL <span id="drillLevelText">1</span></strong>
+                    <div style="display: flex; gap: 15px; font-size: 0.75rem;">
+                        <span style="color: var(--neon-alert);">Timer: <strong id="miningTimer">30</strong>s</span>
+                        <span style="color: var(--neon-green);">Stability: <strong id="drillStability">100%</strong></span>
+                    </div>
+                </div>
+                <p style="font-size: 0.75rem; color: var(--text-main);">
+                    Drill heats up rapidly! Click nodes to extract shards. Higher rarity dinosaurs (Level 4 & 5) require more shards to complete genomes.
+                </p>
+                <div style="background: #020408; border: 1px solid rgba(255,170,0,0.3); flex: 1; min-height: 280px; display:flex; flex-direction:column; align-items:center; justify-content:center; position: relative; overflow: hidden;">
+                    <canvas id="miningCanvas" width="650" height="300" style="cursor: crosshair; display: block; width: 100%; height: 100%;"></canvas>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="action-btn" style="border-color: var(--neon-amber); color: var(--neon-amber); flex: 1;" onclick="startMiningDrill()">[ ENGAGE EXTRACTION DRILL ]</button>
+                    <button class="action-btn" style="border-color: var(--neon-alert); color: var(--neon-alert);" onclick="coolDownDrill()">[ THERMAL FLUSH ]</button>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 15px; display: flex; flex-direction: column; gap: 12px;">
+                <strong style="color: var(--neon-cyan);">FACILITY RIG UPGRADES</strong>
+                <div style="font-size: 0.75rem; color: var(--text-main);">
+                    Level up your mining facility to increase extraction time, slow heat buildup, and unlock rare dinosaur DNA payloads.
+                </div>
+                
+                <div style="background: #0d140d; border: 1px solid var(--panel-border); padding: 10px; border-radius: 4px; font-size: 0.75rem;">
+                    <div>Rig Level: <strong id="drillTier" style="color:var(--neon-green);">Level 1</strong></div>
+                    <div>Extraction Time: <strong id="tierTime" style="color:var(--neon-amber);">30s</strong></div>
+                    <div>Payload Multiplier: <strong id="tierPayload" style="color:var(--neon-cyan);">1.0x</strong></div>
+                </div>
+
+                <button class="sector-btn" style="border-color: var(--neon-green); color: var(--neon-green);" onclick="upgradeDrillRig()">[ UPGRADE RIG LEVEL (Cost: 100 🧬) ]</button>
+
+                <div style="margin-top: auto; background: #0a100a; border: 1px solid var(--panel-border); padding: 10px; font-size: 0.75rem; font-family: monospace;">
+                    <span style="color: var(--neon-amber);">[RARITY SCALE]:</span> Common dinos need 10 shards; Epic/Apex dinos need up to 30 shards!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIVE OPTIC FEEDS -->
     <div id="parkView" class="view-panel">
         <div class="panel-header">
             <span id="activeFeedTitle">Isla Nublar Live Optics // Zone A: Canopy</span>
@@ -211,17 +385,29 @@
                 <div style="font-size: 0.85rem; font-weight: bold; color: var(--neon-amber); border-bottom: 1px solid var(--panel-border); padding-bottom: 6px;">INDIVIDUALIZED TELEMETRY</div>
                 <div class="sector-row"><span>Target Specimen:</span> <strong id="telemetryName" style="color: var(--neon-green);">Brachiosaurus</strong></div>
                 <div class="sector-row"><span>Climate Zone:</span> <strong id="telemetrySector" style="color: var(--neon-cyan);">Zone A: Canopy</strong></div>
-                <div class="sector-row"><span>Live Mood Tag:</span> <strong id="telemetryStatusTag" style="color: var(--neon-green);">[NORMAL / GRAZING]</strong></div>
+                <div class="sector-row"><span>Sub-Enclosure:</span> <strong id="telemetryPaddock" style="color: var(--neon-amber);">Paddock Alpha</strong></div>
+                <div class="sector-row"><span>Live Mood Indicator:</span> <strong id="telemetryStatusTag" style="color: var(--neon-green);">🌱 [CALM / GRAZING]</strong></div>
                 <div class="sector-row"><span>Diet Profile:</span> <strong id="telemetryDiet" style="color: var(--neon-cyan);">Herbivore</strong></div>
                 <div class="sector-row"><span>Anatomy Scale:</span> <strong id="telemetryType" style="color: var(--neon-amber);">Quadruped Longneck</strong></div>
-                <div class="sector-row"><span>Behavioral State:</span> <strong id="telemetryState" style="color: var(--neon-green);">Grazing high trees</strong></div>
-                <div class="sector-row"><span>Threat Index:</span> <strong id="telemetryThreat" style="color: var(--neon-green);">Level 1</strong></div>
-                <div class="sector-actions">
-                    <button class="sector-btn" onclick="triggerDinoMood('feed')">🥗 Feed Target</button>
+                <div class="sector-row"><span>Genome Trait:</span> <strong id="telemetryTrait" style="color: var(--neon-cyan);">Standard DNA</strong></div>
+                
+                <div style="font-size: 0.75rem; color: var(--neon-cyan); margin-top: 5px;">REASSIGN SECTOR:</div>
+                <select id="telemetrySectorSelect" class="sector-select" onchange="reassignSectorFromTelemetry(this.value)">
+                </select>
+
+                <div style="font-size: 0.75rem; color: var(--neon-cyan); margin-top: 5px;">REASSIGN PADDOCK:</div>
+                <select id="telemetryPaddockSelect" class="sector-select" onchange="reassignPaddockFromTelemetry(this.value)">
+                    <option value="Paddock Alpha">Paddock Alpha</option>
+                    <option value="Paddock Beta">Paddock Beta</option>
+                    <option value="Paddock Gamma">Paddock Gamma</option>
+                </select>
+
+                <div class="sector-actions" style="margin-top: 5px;">
+                    <button class="sector-btn" onclick="triggerDinoMood('feed')">🥗 Feed</button>
                     <button class="sector-btn" onclick="triggerDinoMood('agitate')" style="border-color: var(--neon-alert); color: var(--neon-alert);">⚡ Agitate</button>
                 </div>
                 <div style="margin-top: auto; background: #0a100a; border: 1px solid var(--panel-border); padding: 10px; font-size: 0.75rem; font-family: monospace;">
-                    <span style="color: var(--neon-amber);">[DYNAMIC OPTIC]:</span> Pixel-rendered physiologies, unique environmental sector backgrounds, and reactive mood indicators fully engaged.
+                    <span style="color: var(--neon-amber);">[VAULT LINK]:</span> Genome Vault tracks extracted dinosaur DNA payloads in real-time.
                 </div>
             </div>
         </div>
@@ -256,10 +442,10 @@
                 </div>
             </div>
             <div class="card">
-                <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-cyan);"><strong>DR. GERRY HARDING: PATHOLOGY</strong></div>
+                <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-cyan);"><strong>DR. HENRY WU: GENETICS & VAULT</strong></div>
                 <div class="sector-details">
-                    <div>Lysine Contingency: <strong style="color:var(--neon-green);">ONLINE</strong></div>
-                    <button class="sector-btn" onclick="logMessage('Harding: Running individualized health checks.')">Run Diagnostic</button>
+                    <div>Vault Status: <strong style="color:var(--neon-green);">ONLINE</strong></div>
+                    <button class="sector-btn" onclick="switchTab('genomeVault', event)">Open Genome Vault</button>
                 </div>
             </div>
         </div>
@@ -278,75 +464,120 @@
     <!-- SYSTEM LOG -->
     <div class="log-container">
         <small style="color: var(--neon-cyan);">SYSTEM EVENT LOG:</small>
-        <div id="logOutput" class="log-box">[SYS_INIT] Pixel optic engine online with bespoke sector rendering and dynamic mood loops.</div>
+        <div id="logOutput" class="log-box">[SYS_INIT] Terminal v8.3 online. Scaled rarity shard costs and dynamic genome vault operational.</div>
     </div>
 
     <script>
         const dinoDatabase = [
-            { id: 1, name: "Brachiosaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 1", status: "Grazing high trees", type: "longneck", baseMood: "[GRAZING / CALM]", moodState: "calm" },
-            { id: 2, name: "Velociraptor", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 4", status: "Pacing perimeter", type: "raptor", baseMood: "[HUNTING / ALERT]", moodState: "alert" },
-            { id: 3, name: "Triceratops", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Herd resting", type: "ceratopsian", baseMood: "[HERD RESTING]", moodState: "calm" },
-            { id: 4, name: "Tyrannosaurus Rex", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 5", status: "Stalking tree line", type: "trex", baseMood: "[APEX STALKING]", moodState: "alert" },
-            { id: 5, name: "Stegosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Wandering scrub", type: "stegosaur", baseMood: "[BROWSING]", moodState: "calm" },
-            { id: 6, name: "Dilophosaurus", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 3", status: "Flaring neck frill", type: "frilled_raptor", baseMood: "[VENOM CHARGED]", moodState: "agitated" },
-            { id: 7, name: "Parasaurolophus", zone: "Zone E: Wetland Delta", diet: "Herbivore", threat: "Level 1", status: "Wading in shallow water", type: "hadrosaur", baseMood: "[VOCALIZING]", moodState: "calm" },
-            { id: 8, name: "Ankylosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Hunkered down (Armored)", type: "ankylosaur", baseMood: "[DEFENSIVE POSTURE]", moodState: "calm" },
-            { id: 9, name: "Gallimimus", zone: "Zone C: Plains / Savannah", diet: "Omnivore", threat: "Level 1", status: "Flock sprinting (Flighty)", type: "flocky", baseMood: "[FORAGING / SPRINTS]", moodState: "calm" },
-            { id: 10, name: "Compsognathus", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 2", status: "Swarming in pack (Flighty)", type: "swarm", baseMood: "[PACK SWARM]", moodState: "alert" },
-            { id: 11, name: "Microceratus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 1", status: "Foraging in underbrush (Tiny)", type: "tiny_ceratopsian", baseMood: "[HIDDEN IN BRUSH]", moodState: "calm" },
-            { id: 12, name: "Pteranodon", zone: "Zone F: Coastal Cliff Aviary", diet: "Carnivore", threat: "Level 3", status: "Soaring over cliffs", type: "pterosaur", baseMood: "[AIRBORNE / SOARING]", moodState: "calm" },
-            { id: 13, name: "Dimorphodon", zone: "Zone F: Coastal Cliff Aviary", diet: "Carnivore", threat: "Level 2", status: "Fluttering rapidly (Flighty)", type: "small_flyer", baseMood: "[RAPID FLUTTER]", moodState: "alert" },
-            { id: 14, name: "Mosasaurus", zone: "Zone G: Deep Water Lagoon", diet: "Carnivore", threat: "Level 5", status: "Circling deep water", type: "aquatic", baseMood: "[SUB-SURFACE PATROL]", moodState: "calm" },
-            { id: 15, name: "Baryonyx", zone: "Zone E: Wetland Delta", diet: "Carnivore", threat: "Level 4", status: "Fishing in stream", type: "baryonyx", baseMood: "[HUNTING FISH]", moodState: "alert" },
-            { id: 16, name: "Cryo-Raptor", zone: "Zone H: Glacial Tundra", diet: "Carnivore", threat: "Level 4", status: "Prowling snowdrifts", type: "tundra", baseMood: "[CRYO-ACTIVE]", moodState: "alert" },
-            { id: 17, name: "Spinosaurus", zone: "Zone G: Deep Water Lagoon", diet: "Carnivore", threat: "Level 5", status: "Hunting near shoreline", type: "spinosaurus", baseMood: "[TERRITORIAL]", moodState: "alert" },
-            { id: 18, name: "Allosaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 4", status: "Prowling rocky outcrop", type: "trex", baseMood: "[AGRESSIVE PATROL]", moodState: "alert" },
-            { id: 19, name: "Carnotaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 4", status: "Testing horned skull", type: "baryonyx", baseMood: "[SPRINT READY]", moodState: "alert" },
-            { id: 20, name: "Corythosaurus", zone: "Zone E: Wetland Delta", diet: "Herbivore", threat: "Level 1", status: "Calling out by river", type: "hadrosaur", baseMood: "[HERD COMMUNICATING]", moodState: "calm" },
-            { id: 21, name: "Diplodocus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 2", status: "Whipping long tail", type: "longneck", baseMood: "[CANOPY BROWSING]", moodState: "calm" },
-            { id: 22, name: "Dryosaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 1", status: "Sprinting through ferns", type: "flocky", baseMood: "[VIGILANT]", moodState: "alert" },
-            { id: 23, name: "Edmontosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Grazing peacefully", type: "hadrosaur", baseMood: "[CALM GRAZING]", moodState: "calm" },
-            { id: 24, name: "Euoplocephalus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Swishing club tail", type: "ankylosaur", baseMood: "[ARMOR LOCKED]", moodState: "calm" },
-            { id: 25, name: "Giganotosaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 5", status: "Resting in clearing", type: "trex", baseMood: "[DOMINANT APEX]", moodState: "calm" },
-            { id: 26, name: "Kentrosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Displaying shoulder spikes", type: "stegosaur", baseMood: "[SPIKE DISPLAY]", moodState: "alert" },
-            { id: 27, name: "Metriacanthosaurus", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 3", status: "Stalking enclosure fence", type: "baryonyx", baseMood: "[TESTING FENCE]", moodState: "alert" },
-            { id: 28, name: "Mamenchisaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 2", status: "Reaching highest branches", type: "longneck", baseMood: "[REACHING CANOPY]", moodState: "calm" },
-            { id: 29, name: "Pachycephalosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Headbutting training post", type: "tiny_ceratopsian", baseMood: "[HEADBUTTING]", moodState: "agitated" },
-            { id: 30, name: "Pentaceratops", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Displaying massive frill", type: "ceratopsian", baseMood: "[FRILL DISPLAY]", moodState: "alert" },
-            { id: 31, name: "Proceratosaurus", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 2", status: "Chittering in shadows", type: "swarm", baseMood: "[SHADOW STALKING]", moodState: "calm" },
-            { id: 32, name: "Sauropelta", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Resting armored back", type: "ankylosaur", baseMood: "[RESTING ARMORED]", moodState: "calm" },
-            { id: 33, name: "Sinoceratops", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Grazing with herd", type: "ceratopsian", baseMood: "[HERD GRAZING]", moodState: "calm" },
-            { id: 34, name: "Suchomimus", zone: "Zone E: Wetland Delta", diet: "Carnivore", threat: "Level 4", status: "Paddling in shallows", type: "spinosaurus", baseMood: "[PADDLING SHALLOWS]", moodState: "calm" },
-            { id: 35, name: "Therizinosaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 3", status: "Swishing giant claws", type: "trex", baseMood: "[CLAW SWISHING]", moodState: "alert" },
-            { id: 36, name: "Torosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Low-frill grazing", type: "ceratopsian", baseMood: "[BROWSING GRASS]", moodState: "calm" },
-            { id: 37, name: "Troodon", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 3", status: "Night vision active", type: "frilled_raptor", baseMood: "[NOCTURNE ACTIVE]", moodState: "alert" },
-            { id: 38, name: "Tuojiangosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Chewing dry brush", type: "stegosaur", baseMood: "[DRY BROWSING]", moodState: "calm" },
-            { id: 39, name: "Tyrannotitan", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 5", status: "Guarding territory", type: "trex", baseMood: "[TERRITORY GUARD]", moodState: "alert" },
-            { id: 40, name: "Utahraptor", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 4", status: "Testing reinforced wire", type: "raptor", baseMood: "[WIRE TESTING]", moodState: "agitated" },
-            { id: 41, name: "Wuerhosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Low-slung browsing", type: "stegosaur", baseMood: "[LOW BROWSING]", moodState: "calm" },
-            { id: 42, name: "Zuniceratops", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 1", status: "Junior herd grazing", type: "tiny_ceratopsian", baseMood: "[JUNIOR GRAZING]", moodState: "calm" },
-            { id: 43, name: "Albertosaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 4", status: "Patrolling ridge line", type: "baryonyx", baseMood: "[RIDGE PATROL]", moodState: "alert" },
-            { id: 44, name: "Amargasaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 2", status: "Showing double-spined neck", type: "longneck", baseMood: "[SPINE DISPLAY]", moodState: "calm" },
-            { id: 45, name: "Archaeornithomimus", zone: "Zone C: Plains / Savannah", diet: "Omnivore", threat: "Level 1", status: "Scavenging near herd", type: "flocky", baseMood: "[SCAVENGING]", moodState: "calm" },
-            { id: 46, name: "Atrociraptor", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 4", status: "Aggressive pacing", type: "raptor", baseMood: "[HIGH AGGRESSION]", moodState: "agitated" },
-            { id: 47, name: "Cearadactylus", zone: "Zone F: Coastal Cliff Aviary", diet: "Carnivore", threat: "Level 2", status: "Gliding over surf", type: "small_flyer", baseMood: "[SURF GLIDING]", moodState: "calm" },
-            { id: 48, name: "Ceratosaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 3", status: "Sniffing sulfur vents", type: "baryonyx", baseMood: "[VENT SNIFFING]", moodState: "calm" },
-            { id: 49, name: "Chasmosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Resting in shade", type: "ceratopsian", baseMood: "[SHADE RESTING]", moodState: "calm" },
-            { id: 50, name: "Concavenator", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 4", status: "Showing back hump", type: "baryonyx", baseMood: "[HUMP DISPLAY]", moodState: "alert" }
+            { id: 1, name: "Brachiosaurus", zone: "Zone A: Canopy / Jungle", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 1", rarity: "Common", requiredShards: 10, status: "Grazing high trees", type: "longneck", baseMood: "🌱 [CALM / GRAZING]", emoji: "🌱", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 2, name: "Velociraptor", zone: "Zone B: Heavy Security Pen", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 25, status: "Pacing perimeter", type: "raptor", baseMood: "⚠️ [HUNTING / ALERT]", emoji: "⚠️", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 3, name: "Triceratops", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Common", requiredShards: 12, status: "Herd resting", type: "ceratopsian", baseMood: "🌿 [HERD RESTING]", emoji: "🌿", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 4, name: "Tyrannosaurus Rex", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 5", rarity: "Apex", requiredShards: 30, status: "Stalking tree line", type: "trex", baseMood: "👑 [APEX STALKING]", emoji: "👑", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 5, name: "Stegosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Wandering scrub", type: "stegosaur", baseMood: "🍃 [BROWSING]", emoji: "🍃", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 6, name: "Dilophosaurus", zone: "Zone B: Heavy Security Pen", paddock: "Paddock Beta", diet: "Carnivore", threat: "Level 3", rarity: "Rare", requiredShards: 15, status: "Flaring neck frill", type: "frilled_raptor", baseMood: "🧪 [VENOM CHARGED]", emoji: "🧪", moodState: "agitated", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 7, name: "Parasaurolophus", zone: "Zone E: Wetland Delta", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 1", rarity: "Common", requiredShards: 10, status: "Wading in shallow water", type: "hadrosaur", baseMood: "🎵 [VOCALIZING]", emoji: "🎵", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 8, name: "Ankylosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Beta", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 18, status: "Hunkered down (Armored)", type: "ankylosaur", baseMood: "🛡️ [DEFENSIVE]", emoji: "🛡️", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 9, name: "Gallimimus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Beta", diet: "Omnivore", threat: "Level 1", rarity: "Common", requiredShards: 10, status: "Flock sprinting (Flighty)", type: "flocky", baseMood: "💨 [SPRINTING]", emoji: "💨", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 10, name: "Compsognathus", zone: "Zone B: Heavy Security Pen", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 2", rarity: "Common", requiredShards: 10, status: "Swarming in pack (Flighty)", type: "swarm", baseMood: "🔴 [PACK SWARM]", emoji: "🔴", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 11, name: "Microceratus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 1", rarity: "Common", requiredShards: 10, status: "Foraging in underbrush (Tiny)", type: "tiny_ceratopsian", baseMood: "🌿 [HIDDEN IN BRUSH]", emoji: "🌿", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 12, name: "Pteranodon", zone: "Zone F: Coastal Cliff Aviary", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 3", rarity: "Rare", requiredShards: 15, status: "Soaring over cliffs", type: "pterosaur", baseMood: "🦅 [SOARING]", emoji: "🦅", moodState: "calm", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 13, name: "Dimorphodon", zone: "Zone F: Coastal Cliff Aviary", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 2", rarity: "Common", requiredShards: 10, status: "Fluttering rapidly (Flighty)", type: "small_flyer", baseMood: "🦇 [RAPID FLUTTER]", emoji: "🦇", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 14, name: "Mosasaurus", zone: "Zone G: Deep Water Lagoon", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 5", rarity: "Apex", requiredShards: 30, status: "Circling deep water", type: "aquatic", baseMood: "🌊 [SUB-SURFACE]", emoji: "🌊", moodState: "calm", trait: "Standard DNA", color: "#3498db" },
+            { id: 15, name: "Baryonyx", zone: "Zone E: Wetland Delta", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Fishing in stream", type: "baryonyx", baseMood: "🐟 [HUNTING FISH]", emoji: "🐟", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 16, name: "Cryo-Raptor", zone: "Zone H: Glacial Tundra", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Prowling snowdrifts", type: "tundra", baseMood: "❄️ [CRYO-ACTIVE]", emoji: "❄️", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 17, name: "Spinosaurus", zone: "Zone G: Deep Water Lagoon", paddock: "Paddock Beta", diet: "Carnivore", threat: "Level 5", rarity: "Apex", requiredShards: 30, status: "Hunting near shoreline", type: "spinosaurus", baseMood: "⚡ [TERRITORIAL]", emoji: "⚡", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 18, name: "Allosaurus", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 25, status: "Prowling rocky outcrop", type: "trex", baseMood: "🔥 [AGRESSIVE]", emoji: "🔥", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 19, name: "Carnotaurus", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Beta", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Testing horned skull", type: "baryonyx", baseMood: "🐂 [SPRINT READY]", emoji: "🐂", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 20, name: "Corythosaurus", zone: "Zone E: Wetland Delta", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 1", rarity: "Common", requiredShards: 10, status: "Calling out by river", type: "hadrosaur", baseMood: "🎶 [HERD CALL]", emoji: "🎶", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 21, name: "Diplodocus", zone: "Zone A: Canopy / Jungle", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Whipping long tail", type: "longneck", baseMood: "🌴 [CANOPY BROWSING]", emoji: "🌴", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 22, name: "Dryosaurus", zone: "Zone A: Canopy / Jungle", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 1", rarity: "Common", requiredShards: 10, status: "Sprinting through ferns", type: "flocky", baseMood: "👀 [VIGILANT]", emoji: "👀", moodState: "alert", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 23, name: "Edmontosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Common", requiredShards: 10, status: "Grazing peacefully", type: "hadrosaur", baseMood: "🌿 [CALM GRAZING]", emoji: "🌿", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 24, name: "Euoplocephalus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Swishing club tail", type: "ankylosaur", baseMood: "🛡️ [ARMOR LOCKED]", emoji: "🛡️", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 25, name: "Giganotosaurus", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 5", rarity: "Apex", requiredShards: 30, status: "Resting in clearing", type: "trex", baseMood: "👑 [DOMINANT APEX]", emoji: "👑", moodState: "calm", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 26, name: "Kentrosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Displaying shoulder spikes", type: "stegosaur", baseMood: "🌵 [SPIKE DISPLAY]", emoji: "🌵", moodState: "alert", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 27, name: "Metriacanthosaurus", zone: "Zone B: Heavy Security Pen", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 3", rarity: "Rare", requiredShards: 18, status: "Stalking enclosure fence", type: "baryonyx", baseMood: "⚡ [TESTING FENCE]", emoji: "⚡", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 28, name: "Mamenchisaurus", zone: "Zone A: Canopy / Jungle", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Reaching highest branches", type: "longneck", baseMood: "🌿 [REACHING CANOPY]", emoji: "🌿", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 29, name: "Pachycephalosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Headbutting training post", type: "tiny_ceratopsian", baseMood: "💥 [HEADBUTTING]", emoji: "💥", moodState: "agitated", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 30, name: "Pentaceratops", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Displaying massive frill", type: "ceratopsian", baseMood: "🛡️ [FRILL DISPLAY]", emoji: "🛡️", moodState: "alert", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 31, name: "Proceratosaurus", zone: "Zone B: Heavy Security Pen", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 2", rarity: "Common", requiredShards: 10, status: "Chittering in shadows", type: "swarm", baseMood: "🌑 [SHADOW STALKING]", emoji: "🌑", moodState: "calm", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 32, name: "Sauropelta", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Resting armored back", type: "ankylosaur", baseMood: "🛡️ [RESTING ARMORED]", emoji: "🛡️", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 33, name: "Sinoceratops", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Grazing with herd", type: "ceratopsian", baseMood: "🌿 [HERD GRAZING]", emoji: "🌿", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 34, name: "Suchomimus", zone: "Zone E: Wetland Delta", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Paddling in shallows", type: "spinosaurus", baseMood: "🌊 [PADDLING]", emoji: "🌊", moodState: "calm", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 35, name: "Therizinosaurus", zone: "Zone A: Canopy / Jungle", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 3", rarity: "Epic", requiredShards: 22, status: "Swishing giant claws", type: "trex", baseMood: "⚔️ [CLAW SWISHING]", emoji: "⚔️", moodState: "alert", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 36, name: "Torosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Low-frill grazing", type: "ceratopsian", baseMood: "🌱 [BROWSING]", emoji: "🌱", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 37, name: "Troodon", zone: "Zone B: Heavy Security Pen", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 3", rarity: "Rare", requiredShards: 18, status: "Night vision active", type: "frilled_raptor", baseMood: "🌙 [NOCTURNE ACTIVE]", emoji: "🌙", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 38, name: "Tuojiangosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Chewing dry brush", type: "stegosaur", baseMood: "🍂 [DRY BROWSING]", emoji: "🍂", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 39, name: "Tyrannotitan", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 5", rarity: "Apex", requiredShards: 30, status: "Guarding territory", type: "trex", baseMood: "🔥 [TERRITORY GUARD]", emoji: "🔥", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 40, name: "Utahraptor", zone: "Zone B: Heavy Security Pen", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Testing reinforced wire", type: "raptor", baseMood: "⚡ [WIRE TESTING]", emoji: "⚡", moodState: "agitated", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 41, name: "Wuerhosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Low-slung browsing", type: "stegosaur", baseMood: "🌱 [LOW BROWSING]", emoji: "🌱", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 42, name: "Zuniceratops", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 1", rarity: "Common", requiredShards: 10, status: "Junior herd grazing", type: "tiny_ceratopsian", baseMood: "🍼 [JUNIOR GRAZING]", emoji: "🍼", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 43, name: "Albertosaurus", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Patrolling ridge line", type: "baryonyx", baseMood: "🌋 [RIDGE PATROL]", emoji: "🌋", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 44, name: "Amargasaurus", zone: "Zone A: Canopy / Jungle", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Showing double-spined neck", type: "longneck", baseMood: "🌴 [SPINE DISPLAY]", emoji: "🌴", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 45, name: "Archaeornithomimus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Omnivore", threat: "Level 1", rarity: "Common", requiredShards: 10, status: "Scavenging near herd", type: "flocky", baseMood: "🦴 [SCAVENGING]", emoji: "🦴", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 46, name: "Atrociraptor", zone: "Zone B: Heavy Security Pen", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Aggressive pacing", type: "raptor", baseMood: "😡 [HIGH AGGRESSION]", emoji: "😡", moodState: "agitated", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 47, name: "Cearadactylus", zone: "Zone F: Coastal Cliff Aviary", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 2", status: "Gliding over surf", type: "small_flyer", baseMood: "🌊 [SURF GLIDING]", emoji: "🌊", moodState: "calm", trait: "Standard DNA", color: "#f1c40f" },
+            { id: 48, name: "Ceratosaurus", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 3", rarity: "Rare", requiredShards: 18, status: "Sniffing sulfur vents", type: "baryonyx", baseMood: "💨 [VENT SNIFFING]", emoji: "💨", moodState: "calm", trait: "Standard DNA", color: "#e74c3c" },
+            { id: 49, name: "Chasmosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Resting in shade", type: "ceratopsian", baseMood: "🌳 [SHADE RESTING]", emoji: "🌳", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
+            { id: 50, name: "Concavenator", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Showing back hump", type: "baryonyx", baseMood: "🌋 [HUMP DISPLAY]", emoji: "🌋", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" }
         ];
 
+        // Genome Vault Payload Tracking with Scaled Shards
+        let genomeVault = {};
+        dinoDatabase.forEach(d => {
+            genomeVault[d.name] = { count: 0, required: d.requiredShards, rarity: d.rarity };
+        });
+
+        const sectorList = [
+            "Zone A: Canopy / Jungle",
+            "Zone B: Heavy Security Pen",
+            "Zone C: Plains / Savannah",
+            "Zone D: Volcanic Ridge",
+            "Zone E: Wetland Delta",
+            "Zone F: Coastal Cliff Aviary",
+            "Zone G: Deep Water Lagoon",
+            "Zone H: Glacial Tundra"
+        ];
+
+        const availablePaddocks = ["Paddock Alpha", "Paddock Beta", "Paddock Gamma", "Paddock Delta"];
+
+        let amber = 50;
+        let dna = 120;
+        let splicedCount = 0;
+        let hybridCount = 0;
+
+        let drillLevel = 1;
+        let extractionTimer = 30;
+        let timerInterval = null;
+        let miningX = 300;
+        let miningY = 150;
+        let miningNodes = [];
+        let drillStability = 100;
+        let miningActive = false;
+
         let activeFeedIndex = 0;
+        let activeSectorFilter = "Zone A: Canopy / Jungle";
         let animationFrameId = null;
 
         function switchTab(tabId, event) {
             document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            if(event) event.target.classList.add('active');
+            if(event && event.target.tagName === 'BUTTON') event.target.classList.add('active');
+            
             if(tabId === 'parkView') {
                 setTimeout(() => loadOpticFeed(activeFeedIndex), 50);
+            } else if(tabId === 'sectorDetailView') {
+                renderSectorCensus(activeSectorFilter);
+            } else if(tabId === 'biosphere') {
+                renderBiosphereRegistry();
+            } else if(tabId === 'genomeVault') {
+                renderGenomeVault();
+            } else if(tabId === 'genetics') {
+                updateWuTargetSelect();
+                updateSpliceCostDisplay();
             } else {
                 if(animationFrameId) cancelAnimationFrame(animationFrameId);
+                stopMiningSession();
             }
         }
 
@@ -355,21 +586,8 @@
         }
 
         function initApp() {
-            const rosterGrid = document.getElementById('masterRosterGrid');
-            rosterGrid.innerHTML = '';
-            dinoDatabase.forEach(d => {
-                let rCard = document.createElement('div');
-                rCard.className = 'card';
-                rCard.innerHTML = `
-                    <div class="sector-details">
-                        <strong style="color: ${d.diet === 'Carnivore' ? 'var(--neon-alert)' : 'var(--neon-green)'};">${d.name} [ID: ${d.id}]</strong>
-                        <p style="font-size:0.75rem; color:var(--text-main);">Climate Zone: ${d.zone}</p>
-                        <p style="font-size:0.75rem; color:var(--text-muted);">Status: ${d.status} | Threat: ${d.threat}</p>
-                        <button class="sector-btn" style="margin-top:5px;" onclick="jumpToFeed(${d.id - 1})">🌐 View in Live Optics</button>
-                    </div>
-                `;
-                rosterGrid.appendChild(rCard);
-            });
+            renderBiosphereRegistry();
+            renderGenomeVault();
 
             const selectorContainer = document.getElementById('feedSelectorButtons');
             selectorContainer.innerHTML = '';
@@ -382,7 +600,528 @@
                 selectorContainer.appendChild(btn);
             });
 
+            const sectorBtnContainer = document.getElementById('sectorFilterButtons');
+            sectorBtnContainer.innerHTML = '';
+            sectorList.forEach(sec => {
+                let sBtn = document.createElement('button');
+                sBtn.className = 'sector-btn';
+                sBtn.style.whiteSpace = 'nowrap';
+                sBtn.innerText = sec.split(':')[0];
+                sBtn.onclick = () => openSectorDetail(sec);
+                sectorBtnContainer.appendChild(sBtn);
+            });
+
+            updateWuTargetSelect();
+            initMiningCanvas();
             loadOpticFeed(0);
+        }
+
+        function updateWuTargetSelect() {
+            const wuSelect = document.getElementById('wuTargetSelect');
+            if(!wuSelect) return;
+            wuSelect.innerHTML = '';
+            dinoDatabase.forEach(d => {
+                let record = genomeVault[d.name] || { count: 0, required: d.requiredShards };
+                let unlocked = record.count >= record.required;
+                let opt = document.createElement('option');
+                opt.value = d.id;
+                opt.innerText = `${d.id}. ${d.name} [${d.rarity}] - ${record.count}/${record.required} Shards ${unlocked ? '✅' : '🔒'}`;
+                wuSelect.appendChild(opt);
+            });
+            updateSpliceCostDisplay();
+        }
+
+        function updateSpliceCostDisplay() {
+            const wuSelect = document.getElementById('wuTargetSelect');
+            if (!wuSelect) return;
+            let targetId = parseInt(wuSelect.value);
+            let dino = dinoDatabase.find(d => d.id === targetId);
+            if (dino) {
+                let record = genomeVault[dino.name] || { required: dino.requiredShards };
+                let cost = record.required * 3; // Scaled DNA cost by rarity shards
+                document.getElementById('spliceCostLabel').innerText = `Target: ${dino.name} (${dino.rarity}) // Splice Cost: ${cost} DNA strands.`;
+            }
+        }
+
+        function renderGenomeVault() {
+            const vaultGrid = document.getElementById('genomeVaultGrid');
+            if(!vaultGrid) return;
+            vaultGrid.innerHTML = '';
+
+            let unlockedCount = 0;
+            dinoDatabase.forEach(d => {
+                let record = genomeVault[d.name] || { count: 0, required: d.requiredShards, rarity: d.rarity };
+                let isCompleted = record.count >= record.required;
+                if (isCompleted) unlockedCount++;
+                let percentage = Math.min(100, Math.round((record.count / record.required) * 100));
+
+                let rarityColor = 'var(--neon-green)';
+                if (d.rarity === 'Rare') rarityColor = 'var(--neon-cyan)';
+                if (d.rarity === 'Epic') rarityColor = 'var(--neon-amber)';
+                if (d.rarity === 'Apex') rarityColor = 'var(--neon-alert)';
+
+                let card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="sector-details">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="color: ${isCompleted ? 'var(--neon-green)' : 'var(--text-main)'};">${d.name}</strong>
+                            <span style="font-size:0.65rem; color:${rarityColor}; border:1px solid ${rarityColor}; padding:1px 4px;">${d.rarity}</span>
+                        </div>
+                        <div class="sector-row"><span>Shards Collected:</span> <strong style="color:var(--neon-cyan);">${record.count} / ${record.required}</strong></div>
+                        <div class="sector-row"><span>Genome Completion:</span> <strong style="color:${isCompleted ? 'var(--neon-green)' : 'var(--neon-amber)'};">${percentage}% ${isCompleted ? '✅ UNLOCKED' : '🔒'}</strong></div>
+                        <p style="font-size:0.7rem; color:var(--text-main); margin-top:2px;">Sector: ${d.zone.split(':')[0]}</p>
+                    </div>
+                `;
+                vaultGrid.appendChild(card);
+            });
+
+            document.getElementById('vaultCount').innerText = unlockedCount;
+        }
+
+        // --- Dedicated Deep Rock Mining Minigame ---
+        function initMiningCanvas() {
+            const canvas = document.getElementById('miningCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            canvas.onmousemove = (e) => {
+                let rect = canvas.getBoundingClientRect();
+                miningX = e.clientX - rect.left;
+                miningY = e.clientY - rect.top;
+            };
+
+            canvas.onclick = () => {
+                if (!miningActive) return;
+                let hitIndex = -1;
+                miningNodes.forEach((node, idx) => {
+                    let dist = Math.hypot(miningX - node.x, miningY - node.y);
+                    if (dist < node.radius + 12) hitIndex = idx;
+                });
+
+                if (hitIndex !== -1) {
+                    let node = miningNodes.splice(hitIndex, 1)[0];
+                    let payloadMult = drillLevel;
+                    
+                    if (!genomeVault[node.dinoName]) genomeVault[node.dinoName] = { count: 0, required: node.requiredShards, rarity: node.rarity };
+                    genomeVault[node.dinoName].count += payloadMult;
+
+                    let dnaGain = (node.isRare ? 15 : 5) * payloadMult;
+                    dna += dnaGain;
+                    amber += (node.isRare ? 20 : 5) * payloadMult;
+
+                    document.getElementById('amberCount').innerText = amber;
+                    document.getElementById('dnaCount').innerText = dna;
+                    document.getElementById('miningAmberCount').innerText = amber;
+                    document.getElementById('miningDnaCount').innerText = dna;
+                    renderGenomeVault();
+                    updateWuTargetSelect();
+
+                    if (node.isRare) {
+                        logMessage(`🌟 RARE PAYLOAD VAULTED: +${dnaGain} DNA for ${node.dinoName} (${node.rarity})!`);
+                    } else {
+                        logMessage(`VAULTED: Extracted DNA fragment for ${node.dinoName} (+${dnaGain} 🧪).`);
+                    }
+
+                    if (miningNodes.length === 0) {
+                        spawnMiningNodes();
+                    }
+                } else {
+                    drillStability -= (15 + drillLevel * 4);
+                    document.getElementById('drillStability').innerText = Math.max(0, drillStability) + "%";
+                    logMessage('DRILL OVERHEAT WARNING: Struck bare rock! Thermal core spiking.');
+                    if (drillStability <= 0) {
+                        stopMiningSession();
+                        logMessage('CRITICAL OVERHEAT: Extraction rig seized up! Session aborted.');
+                    }
+                }
+            };
+
+            function spawnMiningNodes() {
+                miningNodes = [];
+                let nodeCount = 4 + drillLevel;
+                for (let i = 0; i < nodeCount; i++) {
+                    let randomDino = dinoDatabase[Math.floor(Math.random() * dinoDatabase.length)];
+                    let isRare = randomDino.rarity === 'Epic' || randomDino.rarity === 'Apex' || Math.random() < 0.2;
+                    miningNodes.push({
+                        x: Math.random() * (canvas.width - 60) + 30,
+                        y: Math.random() * (canvas.height - 80) + 30,
+                        radius: isRare ? 14 : 10,
+                        isRare: isRare,
+                        dinoName: randomDino.name,
+                        rarity: randomDino.rarity,
+                        requiredShards: randomDino.requiredShards,
+                        vx: (Math.random() - 0.5) * (1.5 + drillLevel * 0.4),
+                        vy: (Math.random() - 0.5) * (1.5 + drillLevel * 0.4)
+                    });
+                }
+            }
+
+            function miningLoop() {
+                ctx.fillStyle = '#020408';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                if (miningActive) {
+                    miningNodes.forEach(node => {
+                        node.x += node.vx;
+                        node.y += node.vy;
+                        if (node.x < 20 || node.x > canvas.width - 20) node.vx *= -1;
+                        if (node.y < 20 || node.y > canvas.height - 20) node.vy *= -1;
+
+                        ctx.fillStyle = node.isRare ? '#f1c40f' : '#ffb000';
+                        ctx.beginPath(); ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2); ctx.fill();
+                        
+                        ctx.fillStyle = node.isRare ? '#e74c3c' : '#1abc9c';
+                        ctx.beginPath(); ctx.arc(node.x, node.y, node.radius - 4, 0, Math.PI * 2); ctx.fill();
+
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = '8px Courier New';
+                        ctx.fillText(node.isRare ? `⭐ ${node.dinoName}` : node.dinoName.substring(0, 5), node.x - 15, node.y - node.radius - 4);
+                    });
+
+                    ctx.strokeStyle = drillStability < 40 ? '#e74c3c' : '#2ecc71';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(miningX, miningY, 15, 0, Math.PI * 2);
+                    ctx.moveTo(miningX - 20, miningY); ctx.lineTo(miningX + 20, miningY);
+                    ctx.moveTo(miningX, miningY - 20); ctx.lineTo(miningX, miningY + 20);
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = '#ffb000';
+                    ctx.font = '12px Courier New';
+                    ctx.fillText("CLICK '[ ENGAGE EXTRACTION DRILL ]' TO START TIMED SESSION", 85, 150);
+                }
+
+                requestAnimationFrame(miningLoop);
+            }
+            miningLoop();
+        }
+
+        function startMiningDrill() {
+            if (miningActive) return;
+            miningActive = true;
+            drillStability = 100;
+            document.getElementById('drillStability').innerText = "100%";
+            
+            extractionTimer = 25 + (drillLevel * 5);
+            document.getElementById('miningTimer').innerText = extractionTimer;
+
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                extractionTimer--;
+                document.getElementById('miningTimer').innerText = extractionTimer;
+                if (extractionTimer <= 0) {
+                    stopMiningSession();
+                    logMessage('EXTRACTION COMPLETE: Timer expired. Session successfully concluded!');
+                    amber += 20 * drillLevel;
+                    dna += 50 * drillLevel;
+                    document.getElementById('amberCount').innerText = amber;
+                    document.getElementById('dnaCount').innerText = dna;
+                    document.getElementById('miningAmberCount').innerText = amber;
+                    document.getElementById('miningDnaCount').innerText = dna;
+                }
+            }, 1000);
+
+            miningNodes = [];
+            let nodeCount = 4 + drillLevel;
+            for (let i = 0; i < nodeCount; i++) {
+                let randomDino = dinoDatabase[Math.floor(Math.random() * dinoDatabase.length)];
+                let isRare = randomDino.rarity === 'Epic' || randomDino.rarity === 'Apex';
+                miningNodes.push({
+                    x: Math.random() * 550 + 50,
+                    y: Math.random() * 200 + 40,
+                    radius: isRare ? 14 : 10,
+                    isRare: isRare,
+                    dinoName: randomDino.name,
+                    rarity: randomDino.rarity,
+                    requiredShards: randomDino.requiredShards,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2
+                });
+            }
+            logMessage(`MINING FACILITY: Timed drill session engaged! Level ${drillLevel} rig operating under rapid heat buildup.`);
+        }
+
+        function stopMiningSession() {
+            miningActive = false;
+            if (timerInterval) clearInterval(timerInterval);
+        }
+
+        function coolDownDrill() {
+            drillStability = 100;
+            document.getElementById('drillStability').innerText = "100%";
+            logMessage('Thermal Flush executed. Drill rig core temperature reset.');
+        }
+
+        function upgradeDrillRig() {
+            let cost = drillLevel * 100;
+            if (amber < cost) {
+                logMessage(`ERROR: Insufficient Amber reserves (${cost} required for Level ${drillLevel + 1})!`);
+                return;
+            }
+            amber -= cost;
+            drillLevel++;
+            document.getElementById('amberCount').innerText = amber;
+            document.getElementById('miningAmberCount').innerText = amber;
+            document.getElementById('drillLevelText').innerText = drillLevel;
+            document.getElementById('drillTier').innerText = `Level ${drillLevel}`;
+            document.getElementById('tierTime').innerText = (25 + drillLevel * 5) + "s";
+            document.getElementById('tierPayload').innerText = `${drillLevel}.0x`;
+            logMessage(`FACILITY UPGRADE: Mining rig upgraded to Level ${drillLevel}! Longer extraction timer & higher payload multipliers active.`);
+        }
+
+        function executeGeneSplice() {
+            let targetId = parseInt(document.getElementById('wuTargetSelect').value);
+            let dino = dinoDatabase.find(d => d.id === targetId);
+            if (!dino) return;
+
+            let record = genomeVault[dino.name] || { count: 0, required: dino.requiredShards };
+            let dynamicCost = record.required * 3;
+
+            if (dna < dynamicCost) {
+                logMessage(`ERROR: Insufficient DNA strands for gene splicing (${dynamicCost} required for ${dino.rarity} rarity)!`);
+                return;
+            }
+            dna -= dynamicCost;
+            document.getElementById('dnaCount').innerText = dna;
+            document.getElementById('miningDnaCount').innerText = dna;
+
+            let trait = document.getElementById('wuTraitSelect').value;
+            dino.trait = trait;
+            splicedCount++;
+            document.getElementById('splicedCount').innerText = splicedCount;
+            logMessage(`Dr. Wu: Successfully spliced "${trait}" into ${dino.name} [ID: ${dino.id}] for ${dynamicCost} DNA.`);
+            updateWuTargetSelect();
+            renderBiosphereRegistry();
+        }
+
+        function breedAdvancedHybrid() {
+            if (amber < 100 || dna < 150) {
+                logMessage('ERROR: Insufficient Amber (100) or DNA (150) for advanced hybridization!');
+                return;
+            }
+            amber -= 100;
+            dna -= 150;
+            document.getElementById('amberCount').innerText = amber;
+            document.getElementById('dnaCount').innerText = dna;
+            document.getElementById('miningAmberCount').innerText = amber;
+            document.getElementById('miningDnaCount').innerText = dna;
+
+            let base = document.getElementById('hybridBase').value;
+            let donor1 = document.getElementById('hybridDonor1').value;
+            let donor2 = document.getElementById('hybridDonor2').value;
+            let newId = dinoDatabase.length + 1;
+            let hybridName = `${base}-Apex Hybrid`;
+
+            let customColor = '#9b59b6';
+            let newHybrid = {
+                id: newId,
+                name: hybridName,
+                zone: "Zone B: Heavy Security Pen",
+                paddock: "Paddock Beta",
+                diet: "Carnivore",
+                threat: "Level 5",
+                rarity: "Apex",
+                requiredShards: 30,
+                status: "Apex Hybrid Stalking",
+                type: "trex",
+                baseMood: "🧬 [ULTIMATE HYBRID]",
+                emoji: "🧬",
+                moodState: "alert",
+                trait: `${donor1} + ${donor2}`,
+                color: customColor
+            };
+
+            dinoDatabase.push(newHybrid);
+            genomeVault[hybridName] = { count: 30, required: 30, rarity: "Apex" };
+            hybridCount++;
+            document.getElementById('hybridCount').innerText = hybridCount;
+            logMessage(`SUCCESS: Dr. Wu engineered advanced hybrid specimen "${hybridName}" [ID: ${newId}]! Assigned to Security Pen.`);
+            initApp();
+        }
+
+        function evaluateCompatibility(dinoA, dinoB) {
+            if (dinoA.id === dinoB.id) return { status: "Self", desc: "Same specimen", color: "var(--neon-green)" };
+            if (dinoA.paddock !== dinoB.paddock) return { status: "🛡️ PADDOCK BUFFERED", desc: "Separated by sub-enclosure barrier.", color: "var(--neon-green)" };
+            
+            if (dinoA.diet === "Carnivore" && dinoB.diet === "Carnivore") {
+                if (dinoA.threat === "Level 5" || dinoB.threat === "Level 5") {
+                    return { status: "⚠️ CRITICAL CLASH", desc: "Apex predator territorial hostility in same paddock!", color: "var(--neon-alert)" };
+                }
+                return { status: "⚡ TENSE", desc: "Carnivore rivalry in shared paddock.", color: "var(--neon-amber)" };
+            }
+            if (dinoA.diet === "Carnivore" && dinoB.diet !== "Carnivore") {
+                return { status: "❌ FATAL HAZARD", desc: "Unbuffered prey proximity in shared paddock!", color: "var(--neon-alert)" };
+            }
+            if (dinoB.diet === "Carnivore" && dinoA.diet !== "Carnivore") {
+                return { status: "❌ FATAL HAZARD", desc: "Unbuffered prey proximity in shared paddock!", color: "var(--neon-alert)" };
+            }
+            return { status: "✅ HARMONIOUS", desc: "Peaceful co-grazing compatibility.", color: "var(--neon-green)" };
+        }
+
+        function renderBiosphereRegistry() {
+            const rosterGrid = document.getElementById('masterRosterGrid');
+            rosterGrid.innerHTML = '';
+            dinoDatabase.forEach((d, idx) => {
+                let rCard = document.createElement('div');
+                rCard.className = 'card';
+                
+                let sectorOptions = '';
+                sectorList.forEach(sec => {
+                    let selected = (sec === d.zone) ? 'selected' : '';
+                    sectorOptions += `<option value="${sec}" ${selected}>${sec}</option>`;
+                });
+
+                let paddockOptions = '';
+                availablePaddocks.forEach(pad => {
+                    let selected = (pad === d.paddock) ? 'selected' : '';
+                    paddockOptions += `<option value="${pad}" ${selected}>${pad}</option>`;
+                });
+
+                rCard.innerHTML = `
+                    <div class="sector-details">
+                        <strong style="color: ${d.color || (d.diet === 'Carnivore' ? 'var(--neon-alert)' : 'var(--neon-green)')};">${d.name} [ID: ${d.id}]</strong>
+                        <p style="font-size:0.75rem; color:var(--text-main);">Sector: <strong>${d.zone}</strong></p>
+                        <p style="font-size:0.75rem; color:var(--neon-amber);">Paddock: <strong>${d.paddock}</strong></p>
+                        <p style="font-size:0.75rem; color:var(--neon-cyan);">Trait: <strong>${d.trait || 'Standard DNA'}</strong></p>
+                        
+                        <div style="margin-top: 4px;">
+                            <label style="font-size: 0.65rem; color: var(--neon-cyan);">ASSIGN SECTOR:</label>
+                            <select class="sector-select" onchange="updateDinoSector(${d.id}, this.value)">
+                                ${sectorOptions}
+                            </select>
+                        </div>
+
+                        <div style="margin-top: 4px;">
+                            <label style="font-size: 0.65rem; color: var(--neon-amber);">ASSIGN PADDOCK:</label>
+                            <select class="sector-select" style="color: var(--neon-amber);" onchange="updateDinoPaddock(${d.id}, this.value)">
+                                ${paddockOptions}
+                            </select>
+                        </div>
+
+                        <button class="sector-btn" style="margin-top:8px;" onclick="jumpToFeed(${idx})">🌐 Live Optic Feed</button>
+                    </div>
+                `;
+                rosterGrid.appendChild(rCard);
+            });
+        }
+
+        function updateDinoSector(dinoId, newSector) {
+            let dino = dinoDatabase.find(d => d.id === dinoId);
+            if(dino) {
+                dino.zone = newSector;
+                logMessage(`Transport Matrix: ${dino.name} relocated to ${newSector}.`);
+                renderBiosphereRegistry();
+                if(document.getElementById('parkView').classList.contains('active')) loadOpticFeed(activeFeedIndex);
+            }
+        }
+
+        function updateDinoPaddock(dinoId, newPaddock) {
+            let dino = dinoDatabase.find(d => d.id === dinoId);
+            if(dino) {
+                dino.paddock = newPaddock;
+                logMessage(`Paddock Partition: ${dino.name} moved to ${newPaddock}.`);
+                renderBiosphereRegistry();
+                if(document.getElementById('parkView').classList.contains('active')) loadOpticFeed(activeFeedIndex);
+            }
+        }
+
+        function reassignSectorFromTelemetry(newSector) {
+            let dino = dinoDatabase[activeFeedIndex];
+            if(dino) {
+                dino.zone = newSector;
+                logMessage(`Telemetry Transfer: ${dino.name} moved to ${newSector}.`);
+                document.getElementById('telemetrySector').innerText = dino.zone;
+                renderBiosphereRegistry();
+            }
+        }
+
+        function reassignPaddockFromTelemetry(newPaddock) {
+            let dino = dinoDatabase[activeFeedIndex];
+            if(dino) {
+                dino.paddock = newPaddock;
+                logMessage(`Telemetry Partition: ${dino.name} moved to ${newPaddock}.`);
+                document.getElementById('telemetryPaddock').innerText = dino.paddock;
+                renderBiosphereRegistry();
+            }
+        }
+
+        function createPaddock() {
+            let newPadName = `Paddock ${String.fromCharCode(65 + availablePaddocks.length)}`;
+            availablePaddocks.push(newPadName);
+            logMessage(`New sub-enclosure ${newPadName} established in ${activeSectorFilter}.`);
+            openSectorDetail(activeSectorFilter);
+        }
+
+        function openSectorDetail(sectorName) {
+            activeSectorFilter = sectorName;
+            switchTab('sectorDetailView', null);
+            renderSectorCensus(sectorName);
+        }
+
+        function renderSectorCensus(sectorName) {
+            document.getElementById('selectedSectorTitle').innerText = `Paddocks & Census // ${sectorName}`;
+            let filteredDinos = dinoDatabase.filter(d => d.zone === sectorName);
+            document.getElementById('sectorPopCount').innerText = `Registered Specimens: ${filteredDinos.length}`;
+
+            let paddocksContainer = document.getElementById('paddocksContainer');
+            paddocksContainer.innerHTML = '';
+            availablePaddocks.forEach(pad => {
+                let padDinos = filteredDinos.filter(d => d.paddock === pad);
+                let padDiv = document.createElement('div');
+                padDiv.className = 'paddock-card';
+                padDiv.innerHTML = `<strong style="color:var(--neon-amber);">${pad}</strong> (${padDinos.length} specimens: ${padDinos.map(d => d.name).join(', ') || 'Empty'})`;
+                paddocksContainer.appendChild(padDiv);
+            });
+
+            let summaryEl = document.getElementById('sectorCompatSummary');
+            if (filteredDinos.length <= 1) {
+                summaryEl.innerHTML = `<span style="color: var(--neon-green);">✅ Cohabitation Status: Optimal.</span>`;
+            } else {
+                let hasLethalClash = false;
+                for (let i = 0; i < filteredDinos.length; i++) {
+                    for (let j = i + 1; j < filteredDinos.length; j++) {
+                        let comp = evaluateCompatibility(filteredDinos[i], filteredDinos[j]);
+                        if (comp.status.includes("FATAL") || comp.status.includes("CRITICAL")) hasLethalClash = true;
+                    }
+                }
+                if (hasLethalClash) {
+                    summaryEl.innerHTML = `<span style="color: var(--neon-alert);">❌ COHABITATION HAZARD: Unbuffered predators sharing enclosures with prey! Assign separate paddocks.</span>`;
+                } else {
+                    summaryEl.innerHTML = `<span style="color: var(--neon-green);">✅ COHABITATION STATUS: Secure. Sub-enclosure paddock barriers are effectively isolating conflicting species.</span>`;
+                }
+            }
+
+            const censusGrid = document.getElementById('sectorCensusGrid');
+            censusGrid.innerHTML = '';
+            filteredDinos.forEach(d => {
+                let globalIdx = dinoDatabase.findIndex(item => item.id === d.id);
+                let sectorMates = filteredDinos.filter(m => m.id !== d.id);
+                let cohabHtml = `<div style="font-size:0.7rem; margin-top:4px; border-top:1px dashed var(--panel-border); padding-top:4px;"><strong style="color:var(--neon-cyan);">Cohabitation Notes:</strong>`;
+                if(sectorMates.length === 0) {
+                    cohabHtml += `<div style="color:var(--neon-green);">Solo occupant in sector.</div>`;
+                } else {
+                    sectorMates.forEach(mate => {
+                        let c = evaluateCompatibility(d, mate);
+                        cohabHtml += `<div style="display:flex; justify-content:space-between; margin-top:2px;"><span>vs ${mate.name} (${mate.paddock}):</span> <span style="color:${c.color};">${c.status}</span></div>`;
+                    });
+                }
+                cohabHtml += `</div>`;
+
+                let cCard = document.createElement('div');
+                cCard.className = 'card';
+                cCard.innerHTML = `
+                    <div class="sector-details">
+                        <strong style="color: ${d.color || (d.diet === 'Carnivore' ? 'var(--neon-alert)' : 'var(--neon-green)')};">${d.name} [ID: ${d.id}]</strong>
+                        <div class="sector-row"><span>Paddock:</span> <strong style="color: var(--neon-amber);">${d.paddock}</strong></div>
+                        <div class="sector-row"><span>Diet:</span> <strong style="color: var(--neon-cyan);">${d.diet}</strong></div>
+                        <div class="sector-row"><span>Trait:</span> <strong style="color: var(--neon-cyan);">${d.trait || 'Standard DNA'}</strong></div>
+                        ${cohabHtml}
+                        <button class="sector-btn" style="margin-top:8px;" onclick="jumpToFeed(${globalIdx})">🌐 Live Optic Feed</button>
+                    </div>
+                `;
+                censusGrid.appendChild(cCard);
+            });
         }
 
         function jumpToFeed(index) {
@@ -398,26 +1137,21 @@
                 el.innerText = "60,000V (MAX)";
                 el.style.color = "var(--neon-amber)";
             }
-            logMessage(`Climate Zone ${zoneNum} perimeter voltage boosted to maximum threshold.`);
-        }
-
-        let amber = 50;
-        function mineAmber() {
-            amber += 25;
-            document.getElementById('amberCount').innerText = amber;
-            logMessage('Laser extraction run successful. Harvested +25 🧬.');
+            logMessage(`Climate Zone ${zoneNum} perimeter voltage boosted to maximum.`);
         }
 
         function triggerDinoMood(action) {
             let dino = dinoDatabase[activeFeedIndex];
             if(action === 'feed') {
                 dino.moodState = 'calm';
-                dino.statusTag = '[FED & CONTENT]';
-                logMessage(`${dino.name} has been fed. Mood stabilized to content.`);
+                dino.baseMood = '🥗 [FED & CONTENT]';
+                dino.emoji = '🥗';
+                logMessage(`${dino.name} has been fed in ${dino.paddock}.`);
             } else if(action === 'agitate') {
                 dino.moodState = 'agitated';
-                dino.statusTag = '[AGITATED / THREATENING]';
-                logMessage(`WARNING: ${dino.name} has been agitated! Security monitors locked on.`);
+                dino.baseMood = '⚡ [AGITATED / THREATENING]';
+                dino.emoji = '⚡';
+                logMessage(`WARNING: ${dino.name} in ${dino.paddock} is agitated!`);
             }
             loadOpticFeed(activeFeedIndex);
         }
@@ -426,14 +1160,35 @@
             activeFeedIndex = index;
             let currentDino = dinoDatabase[activeFeedIndex];
 
-            document.getElementById('activeFeedTitle').innerText = `Isla Nublar Live Optics // ${currentDino.zone} - Specimen: ${currentDino.name}`;
+            document.getElementById('activeFeedTitle').innerText = `Isla Nublar Live Optics // ${currentDino.zone} [${currentDino.paddock}] - Specimen: ${currentDino.name}`;
             document.getElementById('telemetryName').innerText = currentDino.name;
             document.getElementById('telemetrySector').innerText = currentDino.zone;
+            document.getElementById('telemetryPaddock').innerText = currentDino.paddock;
             document.getElementById('telemetryDiet').innerText = currentDino.diet;
-            document.getElementById('telemetryStatusTag').innerText = currentDino.statusTag;
+            document.getElementById('telemetryStatusTag').innerText = currentDino.baseMood;
             document.getElementById('telemetryType').innerText = currentDino.type.toUpperCase() + " ANATOMY";
-            document.getElementById('telemetryState').innerText = currentDino.status;
             document.getElementById('telemetryThreat').innerText = currentDino.threat;
+            document.getElementById('telemetryTrait').innerText = currentDino.trait || "Standard DNA";
+
+            let selectEl = document.getElementById('telemetrySectorSelect');
+            selectEl.innerHTML = '';
+            sectorList.forEach(sec => {
+                let opt = document.createElement('option');
+                opt.value = sec;
+                opt.innerText = sec;
+                if(sec === currentDino.zone) opt.selected = true;
+                selectEl.appendChild(opt);
+            });
+
+            let padSelectEl = document.getElementById('telemetryPaddockSelect');
+            padSelectEl.innerHTML = '';
+            availablePaddocks.forEach(pad => {
+                let opt = document.createElement('option');
+                opt.value = pad;
+                opt.innerText = pad;
+                if(pad === currentDino.paddock) opt.selected = true;
+                padSelectEl.appendChild(opt);
+            });
 
             const canvas = document.getElementById('uniqueOpticCanvas');
             if(!canvas) return;
@@ -448,307 +1203,72 @@
             function renderOpticFeed() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // --- 1. UNIQUE SECTOR BACKGROUNDS ---
                 if(currentDino.zone.includes("Canopy")) {
-                    // Deep Jungle Canopy
                     ctx.fillStyle = '#030c05'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#061608';
-                    ctx.fillRect(0, 0, canvas.width, 40); // Canopy overhang
-                    // Hanging vines/foliage silhouettes
-                    ctx.fillStyle = '#09220c';
-                    for(let i=30; i<canvas.width; i+=60) {
-                        ctx.fillRect(i, 40, 12, 60 + Math.sin(i)*20);
-                        ctx.fillRect(i+30, 40, 8, 40);
-                    }
+                    ctx.fillStyle = '#061608'; ctx.fillRect(0, 0, canvas.width, 40);
                 } else if(currentDino.zone.includes("Security")) {
-                    // Heavy Security Concrete & Electric Fences
                     ctx.fillStyle = '#111316'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.fillStyle = '#181d22'; ctx.fillRect(0, 240, canvas.width, 110);
-                    // Concrete pillars
-                    ctx.fillStyle = '#222830';
-                    ctx.fillRect(50, 80, 40, 160);
-                    ctx.fillRect(500, 80, 40, 160);
-                    // Electric grid wires crossing background
-                    ctx.strokeStyle = '#ffb000'; ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    ctx.moveTo(0, 100); ctx.lineTo(canvas.width, 100);
-                    ctx.moveTo(0, 160); ctx.lineTo(canvas.width, 160);
-                    ctx.stroke();
                 } else if(currentDino.zone.includes("Plains")) {
-                    // Open Savannah Grasslands & Acacia silhouettes
                     ctx.fillStyle = '#14180a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.fillStyle = '#1e2410'; ctx.fillRect(0, 250, canvas.width, 100);
-                    // Distant acacia tree
-                    ctx.fillStyle = '#0d1007';
-                    ctx.fillRect(450, 170, 8, 80);
-                    ctx.beginPath(); ctx.arc(454, 160, 45, 0, Math.PI * 2); ctx.fill();
                 } else if(currentDino.zone.includes("Volcanic")) {
-                    // Volcanic Ridge with glowing lava flows
                     ctx.fillStyle = '#180505'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    // Volcanic mountain silhouette
-                    ctx.fillStyle = '#0d0202';
-                    ctx.beginPath(); ctx.moveTo(0, 260); ctx.lineTo(300, 80); ctx.lineTo(600, 260); ctx.fill();
-                    // Glowing lava fissures
-                    ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 3;
-                    ctx.beginPath(); ctx.moveTo(270, 120); ctx.lineTo(290, 180); ctx.lineTo(280, 230); ctx.stroke();
-                    ctx.strokeStyle = '#ffb000'; ctx.lineWidth = 1.5;
-                    ctx.beginPath(); ctx.moveTo(320, 140); ctx.lineTo(305, 190); ctx.lineTo(330, 240); ctx.stroke();
                 } else if(currentDino.zone.includes("Wetland")) {
-                    // Wetland Delta with marsh water and reeds
                     ctx.fillStyle = '#040b12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#081622'; ctx.fillRect(0, 220, canvas.width, 130); // Water base
-                    // Reed silhouettes along banks
-                    ctx.fillStyle = '#102216';
-                    for(let i=20; i<canvas.width; i+=40) {
-                        ctx.fillRect(i, 180, 3, 50);
-                        ctx.fillRect(i+15, 190, 2, 40);
-                    }
+                    ctx.fillStyle = '#081622'; ctx.fillRect(0, 220, canvas.width, 130);
                 } else if(currentDino.zone.includes("Aviary")) {
-                    // Coastal Cliff Aviary with geodesic dome wireframe & ocean view
                     ctx.fillStyle = '#040d16'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    // Ocean horizon
-                    ctx.fillStyle = '#081c2c'; ctx.fillRect(0, 230, canvas.width, 120);
-                    // Dome netting grid overlay
-                    ctx.strokeStyle = 'rgba(26, 188, 156, 0.2)'; ctx.lineWidth = 1;
-                    for(let x=0; x<canvas.width; x+=40) {
-                        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-                    }
-                    for(let y=0; y<canvas.height; y+=40) {
-                        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-                    }
                 } else if(currentDino.zone.includes("Lagoon")) {
-                    // Deep Water Lagoon with sub-aquatic beams
-                    ctx.fillStyle = '#020a14'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    // Sub-surface light rays
-                    ctx.fillStyle = 'rgba(52, 152, 219, 0.08)';
-                    ctx.beginPath(); ctx.moveTo(100, 0); ctx.lineTo(50, 350); ctx.lineTo(150, 350); ctx.lineTo(250, 0); ctx.fill();
-                    ctx.beginPath(); ctx.moveTo(350, 0); ctx.lineTo(300, 350); ctx.lineTo(400, 350); ctx.lineTo(500, 0); ctx.fill();
+                    ctx.fillStyle = '#020c18'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 } else if(currentDino.zone.includes("Tundra")) {
-                    // Glacial Tundra with falling snow specks
                     ctx.fillStyle = '#0c1520'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#142232'; ctx.fillRect(0, 240, canvas.width, 110); // Snow ground
-                    // Snow specs
-                    ctx.fillStyle = '#ffffff';
-                    for(let i=0; i<30; i++) {
-                        let sx = (i * 23 + legCycle * 4) % canvas.width;
-                        let sy = (i * 37 + legCycle * 2) % canvas.height;
-                        ctx.fillRect(sx, sy, 2, 2);
-                    }
                 } else {
                     ctx.fillStyle = '#040804'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
 
-                // Ground baseline fence posts
-                if(!currentDino.zone.includes("Aviary") && !currentDino.zone.includes("Lagoon") && !currentDino.zone.includes("Tundra")) {
-                    ctx.strokeStyle = '#1e331e'; ctx.lineWidth = 2;
-                    ctx.beginPath(); ctx.moveTo(0, 260); ctx.lineTo(canvas.width, 260); ctx.stroke();
-                    for(let i = 50; i < canvas.width; i += 90) {
-                        ctx.fillStyle = '#1c281c'; ctx.fillRect(i, 210, 6, 50);
-                    }
-                }
+                ctx.strokeStyle = '#1e331e'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(0, 260); ctx.lineTo(canvas.width, 260); ctx.stroke();
 
-                // Movement & animation
-                if(Math.abs(entityX - targetX) < 2) {
-                    targetX = Math.random() * (canvas.width - 180) + 70;
-                }
-                let moving = Math.abs(targetX - entityX) > 0.5;
-                if(moving) {
+                if(Math.abs(entityX - targetX) < 2) targetX = Math.random() * (canvas.width - 180) + 70;
+                if(Math.abs(targetX - entityX) > 0.5) {
                     entityX += (targetX > entityX) ? 1.0 : -1.0;
                     legCycle += 0.2;
                 }
 
-                // Mood color styling
-                let skinColor = currentDino.diet === 'Carnivore' ? '#e74c3c' : '#2ecc71';
+                let skinColor = currentDino.color || (currentDino.diet === 'Carnivore' ? '#e74c3c' : '#2ecc71');
                 if(currentDino.moodState === 'agitated') skinColor = '#ff3333';
-                if(currentDino.moodState === 'alert') skinColor = '#e67e22';
 
                 ctx.save();
                 ctx.translate(entityX, 0);
-
-                // --- 2. ENHANCED PIXEL PHYSIOLOGY RENDERER ---
                 let lOffset = Math.sin(legCycle) * 4;
 
-                if(currentDino.type === 'longneck') {
-                    // Longneck (Brachiosaurus / Diplodocus / Mamenchisaurus / Amargasaurus)
-                    // Massive body
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(0, 190, 90, 45);
-                    // Long neck reaching up/forward
-                    ctx.fillRect(75, 110, 18, 90);
-                    // Head & snout
-                    ctx.fillRect(80, 100, 22, 14);
-                    // Stout legs with pixel articulation
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(10, 235, 14, 30 + lOffset);
-                    ctx.fillRect(35, 235, 14, 30 - lOffset);
-                    ctx.fillRect(65, 235, 14, 30 + lOffset);
-                    // Tail
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(-35, 200, 35, 15);
-                } else if(currentDino.type === 'trex') {
-                    // Large Apex Predator (T-Rex / Allosaurus / Giganotosaurus / Tyrannotitan)
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(0, 180, 95, 55);
-                    // Heavy tail counterbalance
-                    ctx.fillRect(-50, 185, 50, 22);
-                    // Massive head & jaw
-                    ctx.fillRect(75, 155, 38, 30);
-                    ctx.fillStyle = '#0b0f0b'; // Eye optic
-                    ctx.fillRect(98, 162, 5, 5);
-                    // Tiny arms
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(65, 205, 10, 8);
-                    // Powerful legs
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(20, 230, 18, 35 + lOffset);
-                    ctx.fillRect(55, 230, 18, 35 - lOffset);
-                } else if(currentDino.type === 'raptor' || currentDino.type === 'frilled_raptor') {
-                    // Agile Raptor (Velociraptor / Utahraptor / Atrociraptor / Dilophosaurus / Troodon)
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(0, 200, 65, 32);
-                    // Long balanced tail
-                    ctx.fillRect(-45, 205, 45, 10);
-                    // Head & snout
-                    ctx.fillRect(55, 185, 22, 18);
-                    if(currentDino.type === 'frilled_raptor') {
-                        // Dilophosaurus venom frill
-                        ctx.fillStyle = '#f1c40f';
-                        ctx.beginPath(); ctx.arc(65, 190, 16, Math.PI * 0.4, Math.PI * 1.6); ctx.fill();
-                    }
-                    // Slender legs
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(10, 228, 8, 35 + lOffset);
-                    ctx.fillRect(35, 228, 8, 35 - lOffset);
-                } else if(currentDino.type === 'ceratopsian') {
-                    // Horned Ceratopsian (Triceratops / Pentaceratops / Chasmosaurus)
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(0, 195, 85, 45);
-                    // Massive frilled head
-                    ctx.fillRect(65, 165, 32, 40);
-                    // Horns
-                    ctx.fillStyle = '#f1c40f';
-                    ctx.fillRect(90, 155, 14, 8); // Brow horns
-                    ctx.fillRect(85, 170, 12, 6); // Nasal horn
-                    // Sturdy legs
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(10, 235, 15, 28 + lOffset);
-                    ctx.fillRect(55, 235, 15, 28 - lOffset);
-                } else if(currentDino.type === 'stegosaur') {
-                    // Stegosaur / Spiked Herbivore (Stegosaurus / Kentrosaurus / Tuojiangosaurus / Wuerhosaurus)
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(0, 200, 80, 40);
-                    // Head
-                    ctx.fillRect(70, 210, 15, 14);
-                    // Back plates / spikes
-                    ctx.fillStyle = '#f1c40f';
-                    for(let p=10; p<70; p+=15) {
-                        ctx.beginPath(); ctx.moveTo(p, 200); ctx.lineTo(p+6, 175); ctx.lineTo(p+12, 200); ctx.fill();
-                    }
-                    // Legs
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(12, 235, 12, 28 + lOffset);
-                    ctx.fillRect(52, 235, 12, 28 - lOffset);
-                } else if(currentDino.type === 'ankylosaur') {
-                    // Armored Tank (Ankylosaurus / Euoplocephalus / Sauropelta)
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(-5, 205, 85, 35);
-                    // Armor plating bumps
-                    ctx.fillStyle = '#222830';
-                    for(let a=0; a<75; a+=12) {
-                        ctx.fillRect(a, 200, 8, 8);
-                    }
-                    // Club tail
-                    ctx.fillRect(75, 218, 16, 10);
-                    // Stubby legs
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(8, 235, 14, 25);
-                    ctx.fillRect(50, 235, 14, 25);
-                } else if(currentDino.type === 'hadrosaur') {
-                    // Duck-billed Herbivore (Parasaurolophus / Corythosaurus / Edmontosaurus)
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(0, 195, 75, 42);
-                    // Crest
-                    if(currentDino.name.includes("Parasaurolophus")) {
-                        ctx.fillRect(55, 170, 25, 8); // Long backward crest
-                    } else {
-                        ctx.fillRect(58, 175, 15, 15); // Rounded crest
-                    }
-                    // Head snout
-                    ctx.fillRect(60, 190, 18, 14);
-                    // Legs
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(10, 232, 12, 30 + lOffset);
-                    ctx.fillRect(48, 232, 12, 30 - lOffset);
-                } else if(currentDino.type === 'aquatic') {
-                    // Mosasaurus (Deep Water Lagoon)
-                    ctx.fillStyle = '#3498db';
-                    ctx.fillRect(-20, 210, 120, 40);
-                    // Massive jaws
-                    ctx.fillRect(90, 215, 30, 25);
-                    // Tail fluke
-                    ctx.fillRect(-45, 200, 25, 60);
-                } else if(currentDino.type === 'spinosaurus') {
-                    // Spinosaurus / Suchomimus (Sailback Predator)
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(0, 195, 85, 45);
-                    // Distinctive dorsal sail
-                    ctx.fillStyle = '#e67e22';
-                    ctx.beginPath(); ctx.moveTo(20, 195); ctx.lineTo(45, 135); ctx.lineTo(70, 195); ctx.fill();
-                    // Crocodile snout
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(75, 205, 28, 14);
-                    // Legs
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(15, 235, 14, 28 + lOffset);
-                    ctx.fillRect(55, 235, 14, 28 - lOffset);
-                } else if(currentDino.type === 'pterosaur' || currentDino.type === 'small_flyer') {
-                    // Flying Reptiles (Pteranodon / Dimorphodon / Cearadactylus)
-                    ctx.fillStyle = '#f1c40f';
-                    let wingFlap = Math.sin(legCycle * 2) * 20;
-                    ctx.fillRect(15, 65, 35, 14); // Body
-                    // Wings spread
-                    ctx.beginPath(); 
-                    ctx.moveTo(32, 72); 
-                    ctx.lineTo(-30, 45 + wingFlap); 
-                    ctx.lineTo(15, 85); 
-                    ctx.fill();
-                    ctx.beginPath(); 
-                    ctx.moveTo(32, 72); 
-                    ctx.lineTo(90, 45 + wingFlap); 
-                    ctx.lineTo(50, 85); 
-                    ctx.fill();
-                } else if(currentDino.type === 'flocky' || currentDino.type === 'tiny_ceratopsian' || currentDino.type === 'swarm') {
-                    // Small Herding / Swarming (Gallimimus / Compsognathus / Microceratus)
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(0, 210, 45, 22);
-                    ctx.fillRect(35, 190, 12, 24); // Neck & head
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(8, 228, 6, 25 + lOffset);
-                    ctx.fillRect(28, 228, 6, 25 - lOffset);
-                } else {
-                    // Standard fallback
-                    ctx.fillStyle = skinColor;
-                    ctx.fillRect(0, 200, 60, 35);
-                    ctx.fillStyle = '#1e331e';
-                    ctx.fillRect(10, 230, 10, 25);
-                    ctx.fillRect(40, 230, 10, 25);
-                }
+                ctx.fillStyle = skinColor;
+                ctx.fillRect(0, 195, 80, 45);
+                ctx.fillStyle = '#1e331e';
+                ctx.fillRect(10, 240, 12, 25 + lOffset);
+                ctx.fillRect(50, 240, 12, 25 - lOffset);
 
                 ctx.restore();
 
-                // --- 3. OVERLAY HUD & MOOD TAGS ---
                 ctx.font = '11px Courier New';
-                ctx.fillStyle = currentDino.diet === 'Carnivore' ? '#ff3333' : '#2ecc71';
+                ctx.fillStyle = currentDino.color || (currentDino.diet === 'Carnivore' ? '#ff3333' : '#2ecc71');
                 ctx.fillText(`ID: ${currentDino.id} // ${currentDino.name.toUpperCase()}`, 15, 25);
                 
-                // Mood / Status indicator box
-                ctx.fillStyle = currentDino.moodState === 'agitated' ? 'rgba(231, 76, 60, 0.8)' : 'rgba(0,0,0,0.8)';
-                ctx.fillRect(12, 32, 220, 20);
+                ctx.fillStyle = 'rgba(0,0,0,0.85)';
+                ctx.fillRect(canvas.width - 55, 12, 42, 32);
                 ctx.strokeStyle = currentDino.moodState === 'agitated' ? '#e74c3c' : '#ffb000';
-                ctx.strokeRect(12, 32, 220, 20);
-                
+                ctx.strokeRect(canvas.width - 55, 12, 42, 32);
+                ctx.font = '18px sans-serif';
+                ctx.fillText(currentDino.emoji, canvas.width - 45, 34);
+
+                ctx.font = '11px Courier New';
+                ctx.fillStyle = 'rgba(0,0,0,0.8)';
+                ctx.fillRect(12, 32, 210, 20);
+                ctx.strokeStyle = currentDino.moodState === 'agitated' ? '#e74c3c' : '#ffb000';
+                ctx.strokeRect(12, 32, 210, 20);
                 ctx.fillStyle = '#ffb000';
-                ctx.fillText(`MOOD: ${currentDino.statusTag}`, 18, 47);
+                ctx.fillText(`MOOD: ${currentDino.baseMood}`, 18, 47);
 
                 if(document.getElementById('parkView').classList.contains('active')) {
                     animationFrameId = requestAnimationFrame(renderOpticFeed);
@@ -758,22 +1278,6 @@
         }
 
         window.onload = initApp;
-
-        // Laser chamber extraction animation
-        const laserCanvas = document.getElementById('laserCanvas');
-        if(laserCanvas) {
-            const ctx = laserCanvas.getContext('2d');
-            function drawLaser() {
-                ctx.fillStyle = '#020408';
-                ctx.fillRect(0, 0, laserCanvas.width, laserCanvas.height);
-                ctx.fillStyle = '#ffb000';
-                ctx.beginPath(); ctx.arc(laserCanvas.width / 2, laserCanvas.height / 2, 25, 0, Math.PI * 2); ctx.fill();
-                ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2;
-                ctx.beginPath(); ctx.moveTo(Math.random() * laserCanvas.width, 0); ctx.lineTo(Math.random() * laserCanvas.width, laserCanvas.height); ctx.stroke();
-                requestAnimationFrame(drawLaser);
-            }
-            drawLaser();
-        }
     </script>
 </body>
 </html>

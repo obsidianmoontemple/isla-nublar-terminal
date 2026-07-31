@@ -3,302 +3,357 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Isla Nublar // Master Control Terminal v5.4</title>
+    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL v5.5</title>
     <style>
         :root {
-            --bg-dark: #121212;
-            --panel-bg: #1e1e1e;
-            --panel-border: #333333;
+            --bg-dark: #0b0f0b;
+            --panel-bg: #141c14;
+            --panel-border: #223322;
+            --neon-green: #2ecc71;
+            --neon-cyan: #1abc9c;
+            --neon-amber: #ffb000;
+            --neon-alert: #e74c3c;
             --text-main: #d4d4d4;
-            --text-muted: #888888;
-            --accent-amber: #ffb000;
-            --accent-blue: #3498db;
-            --accent-red: #e74c3c;
-            --accent-green: #2ecc71;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
         body { background-color: var(--bg-dark); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Authentic SGI / Unix Workstation Header */
-        header { background: #1a1a1a; border-bottom: 2px solid #333; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
-        header .terminal-title { font-size: 0.95rem; font-weight: bold; color: var(--text-main); letter-spacing: 1px; }
+        header { background: #0f170f; border-bottom: 2px solid var(--panel-border); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 0.9rem; font-weight: bold; color: var(--neon-green); letter-spacing: 2px; }
         
-        .station-nav { display: flex; gap: 6px; flex-wrap: wrap; }
-        .station-btn { background: #2a2a2a; color: var(--text-muted); border: 1px solid #444; padding: 5px 10px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; transition: all 0.2s; }
-        .station-btn:hover, .station-btn.active { background: #3a3a3a; color: #fff; border-color: var(--accent-amber); }
+        nav { display: flex; gap: 6px; flex-wrap: wrap; }
+        nav button { background: #182418; color: var(--text-main); border: 1px solid var(--panel-border); padding: 6px 12px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; transition: all 0.2s; }
+        nav button:hover, nav button.active { background: var(--neon-green); color: #000; border-color: var(--neon-green); font-weight: bold; }
 
-        /* Workspace Viewports */
-        .workspace { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .station-view { display: none; flex-direction: column; gap: 15px; height: 100%; }
-        .station-view.active { display: flex; }
+        .view-panel { display: none; flex: 1; padding: 15px; overflow-y: auto; flex-direction: column; gap: 15px; }
+        .view-panel.active { display: flex; }
 
-        /* Industrial Panels (Your Original Style) */
-        .panel-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
-        .panel { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 4px; padding: 15px; display: flex; flex-direction: column; gap: 12px; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 8px; font-size: 0.85rem; font-weight: bold; color: #fff; text-transform: uppercase; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; font-size: 0.85rem; font-weight: bold; color: var(--neon-cyan); text-transform: uppercase; background: var(--panel-bg); padding: 10px; border-radius: 4px; }
         
-        .sub-panel { background: #151515; border: 1px solid #2a2a2a; padding: 10px; border-radius: 3px; display: flex; flex-direction: column; gap: 8px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
+        .card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
+        
+        .sector-preview-screen { height: 110px; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 8px; }
+        .sector-tag { font-size: 0.7rem; background: rgba(0,0,0,0.8); padding: 3px 6px; border: 1px solid var(--neon-green); color: var(--neon-green); font-family: monospace; }
+        
+        .sector-details { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; justify-content: space-between; }
+        .sector-row { display: flex; justify-content: space-between; font-size: 0.8rem; font-family: monospace; }
+        .sector-actions { display: flex; gap: 8px; margin-top: 8px; }
+        
+        .sector-btn { background: #182418; color: var(--text-main); border: 1px solid var(--panel-border); padding: 6px; cursor: pointer; font-size: 0.7rem; text-transform: uppercase; flex: 1; text-align: center; }
+        .sector-btn:hover { background: #223822; border-color: var(--neon-green); color: #fff; }
 
-        /* Canvas Live Viewport */
-        .viewport-box { width: 100%; height: 120px; background: #0a0a0a; border: 1px solid #222; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        canvas { width: 100%; height: 100%; }
+        .action-btn { background: #182418; color: var(--text-main); border: 1px solid var(--panel-border); padding: 10px; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; }
+        .action-btn:hover { background: #223822; }
 
-        /* Buttons & Actions */
-        .btn { background: #252525; color: var(--text-main); border: 1px solid #444; padding: 6px 10px; cursor: pointer; font-size: 0.75rem; text-transform: uppercase; transition: all 0.2s; }
-        .btn:hover { background: #353535; color: #fff; border-color: #666; }
-        .btn-amber { color: var(--accent-amber); border-color: #665000; }
-        .btn-amber:hover { background: #332500; }
-        .btn-danger { color: var(--accent-red); border-color: #662222; }
-        .btn-danger:hover { background: #331111; }
-
-        /* Footer CLI */
-        .cli-footer { background: #161616; border-top: 1px solid #333; padding: 10px 20px; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; }
-        .cli-prompt { color: var(--accent-amber); font-weight: bold; }
-        .cli-input { background: transparent; border: none; color: var(--text-main); outline: none; flex: 1; font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; }
+        .log-container { background: #080c08; border-top: 2px solid var(--panel-border); padding: 10px 20px; font-family: monospace; font-size: 0.75rem; }
+        .log-box { color: var(--neon-green); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     </style>
 </head>
 <body>
-
     <header>
-        <div class="terminal-title">ISLA NUBLAR // MASTER CONTROL TERMINAL v5.4</div>
-        <div class="station-nav">
-            <button class="station-btn active" onclick="switchStation('main')">Main Deck</button>
-            <button class="station-btn" onclick="switchStation('arnold')">Arnold (Grid)</button>
-            <button class="station-btn" onclick="switchStation('wu')">Wu (Genetics)</button>
-            <button class="station-btn" onclick="switchStation('muldoon')">Muldoon (Security)</button>
-            <button class="station-btn" onclick="switchStation('nedry')">Nedry (Overrides)</button>
-            <button class="station-btn" onclick="switchStation('hammond')">Hammond (Admin)</button>
-            <button class="station-btn" onclick="switchStation('harding')">Harding (Medical)</button>
-        </div>
+        <div class="logo">ISLA NUBLAR // MASTER CONTROL TERMINAL v5.5</div>
+        <nav>
+            <button onclick="switchTab('sectors', event)" class="active">🌴 Sectors</button>
+            <button onclick="switchTab('biosphere', event)">🦖 Biosphere</button>
+            <button onclick="switchTab('genetics', event)">🧬 Lab & Extraction</button>
+            <button onclick="switchTab('mapView', event)">🗺️ Park Map</button>
+            <button onclick="switchTab('stations', event)">🎛️ Stations</button>
+            <button onclick="switchTab('ops', event)">⚙️ Operations</button>
+        </nav>
     </header>
 
-    <div class="workspace">
-        
-        <!-- 1. MAIN LANDING STATION (Your Exact v5.3 Layout) -->
-        <div id="station-main" class="station-view active">
-            
-            <!-- Sector Surveillance & Paddock Management -->
-            <div class="panel">
-                <div class="panel-header">
-                    <span>Isla Nublar Sector Surveillance &amp; Paddock Management</span>
-                    <span style="color: var(--accent-green);" id="main-status-label">ALL SECTORS ONLINE</span>
+    <!-- SECTORS VIEW -->
+    <div id="sectors" class="view-panel active">
+        <div class="panel-header">
+            <span>Isla Nublar Sector Surveillance & Paddock Management</span>
+            <span style="color: var(--neon-green);">ALL SECTORS ONLINE</span>
+        </div>
+        <div class="card-grid">
+            <div class="card">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop');">
+                    <span class="sector-tag">SECTOR 1: CANOPY</span>
                 </div>
-                <div class="panel-row">
-                    <div class="sub-panel" id="sec-1-box">
-                        <div><span>SECTOR 1: CANOPY</span></div>
-                        <div><span>Resident:</span> <strong>Brachiosaurus</strong></div>
-                        <div><span>Voltage:</span> <span id="s1-volt">10,000V</span></div>
-                        <div class="viewport-box"><canvas class="dino-cam" data-dino="brachio"></canvas></div>
-                        <button class="btn" onclick="toggleVoltage(1)">Toggle Paddock Power</button>
+                <div class="sector-details">
+                    <div>
+                        <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-green);">Brachiosaurus</strong></div>
+                        <div class="sector-row"><span>Voltage:</span> <span id="sec1Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
                     </div>
-                    <div class="sub-panel" id="sec-2-box">
-                        <div><span>SECTOR 2: RAPTOR PEN</span></div>
-                        <div><span>Resident:</span> <strong>Velociraptor Pack</strong></div>
-                        <div><span>Voltage:</span> <span id="s2-volt">50,000V</span></div>
-                        <div class="viewport-box"><canvas class="dino-cam" data-dino="raptor"></canvas></div>
-                        <button class="btn" onclick="toggleVoltage(2)">Toggle Paddock Power</button>
-                    </div>
-                    <div class="sub-panel" id="sec-3-box">
-                        <div><span>SECTOR 3: PLAINS</span></div>
-                        <div><span>Resident:</span> <strong>Triceratops Herd</strong></div>
-                        <div><span>Voltage:</span> <span id="s3-volt">10,000V</span></div>
-                        <div class="viewport-box"><canvas class="dino-cam" data-dino="triceratops"></canvas></div>
-                        <button class="btn" onclick="toggleVoltage(3)">Toggle Paddock Power</button>
-                    </div>
-                    <div class="sub-panel" id="sec-4-box">
-                        <div><span>SECTOR 4: T-REX PADDOCK</span></div>
-                        <div><span>Resident:</span> <strong>Tyrannosaurus Rex</strong></div>
-                        <div><span>Voltage:</span> <span id="s4-volt">10,000V</span></div>
-                        <div class="viewport-box"><canvas class="dino-cam" data-dino="trex"></canvas></div>
-                        <button class="btn" onclick="toggleVoltage(4)">Toggle Paddock Power</button>
+                    <div class="sector-actions">
+                        <button class="sector-btn" onclick="boostVoltage(1)">⚡ Boost Voltage</button>
+                        <button class="sector-btn" onclick="logMessage('Feed dropped into Sector 1 Canopy.')">🌿 Feed Herd</button>
                     </div>
                 </div>
             </div>
-
-            <!-- Wildlife Registry & InGen Extraction Matrix -->
-            <div class="panel-row">
-                <div class="panel">
-                    <div class="panel-header">
-                        <span>Wildlife &amp; Biosphere Registry</span>
-                        <span>Active Assets: 4</span>
-                    </div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">
-                        All biometric telemetry reporting nominal readings. Movement tracking synchronized with perimeter motion sensors.
-                    </div>
+            <div class="card">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=600&auto=format&fit=crop');">
+                    <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">SECTOR 2: RAPTOR PEN</span>
                 </div>
-
-                <div class="panel">
-                    <div class="panel-header">
-                        <span>InGen Bio-Engineering Matrix</span>
-                        <span style="color: var(--accent-amber);">AMBER: <strong id="amber-count">50</strong> 🧬</span>
+                <div class="sector-details">
+                    <div>
+                        <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-alert);">Velociraptor Pack</strong></div>
+                        <div class="sector-row"><span>Voltage:</span> <span id="sec2Voltage" style="color: var(--neon-cyan);">50,000V</span></div>
                     </div>
-                    <div class="sub-panel">
-                        <div><strong>⚡ LIVE LASER EXTRACTION CHAMBER</strong></div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Isolate prehistoric mosquito DNA matrices from raw amber.</div>
-                        <button class="btn btn-amber" onclick="extractAmber()">Run Extraction Sequence (+10)</button>
+                    <div class="sector-actions">
+                        <button class="sector-btn" onclick="boostVoltage(2)">⚡ Boost Voltage</button>
+                        <button class="sector-btn" onclick="logMessage('Steer dropped into Sector 2 Raptor Pen.')">🥩 Drop Steer</button>
                     </div>
                 </div>
             </div>
-
-            <!-- Specimen Pod Incubation Row -->
-            <div class="panel-row">
-                <div class="sub-panel">
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                        <strong>SPECIMEN POD // STG-09</strong>
-                        <span style="color: var(--accent-amber);">[ STANDBY ]</span>
-                    </div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">Genome Viability: 40%</div>
-                    <button class="btn" onclick="alert('Synthesizing genetic strands...')">Initialize Incubation</button>
+            <div class="card">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop');">
+                    <span class="sector-tag">SECTOR 3: PLAINS</span>
                 </div>
-                <div class="sub-panel">
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
-                        <strong>SPECIMEN POD // DIL-04</strong>
-                        <span style="color: var(--accent-amber);">[ STANDBY ]</span>
+                <div class="sector-details">
+                    <div>
+                        <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-green);">Triceratops Herd</strong></div>
+                        <div class="sector-row"><span>Voltage:</span> <span id="sec3Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
                     </div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">Genome Viability: 20%</div>
-                    <button class="btn" onclick="alert('Synthesizing genetic strands...')">Initialize Incubation</button>
+                    <div class="sector-actions">
+                        <button class="sector-btn" onclick="boostVoltage(3)">⚡ Boost Voltage</button>
+                        <button class="sector-btn" onclick="logMessage('Feed dropped into Sector 3 Plains.')">🌿 Feed Herd</button>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- 2. ARNOLD STATION -->
-        <div id="station-arnold" class="station-view">
-            <div class="panel">
-                <div class="panel-header"><span>Ray Arnold // Main Grid Engineering & Megawatt Load Balancing</span><span>GRID STABLE</span></div>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Central power distribution sub-routines and auxiliary diesel generator backups.</p>
+            <div class="card">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=600&auto=format&fit=crop');">
+                    <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">SECTOR 4: T-REX PADDOCK</span>
+                </div>
+                <div class="sector-details">
+                    <div>
+                        <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-alert);">Tyrannosaurus Rex</strong></div>
+                        <div class="sector-row"><span>Voltage:</span> <span id="sec4Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
+                    </div>
+                    <div class="sector-actions">
+                        <button class="sector-btn" onclick="boostVoltage(4)">⚡ Boost Voltage</button>
+                        <button class="sector-btn" onclick="logMessage('Live goat dropped into T-Rex Paddock.')">🥩 Drop Goat</button>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <!-- 3. WU STATION -->
-        <div id="station-wu" class="station-view">
-            <div class="panel">
-                <div class="panel-header"><span>Dr. Henry Wu // Genetic Engineering & Splicing Laboratory</span><span>LAB SECURE</span></div>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Amphibian DNA strand replacement matrix and incubation sequencing controls.</p>
-            </div>
-        </div>
-
-        <!-- 4. MULDOON STATION -->
-        <div id="station-muldoon" class="station-view">
-            <div class="panel">
-                <div class="panel-header"><span>Robert Muldoon // Perimeter Defense & Wildlife Security</span><span>OPTICS NOMINAL</span></div>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Automatic defense turrets, tranquilizer inventory, and raptor containment protocols.</p>
-            </div>
-        </div>
-
-        <!-- 5. NEDRY STATION -->
-        <div id="station-nedry" class="station-view">
-            <div class="panel" style="border-color: #664400;">
-                <div class="panel-header" style="color: var(--accent-amber);"><span>Dennis Nedry // Sub-Routine Overrides & Dock Transfer</span><span>RESTRICTED ACCESS</span></div>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Background automation script compiling. Redirecting security grid telemetry to marine vessel container.</p>
-                <button class="btn btn-amber" onclick="alert('AH, AH, AH! You didn\'t say the magic word!')">Execute Security Lockout</button>
-            </div>
-        </div>
-
-        <!-- 6. HAMMOND STATION -->
-        <div id="station-hammond" class="station-view">
-            <div class="panel">
-                <div class="panel-header"><span>John Hammond // Executive Oversight & Park Administration</span><span>"Spared No Expense"</span></div>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Investor relations, visitor metrics, and public safety ratings.</p>
-            </div>
-        </div>
-
-        <!-- 7. HARDING STATION -->
-        <div id="station-harding" class="station-view">
-            <div class="panel">
-                <div class="panel-header"><span>Dr. Gerry Harding // Veterinary Pathology & Bioscience</span><span>MEDICAL BAY ACTIVE</span></div>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">Strychnine diagnostics, lysine contingency status, and pathology logs.</p>
-            </div>
-        </div>
-
     </div>
 
-    <!-- Terminal CLI Footer -->
-    <div class="cli-footer">
-        <span class="cli-prompt">nublar@master-term:~$</span>
-        <input type="text" class="cli-input" id="cliInput" placeholder="Enter command (e.g., help, status, amber)..." onkeypress="handleCLI(event)">
+    <!-- BIOSPHERE VIEW -->
+    <div id="biosphere" class="view-panel">
+        <div class="panel-header">
+            <span>Wildlife & Biosphere Registry</span>
+            <span style="color: var(--neon-green);">Active Assets: 4</span>
+        </div>
+        <div class="card-grid">
+            <div class="card"><div class="sector-details"><strong>Brachiosaurus</strong><p style="font-size:0.75rem; color:var(--text-main);">Status: Healthy / Grazing</p></div></div>
+            <div class="card"><div class="sector-details"><strong>Velociraptor Pack</strong><p style="font-size:0.75rem; color:var(--text-main);">Status: High Alert / Testing Fences</p></div></div>
+            <div class="card"><div class="sector-details"><strong>Triceratops Herd</strong><p style="font-size:0.75rem; color:var(--text-main);">Status: Grazing / Stable</p></div></div>
+            <div class="card"><div class="sector-details"><strong>Tyrannosaurus Rex</strong><p style="font-size:0.75rem; color:var(--text-main);">Status: Resting in Canopy Cover</p></div></div>
+        </div>
+    </div>
+
+    <!-- GENETICS LAB -->
+    <div id="genetics" class="view-panel">
+        <div class="panel-header">
+            <span>InGen Bio-Engineering & Fossil Extraction Matrix</span>
+            <span style="color: var(--neon-amber);">AMBER RESERVES: <strong id="amberCount">50</strong> 🧬</span>
+        </div>
+        <div class="card" style="padding: 15px;">
+            <strong style="color: var(--neon-amber);">⚡ LIVE LASER EXTRACTION CHAMBER</strong>
+            <div style="background: #020408; border: 1px solid rgba(255,170,0,0.3); height: 100px; margin: 10px 0; display:flex; align-items:center; justify-content:center;">
+                <canvas id="laserCanvas" width="400" height="90"></canvas>
+            </div>
+            <button class="action-btn" style="border-color: var(--neon-amber); color: var(--neon-amber);" onclick="mineAmber()">[ HARVEST +25 AMBER 🧬 ]</button>
+        </div>
+    </div>
+
+    <!-- PARK MAP & TACTICAL PLACEMENT VIEW -->
+    <div id="mapView" class="view-panel">
+        <div class="panel-header">
+            <span>Isla Nublar Sector Map & Tactical Paddock Placement</span>
+            <span style="color: var(--neon-amber);" id="mapToolLabel">ACTIVE TOOL: HIGH-VOLTAGE FENCE</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 260px; gap: 15px; flex: 1; min-height: 420px;">
+            <!-- Interactive Canvas Map -->
+            <div style="background: #040704; border: 1px solid var(--panel-border); display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden;">
+                <canvas id="tacticalMapCanvas" width="600" height="380" style="width: 100%; height: 100%; image-rendering: pixelated; cursor: crosshair;" onclick="handleGridClick(event)"></canvas>
+            </div>
+            <!-- Tool Palette -->
+            <div style="background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-size: 0.75rem; font-weight: bold; color: var(--neon-cyan); border-bottom: 1px solid var(--panel-border); padding-bottom: 6px;">CONSTRUCTION TOOLS</div>
+                <button class="sector-btn" style="text-align: left; border-color: var(--neon-amber); color: var(--neon-amber);" onclick="setMapTool(1, 'HIGH-VOLTAGE FENCE', this)">⚡ Security Fence</button>
+                <button class="sector-btn" style="text-align: left;" onclick="setMapTool(2, 'CONCRETE PATH', this)">🧱 Concrete Path</button>
+                <button class="sector-btn" style="text-align: left;" onclick="setMapTool(3, 'JUNGLE FOLIAGE', this)">🌲 Jungle Canopy</button>
+                <button class="sector-btn" style="text-align: left;" onclick="setMapTool(4, 'FACILITY BUILDING', this)">🏢 Control Building</button>
+                <button class="sector-btn" style="text-align: left; border-color: var(--neon-alert); color: var(--neon-alert);" onclick="setMapTool(0, 'BULLDOZE / CLEAR', this)">🚜 Bulldoze Tile</button>
+                <div style="margin-top: auto; font-size: 0.7rem; opacity: 0.6; font-family: monospace;">
+                    Click grid sectors to deploy assets. Synchronized with Arnold's power grid matrix.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATIONS VIEW (Ray Arnold, Muldoon, Nedry, Harding) -->
+    <div id="stations" class="view-panel">
+        <div class="panel-header">
+            <span>Integrated Character Workstations & Biosphere Map</span>
+            <span style="color: var(--neon-cyan);">MULTI-STATION ACTIVE</span>
+        </div>
+        <div class="card-grid">
+            <div class="card">
+                <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-cyan);"><strong>RAY ARNOLD: POWER GRID</strong></div>
+                <div class="sector-details">
+                    <div>Substation Load: <strong style="color:var(--neon-green);">120 MW (Stable)</strong></div>
+                    <button class="sector-btn" onclick="logMessage('Arnold: Rerouting grid load to Visitor Center backup.')">Reroute Substation Grid</button>
+                </div>
+            </div>
+            <div class="card">
+                <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-alert);"><strong>ROBERT MULDOON: SECURITY</strong></div>
+                <div class="sector-details">
+                    <div>Perimeter Turrets: <strong style="color:var(--neon-green);">ARMED</strong></div>
+                    <button class="sector-btn" onclick="logMessage('Muldoon: Motion sensors pinging clear across sector boundaries.')">Scan Motion Trackers</button>
+                </div>
+            </div>
+            <div class="card">
+                <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-amber);"><strong>DENNIS NEDRY: OVERRIDES</strong></div>
+                <div class="sector-details">
+                    <div>Automation Script: <strong style="color:var(--neon-amber);">STANDBY</strong></div>
+                    <button class="sector-btn" style="border-color:var(--neon-amber); color:var(--neon-amber);" onclick="logMessage('ERROR: AH, AH, AH! You didn\'t say the magic word!')">Execute Marine Dock Transfer</button>
+                </div>
+            </div>
+            <div class="card">
+                <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-cyan);"><strong>DR. GERRY HARDING: PATHOLOGY</strong></div>
+                <div class="sector-details">
+                    <div>Lysine Contingency: <strong style="color:var(--neon-green);">ONLINE</strong></div>
+                    <button class="sector-btn" onclick="logMessage('Harding: Checking West Indian lilac toxicity samples.')">Run Pathogen Diagnostic</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OPERATIONS VIEW -->
+    <div id="ops" class="view-panel">
+        <div class="panel-header">
+            <span>Master Operations Desk</span>
+            <span style="color: var(--neon-alert);">Emergency Protocol</span>
+        </div>
+        <p style="font-size: 0.9rem;">Emergency controls and facility protocols.</p>
+        <button class="action-btn" style="border-color: var(--neon-alert); color: var(--neon-alert); background: rgba(255,51,102,0.1);" onclick="logMessage('WARNING: Facility Alert Triggered across all paddocks!')">⚠️ Trigger Facility Alert</button>
+    </div>
+
+    <!-- SYSTEM LOG -->
+    <div class="log-container">
+        <small style="color: var(--neon-cyan);">SYSTEM EVENT LOG:</small>
+        <div id="logOutput" class="log-box">[SYS_INIT] Terminal online. All character sub-routines loaded.</div>
     </div>
 
     <script>
-        let parkData = { amber: 50, voltages: [10000, 50000, 10000, 10000] };
-
-        function switchStation(name) {
-            document.querySelectorAll('.station-view').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.station-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById('station-' + name).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        function extractAmber() {
-            parkData.amber += 10;
-            document.getElementById('amber-count').innerText = parkData.amber;
-        }
-
-        function toggleVoltage(sector) {
-            let idx = sector - 1;
-            parkData.voltages[idx] = parkData.voltages[idx] > 0 ? 0 : (sector === 2 ? 50000 : 10000);
-            document.getElementById(`s${sector}-volt`).innerText = parkData.voltages[idx] + 'V';
-            
-            let box = document.getElementById(`sec-${sector}-box`);
-            let statusLabel = document.getElementById('main-status-label');
-            if(parkData.voltages[idx] === 0) {
-                box.style.borderColor = 'var(--accent-red)';
-                statusLabel.innerText = "CONTAINMENT BREACH WARNING";
-                statusLabel.style.color = "var(--accent-red)";
-            } else {
-                box.style.borderColor = '#2a2a2a';
+        function switchTab(tabId, event) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if(event) event.target.classList.add('active');
+            if(tabId === 'mapView') {
+                setTimeout(renderTacticalMap, 50);
             }
         }
 
-        function handleCLI(e) {
-            if (e.key === 'Enter') {
-                let cmd = e.target.value.trim().toLowerCase();
-                if(cmd === 'help') alert("Commands: status, amber, lockdown");
-                else if(cmd === 'status') alert("All systems operating within normal parameters.");
-                else alert("Unknown command: " + cmd);
-                e.target.value = '';
-            }
+        function logMessage(text) {
+            document.getElementById('logOutput').innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
         }
 
-        // Clean subtle dark surveillance canvas rendering
-        function renderFeeds() {
-            document.querySelectorAll('canvas.dino-cam').forEach(canvas => {
-                const ctx = canvas.getContext('2d');
-                if(!canvas.width) canvas.width = canvas.parentElement.clientWidth;
-                canvas.height = 120;
+        let amber = 50;
+        function mineAmber() {
+            amber += 25;
+            document.getElementById('amberCount').innerText = amber;
+            logMessage('Laser extraction run successful. Harvested +25 🧬.');
+        }
 
-                ctx.fillStyle = '#050505';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function boostVoltage(sectorNum) {
+            let el = document.getElementById(`sec${sectorNum}Voltage`);
+            el.innerText = "60,000V (OVERCHARGED)";
+            el.style.color = "var(--neon-amber)";
+            logMessage(`Sector ${sectorNum} voltage boosted to maximum threshold.`);
+        }
 
-                // Subtle scan grid lines
-                ctx.strokeStyle = '#111111';
-                for(let i=0; i<canvas.width; i+=25) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,canvas.height); ctx.stroke(); }
+        // Tactical Map State & Logic
+        let currentTool = 1;
+        const mapCols = 20;
+        const mapRows = 12;
+        let sectorGrid = Array(mapRows).fill().map(() => Array(mapCols).fill(0));
 
-                let type = canvas.getAttribute('data-dino');
-                let time = Date.now() / 35;
-                ctx.fillStyle = '#555555';
+        function setMapTool(toolId, toolName, btn) {
+            currentTool = toolId;
+            document.getElementById('mapToolLabel').innerText = `ACTIVE TOOL: ${toolName}`;
+            logMessage(`Selected tactical map tool: ${toolName}`);
+        }
 
-                if(type === 'trex') {
-                    let x = (time * 0.7) % (canvas.width + 120) - 60;
-                    ctx.fillRect(x, 60, 45, 24);
-                    ctx.fillRect(x + 32, 42, 14, 20);
-                } else if(type === 'raptor') {
-                    let x = (time * 1.1) % (canvas.width + 100) - 50;
-                    ctx.fillRect(x, 70, 24, 12);
-                    ctx.fillRect(x + 16, 58, 9, 14);
-                } else if(type === 'brachio') {
-                    let x = (time * 0.4) % (canvas.width + 140) - 70;
-                    ctx.fillRect(x, 62, 48, 28);
-                    ctx.fillRect(x + 34, 22, 10, 42);
-                } else if(type === 'triceratops') {
-                    let x = (time * 0.5) % (canvas.width + 100) - 50;
-                    ctx.fillRect(x, 65, 42, 22);
-                    ctx.fillRect(x + 32, 52, 12, 16);
+        function handleGridClick(event) {
+            const canvas = document.getElementById('tacticalMapCanvas');
+            const rect = canvas.getBoundingClientRect();
+            let clickX = Math.floor(((event.clientX - rect.left) / rect.width) * mapCols);
+            let clickY = Math.floor(((event.clientY - rect.top) / rect.height) * mapRows);
+
+            sectorGrid[clickY][clickX] = currentTool;
+            renderTacticalMap();
+            logMessage(`Placed asset [ID: ${currentTool}] at sector grid coordinate [X:${clickX}, Y:${clickY}].`);
+        }
+
+        function renderTacticalMap() {
+            const canvas = document.getElementById('tacticalMapCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let tileW = canvas.width / mapCols;
+            let tileH = canvas.height / mapRows;
+
+            for(let y = 0; y < mapRows; y++) {
+                for(let x = 0; x < mapCols; x++) {
+                    let cell = sectorGrid[y][x];
+                    let px = x * tileW;
+                    let py = y * tileH;
+
+                    ctx.fillStyle = (x + y) % 2 === 0 ? '#0a140a' : '#070f07';
+                    ctx.fillRect(px, py, tileW, tileH);
+
+                    if(cell === 1) {
+                        ctx.fillStyle = '#151515';
+                        ctx.fillRect(px + 1, py + 1, tileW - 2, tileH - 2);
+                        ctx.strokeStyle = '#ffb000';
+                        ctx.lineWidth = 1.5;
+                        ctx.strokeRect(px + 3, py + 3, tileW - 6, tileH - 6);
+                    } else if(cell === 2) {
+                        ctx.fillStyle = '#2c3e50';
+                        ctx.fillRect(px + 2, py + 2, tileW - 4, tileH - 4);
+                    } else if(cell === 3) {
+                        ctx.fillStyle = '#27ae60';
+                        ctx.beginPath();
+                        ctx.arc(px + tileW/2, py + tileH/2, tileW/3, 0, Math.PI * 2);
+                        ctx.fill();
+                    } else if(cell === 4) {
+                        ctx.fillStyle = '#2980b9';
+                        ctx.fillRect(px + 2, py + 2, tileW - 4, tileH - 4);
+                    }
+
+                    ctx.strokeStyle = 'rgba(34, 51, 34, 0.4)';
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeRect(px, py, tileW, tileH);
                 }
-            });
+            }
         }
 
-        setInterval(renderFeeds, 40);
+        // Simple Laser Chamber Canvas Animation
+        const canvas = document.getElementById('laserCanvas');
+        if(canvas) {
+            const ctx = canvas.getContext('2d');
+            function drawLaser() {
+                ctx.fillStyle = '#020408';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ffb000';
+                ctx.beginPath(); ctx.arc(canvas.width / 2, canvas.height / 2, 25, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.moveTo(Math.random() * canvas.width, 0); ctx.lineTo(Math.random() * canvas.width, canvas.height); ctx.stroke();
+                requestAnimationFrame(drawLaser);
+            }
+            drawLaser();
+        }
     </script>
 </body>
 </html>

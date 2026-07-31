@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL v8.3 - SCALED RARITY GENOME VAULT</title>
+    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL v8.7 - DYNAMIC OPTIC SECTOR SYNC</title>
     <style>
         :root {
             --bg-dark: #0b0f0b;
@@ -57,15 +57,17 @@
         .wu-container { display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
         .wu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         @media(max-width: 768px) { .wu-grid { grid-template-columns: 1fr; } }
+        .locked-feature { opacity: 0.4; pointer-events: none; border-color: var(--neon-alert); position: relative; }
+        .locked-badge { color: var(--neon-alert); font-weight: bold; font-size: 0.75rem; margin-top: 4px; }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo" onclick="switchTab('sectors', event)">ISLA NUBLAR // MASTER CONTROL TERMINAL v8.3</div>
+        <div class="logo" onclick="switchTab('sectors', event)">ISLA NUBLAR // MASTER CONTROL TERMINAL v8.7</div>
         <nav>
             <button onclick="switchTab('sectors', event)" class="active">🌴 Climate Sectors</button>
             <button onclick="switchTab('biosphere', event)">🦖 Biosphere Registry</button>
-            <button onclick="switchTab('genetics', event)">🧬 Dr. Wu's Lab</button>
+            <button onclick="switchTab('genetics', event)">🧬 Dr. Wu's Lab (Lvl <span id="labLevelNav">1</span>)</button>
             <button onclick="switchTab('genomeVault', event)">🧪 Genome Vault</button>
             <button onclick="switchTab('miningScreen', event)">⛏️ Amber Mining Facility</button>
             <button onclick="switchTab('parkView', event)">🌐 Live Optic Feeds</button>
@@ -201,12 +203,15 @@
         <div class="card-grid" id="sectorCensusGrid"></div>
     </div>
 
-    <!-- BIOSPHERE REGISTRY VIEW -->
+    <!-- BIOSPHERE REGISTRY VIEW (DISCOVERY LOCKED) -->
     <div id="biosphere" class="view-panel">
         <div class="panel-header">
-            <span>Wildlife & Biosphere Registry (Hatch & Sector Assignment)</span>
-            <span id="unlockedCount" style="color: var(--neon-green);">Discovered & Hatched: 50 / 50</span>
+            <span>Wildlife & Biosphere Registry (Discovery Locked)</span>
+            <span id="unlockedBiosphereCount" style="color: var(--neon-cyan);">Discovered & Unlocked: 0 / 50</span>
         </div>
+        <p style="font-size: 0.8rem; color: var(--text-main);">
+            Specimens remain locked in the Biosphere Registry until 100% genome completion is achieved in the <span style="color:var(--neon-cyan); cursor:pointer;" onclick="switchTab('genomeVault', event)">Genome Vault</span> via amber mining. Once unlocked, you can hatch and assign them to sectors and paddocks!
+        </p>
         <div class="card-grid" id="masterRosterGrid"></div>
     </div>
 
@@ -214,39 +219,28 @@
     <div id="genetics" class="view-panel">
         <div class="panel-header">
             <span>Dr. Henry Wu's Laboratory & Gene-Splicing Terminal</span>
-            <span style="color: var(--neon-amber);">AMBER: <strong id="amberCount">50</strong> 🧬 | DNA: <strong id="dnaCount">120</strong> 🧪</span>
+            <span style="color: var(--neon-amber);">AMBER: <strong id="amberCount">50</strong> 🧬 | DNA: <strong id="dnaCount">120</strong> 🧪 | LAB LEVEL: <strong id="labLevelDisplay">1</strong></span>
         </div>
         
         <div class="wu-container">
             <div class="card" style="padding: 15px; border-color: var(--neon-cyan);">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px;">
-                    <strong style="color: var(--neon-cyan);">🔬 DR. HENRY WU // LEAD GENETICIST WORKSTATION</strong>
-                    <span style="color: var(--neon-green);">Status: Splicing Costs Scaled by Rarity</span>
+                    <strong style="color: var(--neon-cyan);">🔬 DR. HENRY WU // FACILITY UPGRADE TERMINAL</strong>
+                    <button class="action-btn" style="border-color:var(--neon-green); color:var(--neon-green); padding:4px 10px;" onclick="upgradeLabLevel()">[ UPGRADE LAB LEVEL (Cost: 150 🧬, 200 🧪) ]</button>
                 </div>
-                <p style="font-size: 0.75rem; color: var(--text-main); margin-top: 8px;">
-                    Gene splicing costs scale dynamically based on specimen rarity (Level 1 Common = 40 DNA, Level 4/5 Epic/Apex = 100+ DNA). Check your <span style="color:var(--neon-cyan); cursor:pointer;" onclick="switchTab('genomeVault', event)">Genome Vault</span> for completion status.
+                <p style="font-size: 0.75rem; color: var(--text-main); margin-top: 8px;" id="labLevelDesc">
+                    Lab Level 1: Gene Splicing is <strong style="color:var(--neon-green);">UNLOCKED</strong>. Hybridization requires Lab Level 3.
                 </p>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
-                    <div style="background:#0a100a; border:1px solid var(--panel-border); padding:8px; font-size:0.75rem;">
-                        <span>Total Spliced Specimens:</span> <strong id="splicedCount" style="color:var(--neon-cyan);">0</strong>
-                    </div>
-                    <div style="background:#0a100a; border:1px solid var(--panel-border); padding:8px; font-size:0.75rem;">
-                        <span>Active Hybrids:</span> <strong id="hybridCount" style="color:var(--neon-alert);">0</strong>
-                    </div>
-                    <div style="background:#0a100a; border:1px solid var(--panel-border); padding:8px; font-size:0.75rem;">
-                        <span>Lab Security Lockdown:</span> <strong style="color:var(--neon-green);">SECURE</strong>
-                    </div>
-                </div>
             </div>
 
             <div class="wu-grid">
                 <!-- Genome Sequencing & Scaled Gene Splicing -->
-                <div class="card" style="padding: 15px;">
+                <div class="card" id="splicingCard" style="padding: 15px;">
                     <strong style="color: var(--neon-cyan);">🧬 SCALED GENOME SPLICING</strong>
-                    <p style="font-size: 0.75rem; color: var(--text-main); margin: 6px 0;" id="spliceCostLabel">Cost scales by specimen threat/rarity level.</p>
+                    <p style="font-size: 0.75rem; color: var(--text-main); margin: 6px 0;" id="spliceCostLabel">Cost scales by specimen rarity.</p>
                     
                     <div style="display:flex; flex-direction:column; gap:8px; margin-top:5px;">
-                        <label style="font-size:0.75rem; color:var(--neon-cyan);">Select Target Specimen:</label>
+                        <label style="font-size:0.75rem; color:var(--neon-cyan);">Select Target Specimen (Unlocked Only):</label>
                         <select id="wuTargetSelect" class="sector-select" onchange="updateSpliceCostDisplay()">
                         </select>
 
@@ -259,19 +253,20 @@
                             <option value="Bioluminescent Chromatophores">Bioluminescent Chromatophores (Glowing Night Optic)</option>
                         </select>
 
-                        <button class="sector-btn" style="border-color:var(--neon-cyan); color:var(--neon-cyan); margin-top:5px;" id="spliceExecBtn" onclick="executeGeneSplice()">[ EXECUTE SCALED SPLICING ]</button>
+                        <button class="sector-btn" style="border-color:var(--neon-cyan); color:var(--neon-cyan); margin-top:5px;" onclick="executeGeneSplice()">[ EXECUTE SPLICING ]</button>
                     </div>
                 </div>
 
-                <!-- Custom Hybrid Creation Deck -->
-                <div class="card" style="padding: 15px;">
+                <!-- Custom Hybrid Creation Deck (Locked Behind Level 3) -->
+                <div class="card locked-feature" id="hybridCard" style="padding: 15px;">
                     <strong style="color: var(--neon-alert);">⚠️ EXPERIMENTAL HYBRIDIZATION CHAMBER</strong>
-                    <p style="font-size: 0.75rem; color: var(--text-main); margin: 6px 0;">Combine base dinosaur templates with multi-species genetic donors to synthesize custom park apex hybrids (Cost: 100 Amber, 150 DNA).</p>
+                    <p style="font-size: 0.75rem; color: var(--text-main); margin: 6px 0;">Combine base dinosaur templates with multi-species genetic donors to synthesize named hybrid species.</p>
+                    <div class="locked-badge" id="hybridLockText">🔒 LOCKED: Requires Lab Level 3 (Current: Level 1)</div>
                     
-                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;" id="hybridFormControls">
                         <div>
                             <label style="font-size: 0.7rem; color: var(--neon-green);">Base Dinosaur:</label>
-                            <select id="hybridBase" class="sector-select">
+                            <select id="hybridBase" class="sector-select" onchange="updateHybridNamePreview()">
                                 <option value="Velociraptor">Velociraptor</option>
                                 <option value="Tyrannosaurus Rex">Tyrannosaurus Rex</option>
                                 <option value="Spinosaurus">Spinosaurus</option>
@@ -281,23 +276,26 @@
                         </div>
                         <div>
                             <label style="font-size: 0.7rem; color: var(--neon-alert);">Primary Donor:</label>
-                            <select id="hybridDonor1" class="sector-select">
-                                <option value="Tree Frog (Thermal Cloak)">Tree Frog (Thermal Cloak)</option>
-                                <option value="Pit Viper (Infrared Vision)">Pit Viper (Infrared Vision)</option>
-                                <option value="Cuttlefish (Skin Texture)">Cuttlefish (Skin Texture)</option>
-                                <option value="Gorgonian Coral (Spines)">Gorgonian Coral (Spines)</option>
+                            <select id="hybridDonor1" class="sector-select" onchange="updateHybridNamePreview()">
+                                <option value="Tree Frog">Tree Frog (Thermal Cloak)</option>
+                                <option value="Pit Viper">Pit Viper (Infrared Vision)</option>
+                                <option value="Cuttlefish">Cuttlefish (Skin Texture)</option>
+                                <option value="Gorgonian Coral">Gorgonian Coral (Spines)</option>
                             </select>
                         </div>
                         <div>
                             <label style="font-size: 0.7rem; color: var(--neon-amber);">Secondary Donor:</label>
-                            <select id="hybridDonor2" class="sector-select">
-                                <option value="Basilisk Lizard (Water Walk)">Basilisk Lizard (Water Walk)</option>
-                                <option value="Wolverine (Bone Density)">Wolverine (Bone Density)</option>
-                                <option value="Electric Eel (Bio-Shock)">Electric Eel (Bio-Shock)</option>
-                                <option value="Scorpion (Stinger Tail)">Scorpion (Stinger Tail)</option>
+                            <select id="hybridDonor2" class="sector-select" onchange="updateHybridNamePreview()">
+                                <option value="Basilisk Lizard">Basilisk Lizard (Water Walk)</option>
+                                <option value="Wolverine">Wolverine (Bone Density)</option>
+                                <option value="Electric Eel">Electric Eel (Bio-Shock)</option>
+                                <option value="Scorpion">Scorpion (Stinger Tail)</option>
                             </select>
                         </div>
-                        <button class="sector-btn" style="border-color:var(--neon-alert); color:var(--neon-alert); margin-top:5px;" onclick="breedAdvancedHybrid()">[ SYNTHESIZE HYBRID (-100 🧬, -150 🧪) ]</button>
+                        <div style="background:#0a100a; border:1px solid var(--panel-border); padding:6px; font-size:0.75rem; margin-top:4px;">
+                            <span>Projected Hybrid Name:</span> <strong id="hybridNamePreview" style="color:var(--neon-alert);">Indoraptor-Class Alpha</strong>
+                        </div>
+                        <button class="sector-btn" style="border-color:var(--neon-alert); color:var(--neon-alert); margin-top:5px;" onclick="breedNamedHybrid()">[ SYNTHESIZE NAMED HYBRID (-200 🧬, -300 🧪) ]</button>
                     </div>
                 </div>
             </div>
@@ -308,15 +306,15 @@
     <div id="genomeVault" class="view-panel">
         <div class="panel-header">
             <span>InGen Biological Genome Vault & Extracted Payload Inventory</span>
-            <span style="color: var(--neon-cyan);">TOTAL UNIQUE STRANDS: <strong id="vaultCount">0</strong> / 50</span>
+            <span style="color: var(--neon-cyan);">TOTAL UNLOCKED SPECIES: <strong id="vaultCount">0</strong> / 50</span>
         </div>
         <p style="font-size: 0.8rem; color: var(--text-main);">
-            All extracted dinosaur DNA fragments mined from the <span style="color:var(--neon-amber);" onclick="switchTab('miningScreen', event)">Amber Mining Facility</span> are stored here with rarity tiers.
+            Mine amber in the <span style="color:var(--neon-amber); cursor:pointer;" onclick="switchTab('miningScreen', event)">Amber Mining Facility</span> to collect DNA shards. Reaching 100% completion unlocks the specimen in the <span style="color:var(--neon-green); cursor:pointer;" onclick="switchTab('biosphere', event)">Biosphere Registry</span> for hatching!
         </p>
         <div class="card-grid" id="genomeVaultGrid"></div>
     </div>
 
-    <!-- AMBER MINING FACILITY (DEDICATED GAMIFIED SCREEN) -->
+    <!-- AMBER MINING FACILITY -->
     <div id="miningScreen" class="view-panel">
         <div class="panel-header">
             <span>InGen Fossil Extraction & Amber Mining Facility</span>
@@ -336,7 +334,7 @@
                     </div>
                 </div>
                 <p style="font-size: 0.75rem; color: var(--text-main);">
-                    Drill heats up rapidly! Click nodes to extract shards. Higher rarity dinosaurs (Level 4 & 5) require more shards to complete genomes.
+                    Drill heats up rapidly! Click nodes to extract shards directly into your Genome Vault.
                 </p>
                 <div style="background: #020408; border: 1px solid rgba(255,170,0,0.3); flex: 1; min-height: 280px; display:flex; flex-direction:column; align-items:center; justify-content:center; position: relative; overflow: hidden;">
                     <canvas id="miningCanvas" width="650" height="300" style="cursor: crosshair; display: block; width: 100%; height: 100%;"></canvas>
@@ -362,13 +360,13 @@
                 <button class="sector-btn" style="border-color: var(--neon-green); color: var(--neon-green);" onclick="upgradeDrillRig()">[ UPGRADE RIG LEVEL (Cost: 100 🧬) ]</button>
 
                 <div style="margin-top: auto; background: #0a100a; border: 1px solid var(--panel-border); padding: 10px; font-size: 0.75rem; font-family: monospace;">
-                    <span style="color: var(--neon-amber);">[RARITY SCALE]:</span> Common dinos need 10 shards; Epic/Apex dinos need up to 30 shards!
+                    <span style="color: var(--neon-amber);">[DISCOVERY SYNC]:</span> Completing vaults unlocks hatchable specimens.
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- LIVE OPTIC FEEDS -->
+    <!-- LIVE OPTIC FEEDS (DYNAMIC SECTOR BACKGROUND SYNC) -->
     <div id="parkView" class="view-panel">
         <div class="panel-header">
             <span id="activeFeedTitle">Isla Nublar Live Optics // Zone A: Canopy</span>
@@ -407,7 +405,7 @@
                     <button class="sector-btn" onclick="triggerDinoMood('agitate')" style="border-color: var(--neon-alert); color: var(--neon-alert);">⚡ Agitate</button>
                 </div>
                 <div style="margin-top: auto; background: #0a100a; border: 1px solid var(--panel-border); padding: 10px; font-size: 0.75rem; font-family: monospace;">
-                    <span style="color: var(--neon-amber);">[VAULT LINK]:</span> Genome Vault tracks extracted dinosaur DNA payloads in real-time.
+                    <span style="color: var(--neon-amber);">[OPTIC SYNC]:</span> Live camera background updates instantly when specimen sector assignment changes.
                 </div>
             </div>
         </div>
@@ -442,10 +440,10 @@
                 </div>
             </div>
             <div class="card">
-                <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-cyan);"><strong>DR. HENRY WU: GENETICS & VAULT</strong></div>
+                <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-cyan);"><strong>DR. HENRY WU: LAB & REGISTRY</strong></div>
                 <div class="sector-details">
-                    <div>Vault Status: <strong style="color:var(--neon-green);">ONLINE</strong></div>
-                    <button class="sector-btn" onclick="switchTab('genomeVault', event)">Open Genome Vault</button>
+                    <div>Lab Level: <strong style="color:var(--neon-green);" id="stationLabLevel">1</strong></div>
+                    <button class="sector-btn" onclick="switchTab('biosphere', event)">Open Registry</button>
                 </div>
             </div>
         </div>
@@ -464,7 +462,7 @@
     <!-- SYSTEM LOG -->
     <div class="log-container">
         <small style="color: var(--neon-cyan);">SYSTEM EVENT LOG:</small>
-        <div id="logOutput" class="log-box">[SYS_INIT] Terminal v8.3 online. Scaled rarity shard costs and dynamic genome vault operational.</div>
+        <div id="logOutput" class="log-box">[SYS_INIT] Terminal v8.7 online. Optic feeds dynamically sync with sector assignments.</div>
     </div>
 
     <script>
@@ -515,17 +513,27 @@
             { id: 44, name: "Amargasaurus", zone: "Zone A: Canopy / Jungle", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Showing double-spined neck", type: "longneck", baseMood: "🌴 [SPINE DISPLAY]", emoji: "🌴", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
             { id: 45, name: "Archaeornithomimus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Omnivore", threat: "Level 1", rarity: "Common", requiredShards: 10, status: "Scavenging near herd", type: "flocky", baseMood: "🦴 [SCAVENGING]", emoji: "🦴", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
             { id: 46, name: "Atrociraptor", zone: "Zone B: Heavy Security Pen", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Aggressive pacing", type: "raptor", baseMood: "😡 [HIGH AGGRESSION]", emoji: "😡", moodState: "agitated", trait: "Standard DNA", color: "#e74c3c" },
-            { id: 47, name: "Cearadactylus", zone: "Zone F: Coastal Cliff Aviary", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 2", status: "Gliding over surf", type: "small_flyer", baseMood: "🌊 [SURF GLIDING]", emoji: "🌊", moodState: "calm", trait: "Standard DNA", color: "#f1c40f" },
+            { id: 47, name: "Cearadactylus", zone: "Zone F: Coastal Cliff Aviary", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 2", status: "Rare", requiredShards: 15, status: "Gliding over surf", type: "small_flyer", baseMood: "🌊 [SURF GLIDING]", emoji: "🌊", moodState: "calm", trait: "Standard DNA", color: "#f1c40f" },
             { id: 48, name: "Ceratosaurus", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 3", rarity: "Rare", requiredShards: 18, status: "Sniffing sulfur vents", type: "baryonyx", baseMood: "💨 [VENT SNIFFING]", emoji: "💨", moodState: "calm", trait: "Standard DNA", color: "#e74c3c" },
             { id: 49, name: "Chasmosaurus", zone: "Zone C: Plains / Savannah", paddock: "Paddock Alpha", diet: "Herbivore", threat: "Level 2", rarity: "Rare", requiredShards: 15, status: "Resting in shade", type: "ceratopsian", baseMood: "🌳 [SHADE RESTING]", emoji: "🌳", moodState: "calm", trait: "Standard DNA", color: "#2ecc71" },
             { id: 50, name: "Concavenator", zone: "Zone D: Volcanic Ridge", paddock: "Paddock Alpha", diet: "Carnivore", threat: "Level 4", rarity: "Epic", requiredShards: 22, status: "Showing back hump", type: "baryonyx", baseMood: "🌋 [HUMP DISPLAY]", emoji: "🌋", moodState: "alert", trait: "Standard DNA", color: "#e74c3c" }
         ];
 
-        // Genome Vault Payload Tracking with Scaled Shards
         let genomeVault = {};
         dinoDatabase.forEach(d => {
             genomeVault[d.name] = { count: 0, required: d.requiredShards, rarity: d.rarity };
         });
+
+        // Start with Brachiosaurus pre-unlocked
+        genomeVault["Brachiosaurus"].count = 10;
+
+        const hybridRecipes = {
+            "Velociraptor-Tree Frog-Basilisk Lizard": "Indoraptor",
+            "Tyrannosaurus Rex-Pit Viper-Wolverine": "Tyrannolochus",
+            "Spinosaurus-Cuttlefish-Electric Eel": "Spinoceratops Aquaticus",
+            "Stegosaurus-Gorgonian Coral-Scorpion": "Stegoceratops Venificus",
+            "Triceratops-Gorgonian Coral-Wolverine": "Peloroplites Hybrid"
+        };
 
         const sectorList = [
             "Zone A: Canopy / Jungle",
@@ -540,8 +548,9 @@
 
         const availablePaddocks = ["Paddock Alpha", "Paddock Beta", "Paddock Gamma", "Paddock Delta"];
 
-        let amber = 50;
-        let dna = 120;
+        let amber = 250;
+        let dna = 500;
+        let labLevel = 1;
         let splicedCount = 0;
         let hybridCount = 0;
 
@@ -564,7 +573,13 @@
             document.getElementById(tabId).classList.add('active');
             if(event && event.target.tagName === 'BUTTON') event.target.classList.add('active');
             
+            let unlocked = getUnlockedDinos();
             if(tabId === 'parkView') {
+                if(unlocked.length > 0) {
+                    let currentActiveDino = dinoDatabase[activeFeedIndex];
+                    let isUnlocked = unlocked.some(d => d.id === currentActiveDino.id);
+                    if(!isUnlocked) activeFeedIndex = dinoDatabase.findIndex(d => d.id === unlocked[0].id);
+                }
                 setTimeout(() => loadOpticFeed(activeFeedIndex), 50);
             } else if(tabId === 'sectorDetailView') {
                 renderSectorCensus(activeSectorFilter);
@@ -575,6 +590,7 @@
             } else if(tabId === 'genetics') {
                 updateWuTargetSelect();
                 updateSpliceCostDisplay();
+                updateLabUI();
             } else {
                 if(animationFrameId) cancelAnimationFrame(animationFrameId);
                 stopMiningSession();
@@ -588,17 +604,7 @@
         function initApp() {
             renderBiosphereRegistry();
             renderGenomeVault();
-
-            const selectorContainer = document.getElementById('feedSelectorButtons');
-            selectorContainer.innerHTML = '';
-            dinoDatabase.forEach((d, idx) => {
-                let btn = document.createElement('button');
-                btn.className = 'sector-btn';
-                btn.style.whiteSpace = 'nowrap';
-                btn.innerText = `${d.id}. ${d.name}`;
-                btn.onclick = () => jumpToFeed(idx);
-                selectorContainer.appendChild(btn);
-            });
+            updateLabUI();
 
             const sectorBtnContainer = document.getElementById('sectorFilterButtons');
             sectorBtnContainer.innerHTML = '';
@@ -616,16 +622,76 @@
             loadOpticFeed(0);
         }
 
+        function getUnlockedDinos() {
+            return dinoDatabase.filter(d => {
+                let record = genomeVault[d.name];
+                return record && record.count >= record.required;
+            });
+        }
+
+        function updateFeedSelectors() {
+            let unlocked = getUnlockedDinos();
+            const selectorContainer = document.getElementById('feedSelectorButtons');
+            if(!selectorContainer) return;
+            selectorContainer.innerHTML = '';
+            unlocked.forEach((d) => {
+                let realIdx = dinoDatabase.findIndex(item => item.id === d.id);
+                let btn = document.createElement('button');
+                btn.className = 'sector-btn';
+                btn.style.whiteSpace = 'nowrap';
+                btn.innerText = `${d.id}. ${d.name}`;
+                btn.onclick = () => jumpToFeed(realIdx);
+                selectorContainer.appendChild(btn);
+            });
+        }
+
+        function updateLabUI() {
+            document.getElementById('labLevelNav').innerText = labLevel;
+            document.getElementById('labLevelDisplay').innerText = labLevel;
+            document.getElementById('stationLabLevel').innerText = labLevel;
+
+            let hybridCard = document.getElementById('hybridCard');
+            let lockText = document.getElementById('hybridLockText');
+
+            if (labLevel >= 3) {
+                hybridCard.classList.remove('locked-feature');
+                lockText.style.display = 'none';
+                document.getElementById('labLevelDesc').innerHTML = `Lab Level ${labLevel}: Gene Splicing and Named Hybridization are <strong style="color:var(--neon-green);">FULLY UNLOCKED</strong>.`;
+            } else {
+                hybridCard.classList.add('locked-feature');
+                lockText.style.display = 'block';
+                lockText.innerText = `🔒 LOCKED: Requires Lab Level 3 (Current: Level ${labLevel})`;
+                document.getElementById('labLevelDesc').innerHTML = `Lab Level ${labLevel}: Gene Splicing is <strong style="color:var(--neon-green);">UNLOCKED</strong>. Hybridization requires Lab Level 3.`;
+            }
+            updateHybridNamePreview();
+        }
+
+        function upgradeLabLevel() {
+            if (amber < 150 || dna < 200) {
+                logMessage('ERROR: Insufficient Amber (150) or DNA (200) to upgrade lab level!');
+                return;
+            }
+            amber -= 150;
+            dna -= 200;
+            labLevel++;
+            document.getElementById('amberCount').innerText = amber;
+            document.getElementById('dnaCount').innerText = dna;
+            document.getElementById('miningAmberCount').innerText = amber;
+            document.getElementById('miningDnaCount').innerText = dna;
+            logMessage(`FACILITY UPGRADE: Dr. Wu's Lab upgraded to Level ${labLevel}!`);
+            updateLabUI();
+        }
+
         function updateWuTargetSelect() {
             const wuSelect = document.getElementById('wuTargetSelect');
             if(!wuSelect) return;
             wuSelect.innerHTML = '';
-            dinoDatabase.forEach(d => {
-                let record = genomeVault[d.name] || { count: 0, required: d.requiredShards };
-                let unlocked = record.count >= record.required;
+            let unlocked = getUnlockedDinos();
+            unlocked.forEach(d => {
+                let record = genomeVault[d.name];
                 let opt = document.createElement('option');
                 opt.value = d.id;
-                opt.innerText = `${d.id}. ${d.name} [${d.rarity}] - ${record.count}/${record.required} Shards ${unlocked ? '✅' : '🔒'}`;
+                opt.innerText = `${d.id}. ${d.name} [${d.rarity}] - ${record.count}/${record.required} Shards ✅`;
                 wuSelect.appendChild(opt);
             });
             updateSpliceCostDisplay();
@@ -638,9 +704,18 @@
             let dino = dinoDatabase.find(d => d.id === targetId);
             if (dino) {
                 let record = genomeVault[dino.name] || { required: dino.requiredShards };
-                let cost = record.required * 3; // Scaled DNA cost by rarity shards
+                let cost = record.required * 3;
                 document.getElementById('spliceCostLabel').innerText = `Target: ${dino.name} (${dino.rarity}) // Splice Cost: ${cost} DNA strands.`;
             }
+        }
+
+        function updateHybridNamePreview() {
+            let base = document.getElementById('hybridBase').value;
+            let d1 = document.getElementById('hybridDonor1').value;
+            let d2 = document.getElementById('hybridDonor2').value;
+            let key = `${base}-${d1}-${d2}`;
+            let assignedName = hybridRecipes[key] || `${base}-Composite Hybrid`;
+            document.getElementById('hybridNamePreview').innerText = assignedName;
         }
 
         function renderGenomeVault() {
@@ -669,7 +744,7 @@
                             <span style="font-size:0.65rem; color:${rarityColor}; border:1px solid ${rarityColor}; padding:1px 4px;">${d.rarity}</span>
                         </div>
                         <div class="sector-row"><span>Shards Collected:</span> <strong style="color:var(--neon-cyan);">${record.count} / ${record.required}</strong></div>
-                        <div class="sector-row"><span>Genome Completion:</span> <strong style="color:${isCompleted ? 'var(--neon-green)' : 'var(--neon-amber)'};">${percentage}% ${isCompleted ? '✅ UNLOCKED' : '🔒'}</strong></div>
+                        <div class="sector-row"><span>Genome Completion:</span> <strong style="color:${isCompleted ? 'var(--neon-green)' : 'var(--neon-amber)'};">${percentage}% ${isCompleted ? '✅ UNLOCKED' : '🔒 LOCKED'}</strong></div>
                         <p style="font-size:0.7rem; color:var(--text-main); margin-top:2px;">Sector: ${d.zone.split(':')[0]}</p>
                     </div>
                 `;
@@ -677,9 +752,10 @@
             });
 
             document.getElementById('vaultCount').innerText = unlockedCount;
+            updateFeedSelectors();
         }
 
-        // --- Dedicated Deep Rock Mining Minigame ---
+        // --- Mining Minigame ---
         function initMiningCanvas() {
             const canvas = document.getElementById('miningCanvas');
             if(!canvas) return;
@@ -876,10 +952,14 @@
             if (!dino) return;
 
             let record = genomeVault[dino.name] || { count: 0, required: dino.requiredShards };
-            let dynamicCost = record.required * 3;
+            if (record.count < record.required) {
+                logMessage(`ERROR: Specimen ${dino.name} is locked in the Genome Vault! Complete 100% genome first.`);
+                return;
+            }
 
+            let dynamicCost = record.required * 3;
             if (dna < dynamicCost) {
-                logMessage(`ERROR: Insufficient DNA strands for gene splicing (${dynamicCost} required for ${dino.rarity} rarity)!`);
+                logMessage(`ERROR: Insufficient DNA strands for gene splicing (${dynamicCost} required)!`);
                 return;
             }
             dna -= dynamicCost;
@@ -895,13 +975,17 @@
             renderBiosphereRegistry();
         }
 
-        function breedAdvancedHybrid() {
-            if (amber < 100 || dna < 150) {
-                logMessage('ERROR: Insufficient Amber (100) or DNA (150) for advanced hybridization!');
+        function breedNamedHybrid() {
+            if (labLevel < 3) {
+                logMessage('ERROR: Hybridization chamber is locked! Upgrade Lab to Level 3 first.');
                 return;
             }
-            amber -= 100;
-            dna -= 150;
+            if (amber < 200 || dna < 300) {
+                logMessage('ERROR: Insufficient Amber (200) or DNA (300) for named hybridization!');
+                return;
+            }
+            amber -= 200;
+            dna -= 300;
             document.getElementById('amberCount').innerText = amber;
             document.getElementById('dnaCount').innerText = dna;
             document.getElementById('miningAmberCount').innerText = amber;
@@ -910,8 +994,9 @@
             let base = document.getElementById('hybridBase').value;
             let donor1 = document.getElementById('hybridDonor1').value;
             let donor2 = document.getElementById('hybridDonor2').value;
+            let key = `${base}-${donor1}-${donor2}`;
+            let hybridName = hybridRecipes[key] || `${base}-Composite Hybrid`;
             let newId = dinoDatabase.length + 1;
-            let hybridName = `${base}-Apex Hybrid`;
 
             let customColor = '#9b59b6';
             let newHybrid = {
@@ -923,9 +1008,9 @@
                 threat: "Level 5",
                 rarity: "Apex",
                 requiredShards: 30,
-                status: "Apex Hybrid Stalking",
+                status: "Apex Named Hybrid Stalking",
                 type: "trex",
-                baseMood: "🧬 [ULTIMATE HYBRID]",
+                baseMood: "🧬 [NAMED APEX HYBRID]",
                 emoji: "🧬",
                 moodState: "alert",
                 trait: `${donor1} + ${donor2}`,
@@ -936,7 +1021,7 @@
             genomeVault[hybridName] = { count: 30, required: 30, rarity: "Apex" };
             hybridCount++;
             document.getElementById('hybridCount').innerText = hybridCount;
-            logMessage(`SUCCESS: Dr. Wu engineered advanced hybrid specimen "${hybridName}" [ID: ${newId}]! Assigned to Security Pen.`);
+            logMessage(`SUCCESS: Dr. Wu engineered legendary named hybrid "${hybridName}" [ID: ${newId}]! Assigned to Security Pen.`);
             initApp();
         }
 
@@ -962,7 +1047,12 @@
         function renderBiosphereRegistry() {
             const rosterGrid = document.getElementById('masterRosterGrid');
             rosterGrid.innerHTML = '';
-            dinoDatabase.forEach((d, idx) => {
+            
+            let unlockedDinos = getUnlockedDinos();
+            document.getElementById('unlockedBiosphereCount').innerText = `Discovered & Unlocked: ${unlockedDinos.length} / ${dinoDatabase.length}`;
+
+            unlockedDinos.forEach((d) => {
+                let realIdx = dinoDatabase.findIndex(item => item.id === d.id);
                 let rCard = document.createElement('div');
                 rCard.className = 'card';
                 
@@ -999,7 +1089,7 @@
                             </select>
                         </div>
 
-                        <button class="sector-btn" style="margin-top:8px;" onclick="jumpToFeed(${idx})">🌐 Live Optic Feed</button>
+                        <button class="sector-btn" style="margin-top:8px;" onclick="jumpToFeed(${realIdx})">🌐 Live Optic Feed</button>
                     </div>
                 `;
                 rosterGrid.appendChild(rCard);
@@ -1061,7 +1151,8 @@
 
         function renderSectorCensus(sectorName) {
             document.getElementById('selectedSectorTitle').innerText = `Paddocks & Census // ${sectorName}`;
-            let filteredDinos = dinoDatabase.filter(d => d.zone === sectorName);
+            let unlockedDinos = getUnlockedDinos();
+            let filteredDinos = unlockedDinos.filter(d => d.zone === sectorName);
             document.getElementById('sectorPopCount').innerText = `Registered Specimens: ${filteredDinos.length}`;
 
             let paddocksContainer = document.getElementById('paddocksContainer');
@@ -1203,6 +1294,7 @@
             function renderOpticFeed() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+                // Dynamic sector background rendering based on current specimen sector assignment
                 if(currentDino.zone.includes("Canopy")) {
                     ctx.fillStyle = '#030c05'; ctx.fillRect(0, 0, canvas.width, canvas.height);
                     ctx.fillStyle = '#061608'; ctx.fillRect(0, 0, canvas.width, 40);

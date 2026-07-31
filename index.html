@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL v5.5</title>
+    <title>ISLA NUBLAR // MASTER CONTROL TERMINAL v6.8</title>
     <style>
         :root {
             --bg-dark: #0b0f0b;
@@ -53,99 +53,130 @@
 </head>
 <body>
     <header>
-        <div class="logo">ISLA NUBLAR // MASTER CONTROL TERMINAL v5.5</div>
+        <div class="logo">ISLA NUBLAR // MASTER CONTROL TERMINAL v6.8</div>
         <nav>
-            <button onclick="switchTab('sectors', event)" class="active">🌴 Sectors</button>
-            <button onclick="switchTab('biosphere', event)">🦖 Biosphere</button>
+            <button onclick="switchTab('sectors', event)" class="active">🌴 Climate Sectors</button>
+            <button onclick="switchTab('biosphere', event)">🦖 Biosphere Registry (50 Cap)</button>
             <button onclick="switchTab('genetics', event)">🧬 Lab & Extraction</button>
-            <button onclick="switchTab('mapView', event)">🗺️ Park Map</button>
+            <button onclick="switchTab('parkView', event)">🌐 Live Optic Feeds</button>
             <button onclick="switchTab('stations', event)">🎛️ Stations</button>
             <button onclick="switchTab('ops', event)">⚙️ Operations</button>
         </nav>
     </header>
 
-    <!-- SECTORS VIEW -->
+    <!-- CLIMATE & LOCATION SECTORS VIEW -->
     <div id="sectors" class="view-panel active">
         <div class="panel-header">
-            <span>Isla Nublar Sector Surveillance & Paddock Management</span>
-            <span style="color: var(--neon-green);">ALL SECTORS ONLINE</span>
+            <span>Isla Nublar Climate & Location Zones</span>
+            <span style="color: var(--neon-green);">CLIMATE ZONES: 8 / 8 ACTIVE</span>
         </div>
         <div class="card-grid">
             <div class="card">
                 <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop');">
-                    <span class="sector-tag">SECTOR 1: CANOPY</span>
+                    <span class="sector-tag">ZONE A: CANOPY / JUNGLE</span>
                 </div>
                 <div class="sector-details">
-                    <div>
-                        <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-green);">Brachiosaurus</strong></div>
-                        <div class="sector-row"><span>Voltage:</span> <span id="sec1Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
-                    </div>
+                    <div class="sector-row"><span>Voltage:</span> <span id="zone1Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
                     <div class="sector-actions">
-                        <button class="sector-btn" onclick="boostVoltage(1)">⚡ Boost Voltage</button>
-                        <button class="sector-btn" onclick="logMessage('Feed dropped into Sector 1 Canopy.')">🌿 Feed Herd</button>
+                        <button class="sector-btn" onclick="boostClimateVoltage(1)">⚡ Boost</button>
+                        <button class="sector-btn" onclick="logMessage('Canopy climate irrigation toggled.')">💧 Irrigate</button>
                     </div>
                 </div>
             </div>
-            <div class="card">
+            <div class="card carnivore">
                 <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=600&auto=format&fit=crop');">
-                    <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">SECTOR 2: RAPTOR PEN</span>
+                    <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">ZONE B: HEAVY SECURITY PEN</span>
                 </div>
                 <div class="sector-details">
-                    <div>
-                        <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-alert);">Velociraptor Pack</strong></div>
-                        <div class="sector-row"><span>Voltage:</span> <span id="sec2Voltage" style="color: var(--neon-cyan);">50,000V</span></div>
-                    </div>
+                    <div class="sector-row"><span>Voltage:</span> <span id="zone2Voltage" style="color: var(--neon-cyan);">50,000V</span></div>
                     <div class="sector-actions">
-                        <button class="sector-btn" onclick="boostVoltage(2)">⚡ Boost Voltage</button>
-                        <button class="sector-btn" onclick="logMessage('Steer dropped into Sector 2 Raptor Pen.')">🥩 Drop Steer</button>
+                        <button class="sector-btn" onclick="boostClimateVoltage(2)">⚡ Boost</button>
+                        <button class="sector-btn" onclick="logMessage('Security lockdown verified.')">🛡️ Lock Grid</button>
                     </div>
                 </div>
             </div>
             <div class="card">
                 <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=600&auto=format&fit=crop');">
-                    <span class="sector-tag">SECTOR 3: PLAINS</span>
+                    <span class="sector-tag">ZONE C: PLAINS / SAVANNAH</span>
                 </div>
                 <div class="sector-details">
-                    <div>
-                        <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-green);">Triceratops Herd</strong></div>
-                        <div class="sector-row"><span>Voltage:</span> <span id="sec3Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
-                    </div>
+                    <div class="sector-row"><span>Voltage:</span> <span id="zone3Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
                     <div class="sector-actions">
-                        <button class="sector-btn" onclick="boostVoltage(3)">⚡ Boost Voltage</button>
-                        <button class="sector-btn" onclick="logMessage('Feed dropped into Sector 3 Plains.')">🌿 Feed Herd</button>
+                        <button class="sector-btn" onclick="boostClimateVoltage(3)">⚡ Boost</button>
+                        <button class="sector-btn" onclick="logMessage('Plains feeding troughs replenished.')">🌿 Feed Herd</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card carnivore">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=600&auto=format&fit=crop');">
+                    <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">ZONE D: VOLCANIC RIDGE</span>
+                </div>
+                <div class="sector-details">
+                    <div class="sector-row"><span>Voltage:</span> <span id="zone4Voltage" style="color: var(--neon-cyan);">50,000V</span></div>
+                    <div class="sector-actions">
+                        <button class="sector-btn" onclick="boostClimateVoltage(4)">⚡ Boost</button>
+                        <button class="sector-btn" onclick="logMessage('Live bait dispenser triggered.')">🥩 Drop Bait</button>
                     </div>
                 </div>
             </div>
             <div class="card">
-                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1542224566-6e85f2e6772f?q=80&w=600&auto=format&fit=crop');">
-                    <span class="sector-tag" style="border-color: var(--neon-alert); color: var(--neon-alert);">SECTOR 4: T-REX PADDOCK</span>
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=600&auto=format&fit=crop');">
+                    <span class="sector-tag">ZONE E: WETLAND DELTA</span>
                 </div>
                 <div class="sector-details">
-                    <div>
-                        <div class="sector-row"><span>Resident:</span> <strong style="color: var(--neon-alert);">Tyrannosaurus Rex</strong></div>
-                        <div class="sector-row"><span>Voltage:</span> <span id="sec4Voltage" style="color: var(--neon-cyan);">10,000V</span></div>
-                    </div>
+                    <div class="sector-row"><span>Voltage:</span> <span id="zone5Voltage" style="color: var(--neon-cyan);">20,000V</span></div>
                     <div class="sector-actions">
-                        <button class="sector-btn" onclick="boostVoltage(4)">⚡ Boost Voltage</button>
-                        <button class="sector-btn" onclick="logMessage('Live goat dropped into T-Rex Paddock.')">🥩 Drop Goat</button>
+                        <button class="sector-btn" onclick="boostClimateVoltage(5)">⚡ Boost</button>
+                        <button class="sector-btn" onclick="logMessage('Delta water filtration active.')">🌊 Flush Delta</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=600&auto=format&fit=crop');">
+                    <span class="sector-tag">ZONE F: COASTAL CLIFF AVIARY</span>
+                </div>
+                <div class="sector-details">
+                    <div class="sector-row"><span>Voltage:</span> <span id="zone6Voltage" style="color: var(--neon-cyan);">40,000V</span></div>
+                    <div class="sector-actions">
+                        <button class="sector-btn" onclick="boostClimateVoltage(6)">⚡ Boost</button>
+                        <button class="sector-btn" onclick="logMessage('Aviary dome checked.')">🛡️ Check Dome</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="border-color: var(--neon-cyan);">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=600&auto=format&fit=crop');">
+                    <span class="sector-tag" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">ZONE G: DEEP WATER LAGOON</span>
+                </div>
+                <div class="sector-details">
+                    <div class="sector-row"><span>Voltage:</span> <span id="zone7Voltage" style="color: var(--neon-cyan);">35,000V</span></div>
+                    <div class="sector-actions">
+                        <button class="sector-btn" onclick="boostClimateVoltage(7)">⚡ Boost</button>
+                        <button class="sector-btn" onclick="logMessage('Sub-aquatic sonar ping active.')">📡 Sonar Scan</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card" style="border-color: var(--neon-cyan);">
+                <div class="sector-preview-screen" style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&w=600&auto=format&fit=crop');">
+                    <span class="sector-tag" style="border-color: var(--neon-cyan); color: var(--neon-cyan);">ZONE H: GLACIAL TUNDRA</span>
+                </div>
+                <div class="sector-details">
+                    <div class="sector-row"><span>Voltage:</span> <span id="zone8Voltage" style="color: var(--neon-cyan);">45,000V</span></div>
+                    <div class="sector-actions">
+                        <button class="sector-btn" onclick="boostClimateVoltage(8)">⚡ Boost</button>
+                        <button class="sector-btn" onclick="logMessage('Cryo-stabilizers verified.')">❄️ Chill Core</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- BIOSPHERE VIEW -->
+    <!-- BIOSPHERE REGISTRY VIEW -->
     <div id="biosphere" class="view-panel">
         <div class="panel-header">
-            <span>Wildlife & Biosphere Registry</span>
-            <span style="color: var(--neon-green);">Active Assets: 4</span>
+            <span>Wildlife & Biosphere Registry (50 Species Level Cap)</span>
+            <span id="unlockedCount" style="color: var(--neon-green);">Discovered & Hatched: 50 / 50</span>
         </div>
-        <div class="card-grid">
-            <div class="card"><div class="sector-details"><strong>Brachiosaurus</strong><p style="font-size:0.75rem; color:var(--text-main);">Status: Healthy / Grazing</p></div></div>
-            <div class="card"><div class="sector-details"><strong>Velociraptor Pack</strong><p style="font-size:0.75rem; color:var(--text-main);">Status: High Alert / Testing Fences</p></div></div>
-            <div class="card"><div class="sector-details"><strong>Triceratops Herd</strong><p style="font-size:0.75rem; color:var(--text-main);">Status: Grazing / Stable</p></div></div>
-            <div class="card"><div class="sector-details"><strong>Tyrannosaurus Rex</strong><p style="font-size:0.75rem; color:var(--text-main);">Status: Resting in Canopy Cover</p></div></div>
-        </div>
+        <div class="card-grid" id="masterRosterGrid"></div>
     </div>
 
     <!-- GENETICS LAB -->
@@ -163,99 +194,211 @@
         </div>
     </div>
 
-    <!-- PARK MAP & TACTICAL PLACEMENT VIEW -->
-    <div id="mapView" class="view-panel">
+    <!-- LIVE OPTIC FEEDS WITH UNIQUE BACKGROUNDS & PIXEL PHYSIOLOGIES -->
+    <div id="parkView" class="view-panel">
         <div class="panel-header">
-            <span>Isla Nublar Sector Map & Tactical Paddock Placement</span>
-            <span style="color: var(--neon-amber);" id="mapToolLabel">ACTIVE TOOL: HIGH-VOLTAGE FENCE</span>
+            <span id="activeFeedTitle">Isla Nublar Live Optics // Zone A: Canopy</span>
+            <span style="color: var(--neon-green);" id="opticLiveBadge">● SECTOR CAM ACTIVE [HD-OPTIC]</span>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 260px; gap: 15px; flex: 1; min-height: 420px;">
-            <!-- Interactive Canvas Map -->
-            <div style="background: #040704; border: 1px solid var(--panel-border); display: flex; justify-content: center; align-items: center; position: relative; overflow: hidden;">
-                <canvas id="tacticalMapCanvas" width="600" height="380" style="width: 100%; height: 100%; image-rendering: pixelated; cursor: crosshair;" onclick="handleGridClick(event)"></canvas>
+        <div style="display: grid; grid-template-columns: 1fr 340px; gap: 15px; flex: 1;">
+            <div class="card" style="padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="background: #020408; border: 1px solid var(--panel-border); flex: 1; display: flex; justify-content: center; align-items: center; position: relative; min-height: 320px; overflow: hidden;">
+                    <canvas id="uniqueOpticCanvas" width="600" height="350" style="width: 100%; height: 100%; display: block;"></canvas>
+                </div>
+                <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;" id="feedSelectorButtons"></div>
             </div>
-            <!-- Tool Palette -->
-            <div style="background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 12px; display: flex; flex-direction: column; gap: 10px;">
-                <div style="font-size: 0.75rem; font-weight: bold; color: var(--neon-cyan); border-bottom: 1px solid var(--panel-border); padding-bottom: 6px;">CONSTRUCTION TOOLS</div>
-                <button class="sector-btn" style="text-align: left; border-color: var(--neon-amber); color: var(--neon-amber);" onclick="setMapTool(1, 'HIGH-VOLTAGE FENCE', this)">⚡ Security Fence</button>
-                <button class="sector-btn" style="text-align: left;" onclick="setMapTool(2, 'CONCRETE PATH', this)">🧱 Concrete Path</button>
-                <button class="sector-btn" style="text-align: left;" onclick="setMapTool(3, 'JUNGLE FOLIAGE', this)">🌲 Jungle Canopy</button>
-                <button class="sector-btn" style="text-align: left;" onclick="setMapTool(4, 'FACILITY BUILDING', this)">🏢 Control Building</button>
-                <button class="sector-btn" style="text-align: left; border-color: var(--neon-alert); color: var(--neon-alert);" onclick="setMapTool(0, 'BULLDOZE / CLEAR', this)">🚜 Bulldoze Tile</button>
-                <div style="margin-top: auto; font-size: 0.7rem; opacity: 0.6; font-family: monospace;">
-                    Click grid sectors to deploy assets. Synchronized with Arnold's power grid matrix.
+            <div class="card" style="padding: 15px; display: flex; flex-direction: column; gap: 12px;">
+                <div style="font-size: 0.85rem; font-weight: bold; color: var(--neon-amber); border-bottom: 1px solid var(--panel-border); padding-bottom: 6px;">INDIVIDUALIZED TELEMETRY</div>
+                <div class="sector-row"><span>Target Specimen:</span> <strong id="telemetryName" style="color: var(--neon-green);">Brachiosaurus</strong></div>
+                <div class="sector-row"><span>Climate Zone:</span> <strong id="telemetrySector" style="color: var(--neon-cyan);">Zone A: Canopy</strong></div>
+                <div class="sector-row"><span>Live Mood Tag:</span> <strong id="telemetryStatusTag" style="color: var(--neon-green);">[NORMAL / GRAZING]</strong></div>
+                <div class="sector-row"><span>Diet Profile:</span> <strong id="telemetryDiet" style="color: var(--neon-cyan);">Herbivore</strong></div>
+                <div class="sector-row"><span>Anatomy Scale:</span> <strong id="telemetryType" style="color: var(--neon-amber);">Quadruped Longneck</strong></div>
+                <div class="sector-row"><span>Behavioral State:</span> <strong id="telemetryState" style="color: var(--neon-green);">Grazing high trees</strong></div>
+                <div class="sector-row"><span>Threat Index:</span> <strong id="telemetryThreat" style="color: var(--neon-green);">Level 1</strong></div>
+                <div class="sector-actions">
+                    <button class="sector-btn" onclick="triggerDinoMood('feed')">🥗 Feed Target</button>
+                    <button class="sector-btn" onclick="triggerDinoMood('agitate')" style="border-color: var(--neon-alert); color: var(--neon-alert);">⚡ Agitate</button>
+                </div>
+                <div style="margin-top: auto; background: #0a100a; border: 1px solid var(--panel-border); padding: 10px; font-size: 0.75rem; font-family: monospace;">
+                    <span style="color: var(--neon-amber);">[DYNAMIC OPTIC]:</span> Pixel-rendered physiologies, unique environmental sector backgrounds, and reactive mood indicators fully engaged.
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- STATIONS VIEW (Ray Arnold, Muldoon, Nedry, Harding) -->
+    <!-- STATIONS -->
     <div id="stations" class="view-panel">
         <div class="panel-header">
-            <span>Integrated Character Workstations & Biosphere Map</span>
+            <span>Integrated Character Workstations</span>
             <span style="color: var(--neon-cyan);">MULTI-STATION ACTIVE</span>
         </div>
         <div class="card-grid">
             <div class="card">
                 <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-cyan);"><strong>RAY ARNOLD: POWER GRID</strong></div>
                 <div class="sector-details">
-                    <div>Substation Load: <strong style="color:var(--neon-green);">120 MW (Stable)</strong></div>
-                    <button class="sector-btn" onclick="logMessage('Arnold: Rerouting grid load to Visitor Center backup.')">Reroute Substation Grid</button>
+                    <div>Climate Grid Load: <strong style="color:var(--neon-green);">160 MW (Stable)</strong></div>
+                    <button class="sector-btn" onclick="logMessage('Arnold: Balancing power across climate zones.')">Balance Grid</button>
                 </div>
             </div>
             <div class="card">
                 <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-alert);"><strong>ROBERT MULDOON: SECURITY</strong></div>
                 <div class="sector-details">
                     <div>Perimeter Turrets: <strong style="color:var(--neon-green);">ARMED</strong></div>
-                    <button class="sector-btn" onclick="logMessage('Muldoon: Motion sensors pinging clear across sector boundaries.')">Scan Motion Trackers</button>
+                    <button class="sector-btn" onclick="logMessage('Muldoon: Monitoring individualized optic cameras.')">Scan Perimeters</button>
                 </div>
             </div>
             <div class="card">
                 <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-amber);"><strong>DENNIS NEDRY: OVERRIDES</strong></div>
                 <div class="sector-details">
                     <div>Automation Script: <strong style="color:var(--neon-amber);">STANDBY</strong></div>
-                    <button class="sector-btn" style="border-color:var(--neon-amber); color:var(--neon-amber);" onclick="logMessage('ERROR: AH, AH, AH! You didn\'t say the magic word!')">Execute Marine Dock Transfer</button>
+                    <button class="sector-btn" style="border-color:var(--neon-amber); color:var(--neon-amber);" onclick="logMessage('ERROR: AH, AH, AH! You didn\'t say the magic word!')">Execute Lockout</button>
                 </div>
             </div>
             <div class="card">
                 <div style="padding: 10px; border-bottom: 1px solid var(--panel-border); color: var(--neon-cyan);"><strong>DR. GERRY HARDING: PATHOLOGY</strong></div>
                 <div class="sector-details">
                     <div>Lysine Contingency: <strong style="color:var(--neon-green);">ONLINE</strong></div>
-                    <button class="sector-btn" onclick="logMessage('Harding: Checking West Indian lilac toxicity samples.')">Run Pathogen Diagnostic</button>
+                    <button class="sector-btn" onclick="logMessage('Harding: Running individualized health checks.')">Run Diagnostic</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- OPERATIONS VIEW -->
+    <!-- OPERATIONS -->
     <div id="ops" class="view-panel">
         <div class="panel-header">
             <span>Master Operations Desk</span>
             <span style="color: var(--neon-alert);">Emergency Protocol</span>
         </div>
         <p style="font-size: 0.9rem;">Emergency controls and facility protocols.</p>
-        <button class="action-btn" style="border-color: var(--neon-alert); color: var(--neon-alert); background: rgba(255,51,102,0.1);" onclick="logMessage('WARNING: Facility Alert Triggered across all paddocks!')">⚠️ Trigger Facility Alert</button>
+        <button class="action-btn" style="border-color: var(--neon-alert); color: var(--neon-alert); background: rgba(255,51,102,0.1);" onclick="logMessage('WARNING: Facility Alert Triggered!')">⚠️ Trigger Facility Alert</button>
     </div>
 
     <!-- SYSTEM LOG -->
     <div class="log-container">
         <small style="color: var(--neon-cyan);">SYSTEM EVENT LOG:</small>
-        <div id="logOutput" class="log-box">[SYS_INIT] Terminal online. All character sub-routines loaded.</div>
+        <div id="logOutput" class="log-box">[SYS_INIT] Pixel optic engine online with bespoke sector rendering and dynamic mood loops.</div>
     </div>
 
     <script>
+        const dinoDatabase = [
+            { id: 1, name: "Brachiosaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 1", status: "Grazing high trees", type: "longneck", baseMood: "[GRAZING / CALM]", moodState: "calm" },
+            { id: 2, name: "Velociraptor", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 4", status: "Pacing perimeter", type: "raptor", baseMood: "[HUNTING / ALERT]", moodState: "alert" },
+            { id: 3, name: "Triceratops", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Herd resting", type: "ceratopsian", baseMood: "[HERD RESTING]", moodState: "calm" },
+            { id: 4, name: "Tyrannosaurus Rex", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 5", status: "Stalking tree line", type: "trex", baseMood: "[APEX STALKING]", moodState: "alert" },
+            { id: 5, name: "Stegosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Wandering scrub", type: "stegosaur", baseMood: "[BROWSING]", moodState: "calm" },
+            { id: 6, name: "Dilophosaurus", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 3", status: "Flaring neck frill", type: "frilled_raptor", baseMood: "[VENOM CHARGED]", moodState: "agitated" },
+            { id: 7, name: "Parasaurolophus", zone: "Zone E: Wetland Delta", diet: "Herbivore", threat: "Level 1", status: "Wading in shallow water", type: "hadrosaur", baseMood: "[VOCALIZING]", moodState: "calm" },
+            { id: 8, name: "Ankylosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Hunkered down (Armored)", type: "ankylosaur", baseMood: "[DEFENSIVE POSTURE]", moodState: "calm" },
+            { id: 9, name: "Gallimimus", zone: "Zone C: Plains / Savannah", diet: "Omnivore", threat: "Level 1", status: "Flock sprinting (Flighty)", type: "flocky", baseMood: "[FORAGING / SPRINTS]", moodState: "calm" },
+            { id: 10, name: "Compsognathus", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 2", status: "Swarming in pack (Flighty)", type: "swarm", baseMood: "[PACK SWARM]", moodState: "alert" },
+            { id: 11, name: "Microceratus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 1", status: "Foraging in underbrush (Tiny)", type: "tiny_ceratopsian", baseMood: "[HIDDEN IN BRUSH]", moodState: "calm" },
+            { id: 12, name: "Pteranodon", zone: "Zone F: Coastal Cliff Aviary", diet: "Carnivore", threat: "Level 3", status: "Soaring over cliffs", type: "pterosaur", baseMood: "[AIRBORNE / SOARING]", moodState: "calm" },
+            { id: 13, name: "Dimorphodon", zone: "Zone F: Coastal Cliff Aviary", diet: "Carnivore", threat: "Level 2", status: "Fluttering rapidly (Flighty)", type: "small_flyer", baseMood: "[RAPID FLUTTER]", moodState: "alert" },
+            { id: 14, name: "Mosasaurus", zone: "Zone G: Deep Water Lagoon", diet: "Carnivore", threat: "Level 5", status: "Circling deep water", type: "aquatic", baseMood: "[SUB-SURFACE PATROL]", moodState: "calm" },
+            { id: 15, name: "Baryonyx", zone: "Zone E: Wetland Delta", diet: "Carnivore", threat: "Level 4", status: "Fishing in stream", type: "baryonyx", baseMood: "[HUNTING FISH]", moodState: "alert" },
+            { id: 16, name: "Cryo-Raptor", zone: "Zone H: Glacial Tundra", diet: "Carnivore", threat: "Level 4", status: "Prowling snowdrifts", type: "tundra", baseMood: "[CRYO-ACTIVE]", moodState: "alert" },
+            { id: 17, name: "Spinosaurus", zone: "Zone G: Deep Water Lagoon", diet: "Carnivore", threat: "Level 5", status: "Hunting near shoreline", type: "spinosaurus", baseMood: "[TERRITORIAL]", moodState: "alert" },
+            { id: 18, name: "Allosaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 4", status: "Prowling rocky outcrop", type: "trex", baseMood: "[AGRESSIVE PATROL]", moodState: "alert" },
+            { id: 19, name: "Carnotaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 4", status: "Testing horned skull", type: "baryonyx", baseMood: "[SPRINT READY]", moodState: "alert" },
+            { id: 20, name: "Corythosaurus", zone: "Zone E: Wetland Delta", diet: "Herbivore", threat: "Level 1", status: "Calling out by river", type: "hadrosaur", baseMood: "[HERD COMMUNICATING]", moodState: "calm" },
+            { id: 21, name: "Diplodocus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 2", status: "Whipping long tail", type: "longneck", baseMood: "[CANOPY BROWSING]", moodState: "calm" },
+            { id: 22, name: "Dryosaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 1", status: "Sprinting through ferns", type: "flocky", baseMood: "[VIGILANT]", moodState: "alert" },
+            { id: 23, name: "Edmontosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Grazing peacefully", type: "hadrosaur", baseMood: "[CALM GRAZING]", moodState: "calm" },
+            { id: 24, name: "Euoplocephalus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Swishing club tail", type: "ankylosaur", baseMood: "[ARMOR LOCKED]", moodState: "calm" },
+            { id: 25, name: "Giganotosaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 5", status: "Resting in clearing", type: "trex", baseMood: "[DOMINANT APEX]", moodState: "calm" },
+            { id: 26, name: "Kentrosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Displaying shoulder spikes", type: "stegosaur", baseMood: "[SPIKE DISPLAY]", moodState: "alert" },
+            { id: 27, name: "Metriacanthosaurus", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 3", status: "Stalking enclosure fence", type: "baryonyx", baseMood: "[TESTING FENCE]", moodState: "alert" },
+            { id: 28, name: "Mamenchisaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 2", status: "Reaching highest branches", type: "longneck", baseMood: "[REACHING CANOPY]", moodState: "calm" },
+            { id: 29, name: "Pachycephalosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Headbutting training post", type: "tiny_ceratopsian", baseMood: "[HEADBUTTING]", moodState: "agitated" },
+            { id: 30, name: "Pentaceratops", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Displaying massive frill", type: "ceratopsian", baseMood: "[FRILL DISPLAY]", moodState: "alert" },
+            { id: 31, name: "Proceratosaurus", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 2", status: "Chittering in shadows", type: "swarm", baseMood: "[SHADOW STALKING]", moodState: "calm" },
+            { id: 32, name: "Sauropelta", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Resting armored back", type: "ankylosaur", baseMood: "[RESTING ARMORED]", moodState: "calm" },
+            { id: 33, name: "Sinoceratops", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Grazing with herd", type: "ceratopsian", baseMood: "[HERD GRAZING]", moodState: "calm" },
+            { id: 34, name: "Suchomimus", zone: "Zone E: Wetland Delta", diet: "Carnivore", threat: "Level 4", status: "Paddling in shallows", type: "spinosaurus", baseMood: "[PADDLING SHALLOWS]", moodState: "calm" },
+            { id: 35, name: "Therizinosaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 3", status: "Swishing giant claws", type: "trex", baseMood: "[CLAW SWISHING]", moodState: "alert" },
+            { id: 36, name: "Torosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Low-frill grazing", type: "ceratopsian", baseMood: "[BROWSING GRASS]", moodState: "calm" },
+            { id: 37, name: "Troodon", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 3", status: "Night vision active", type: "frilled_raptor", baseMood: "[NOCTURNE ACTIVE]", moodState: "alert" },
+            { id: 38, name: "Tuojiangosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Chewing dry brush", type: "stegosaur", baseMood: "[DRY BROWSING]", moodState: "calm" },
+            { id: 39, name: "Tyrannotitan", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 5", status: "Guarding territory", type: "trex", baseMood: "[TERRITORY GUARD]", moodState: "alert" },
+            { id: 40, name: "Utahraptor", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 4", status: "Testing reinforced wire", type: "raptor", baseMood: "[WIRE TESTING]", moodState: "agitated" },
+            { id: 41, name: "Wuerhosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Low-slung browsing", type: "stegosaur", baseMood: "[LOW BROWSING]", moodState: "calm" },
+            { id: 42, name: "Zuniceratops", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 1", status: "Junior herd grazing", type: "tiny_ceratopsian", baseMood: "[JUNIOR GRAZING]", moodState: "calm" },
+            { id: 43, name: "Albertosaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 4", status: "Patrolling ridge line", type: "baryonyx", baseMood: "[RIDGE PATROL]", moodState: "alert" },
+            { id: 44, name: "Amargasaurus", zone: "Zone A: Canopy / Jungle", diet: "Herbivore", threat: "Level 2", status: "Showing double-spined neck", type: "longneck", baseMood: "[SPINE DISPLAY]", moodState: "calm" },
+            { id: 45, name: "Archaeornithomimus", zone: "Zone C: Plains / Savannah", diet: "Omnivore", threat: "Level 1", status: "Scavenging near herd", type: "flocky", baseMood: "[SCAVENGING]", moodState: "calm" },
+            { id: 46, name: "Atrociraptor", zone: "Zone B: Heavy Security Pen", diet: "Carnivore", threat: "Level 4", status: "Aggressive pacing", type: "raptor", baseMood: "[HIGH AGGRESSION]", moodState: "agitated" },
+            { id: 47, name: "Cearadactylus", zone: "Zone F: Coastal Cliff Aviary", diet: "Carnivore", threat: "Level 2", status: "Gliding over surf", type: "small_flyer", baseMood: "[SURF GLIDING]", moodState: "calm" },
+            { id: 48, name: "Ceratosaurus", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 3", status: "Sniffing sulfur vents", type: "baryonyx", baseMood: "[VENT SNIFFING]", moodState: "calm" },
+            { id: 49, name: "Chasmosaurus", zone: "Zone C: Plains / Savannah", diet: "Herbivore", threat: "Level 2", status: "Resting in shade", type: "ceratopsian", baseMood: "[SHADE RESTING]", moodState: "calm" },
+            { id: 50, name: "Concavenator", zone: "Zone D: Volcanic Ridge", diet: "Carnivore", threat: "Level 4", status: "Showing back hump", type: "baryonyx", baseMood: "[HUMP DISPLAY]", moodState: "alert" }
+        ];
+
+        let activeFeedIndex = 0;
+        let animationFrameId = null;
+
         function switchTab(tabId, event) {
             document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             if(event) event.target.classList.add('active');
-            if(tabId === 'mapView') {
-                setTimeout(renderTacticalMap, 50);
+            if(tabId === 'parkView') {
+                setTimeout(() => loadOpticFeed(activeFeedIndex), 50);
+            } else {
+                if(animationFrameId) cancelAnimationFrame(animationFrameId);
             }
         }
 
         function logMessage(text) {
             document.getElementById('logOutput').innerText = `[${new Date().toLocaleTimeString()}] ${text}`;
+        }
+
+        function initApp() {
+            const rosterGrid = document.getElementById('masterRosterGrid');
+            rosterGrid.innerHTML = '';
+            dinoDatabase.forEach(d => {
+                let rCard = document.createElement('div');
+                rCard.className = 'card';
+                rCard.innerHTML = `
+                    <div class="sector-details">
+                        <strong style="color: ${d.diet === 'Carnivore' ? 'var(--neon-alert)' : 'var(--neon-green)'};">${d.name} [ID: ${d.id}]</strong>
+                        <p style="font-size:0.75rem; color:var(--text-main);">Climate Zone: ${d.zone}</p>
+                        <p style="font-size:0.75rem; color:var(--text-muted);">Status: ${d.status} | Threat: ${d.threat}</p>
+                        <button class="sector-btn" style="margin-top:5px;" onclick="jumpToFeed(${d.id - 1})">🌐 View in Live Optics</button>
+                    </div>
+                `;
+                rosterGrid.appendChild(rCard);
+            });
+
+            const selectorContainer = document.getElementById('feedSelectorButtons');
+            selectorContainer.innerHTML = '';
+            dinoDatabase.forEach((d, idx) => {
+                let btn = document.createElement('button');
+                btn.className = 'sector-btn';
+                btn.style.whiteSpace = 'nowrap';
+                btn.innerText = `${d.id}. ${d.name}`;
+                btn.onclick = () => jumpToFeed(idx);
+                selectorContainer.appendChild(btn);
+            });
+
+            loadOpticFeed(0);
+        }
+
+        function jumpToFeed(index) {
+            activeFeedIndex = index;
+            switchTab('parkView', null);
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            loadOpticFeed(activeFeedIndex);
+        }
+
+        function boostClimateVoltage(zoneNum) {
+            let el = document.getElementById(`zone${zoneNum}Voltage`);
+            if(el) {
+                el.innerText = "60,000V (MAX)";
+                el.style.color = "var(--neon-amber)";
+            }
+            logMessage(`Climate Zone ${zoneNum} perimeter voltage boosted to maximum threshold.`);
         }
 
         let amber = 50;
@@ -265,91 +408,368 @@
             logMessage('Laser extraction run successful. Harvested +25 🧬.');
         }
 
-        function boostVoltage(sectorNum) {
-            let el = document.getElementById(`sec${sectorNum}Voltage`);
-            el.innerText = "60,000V (OVERCHARGED)";
-            el.style.color = "var(--neon-amber)";
-            logMessage(`Sector ${sectorNum} voltage boosted to maximum threshold.`);
+        function triggerDinoMood(action) {
+            let dino = dinoDatabase[activeFeedIndex];
+            if(action === 'feed') {
+                dino.moodState = 'calm';
+                dino.statusTag = '[FED & CONTENT]';
+                logMessage(`${dino.name} has been fed. Mood stabilized to content.`);
+            } else if(action === 'agitate') {
+                dino.moodState = 'agitated';
+                dino.statusTag = '[AGITATED / THREATENING]';
+                logMessage(`WARNING: ${dino.name} has been agitated! Security monitors locked on.`);
+            }
+            loadOpticFeed(activeFeedIndex);
         }
 
-        // Tactical Map State & Logic
-        let currentTool = 1;
-        const mapCols = 20;
-        const mapRows = 12;
-        let sectorGrid = Array(mapRows).fill().map(() => Array(mapCols).fill(0));
+        function loadOpticFeed(index) {
+            activeFeedIndex = index;
+            let currentDino = dinoDatabase[activeFeedIndex];
 
-        function setMapTool(toolId, toolName, btn) {
-            currentTool = toolId;
-            document.getElementById('mapToolLabel').innerText = `ACTIVE TOOL: ${toolName}`;
-            logMessage(`Selected tactical map tool: ${toolName}`);
-        }
+            document.getElementById('activeFeedTitle').innerText = `Isla Nublar Live Optics // ${currentDino.zone} - Specimen: ${currentDino.name}`;
+            document.getElementById('telemetryName').innerText = currentDino.name;
+            document.getElementById('telemetrySector').innerText = currentDino.zone;
+            document.getElementById('telemetryDiet').innerText = currentDino.diet;
+            document.getElementById('telemetryStatusTag').innerText = currentDino.statusTag;
+            document.getElementById('telemetryType').innerText = currentDino.type.toUpperCase() + " ANATOMY";
+            document.getElementById('telemetryState').innerText = currentDino.status;
+            document.getElementById('telemetryThreat').innerText = currentDino.threat;
 
-        function handleGridClick(event) {
-            const canvas = document.getElementById('tacticalMapCanvas');
-            const rect = canvas.getBoundingClientRect();
-            let clickX = Math.floor(((event.clientX - rect.left) / rect.width) * mapCols);
-            let clickY = Math.floor(((event.clientY - rect.top) / rect.height) * mapRows);
-
-            sectorGrid[clickY][clickX] = currentTool;
-            renderTacticalMap();
-            logMessage(`Placed asset [ID: ${currentTool}] at sector grid coordinate [X:${clickX}, Y:${clickY}].`);
-        }
-
-        function renderTacticalMap() {
-            const canvas = document.getElementById('tacticalMapCanvas');
+            const canvas = document.getElementById('uniqueOpticCanvas');
             if(!canvas) return;
             const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            let tileW = canvas.width / mapCols;
-            let tileH = canvas.height / mapRows;
+            if(animationFrameId) cancelAnimationFrame(animationFrameId);
 
-            for(let y = 0; y < mapRows; y++) {
-                for(let x = 0; x < mapCols; x++) {
-                    let cell = sectorGrid[y][x];
-                    let px = x * tileW;
-                    let py = y * tileH;
+            let entityX = 180;
+            let targetX = 420;
+            let legCycle = 0;
 
-                    ctx.fillStyle = (x + y) % 2 === 0 ? '#0a140a' : '#070f07';
-                    ctx.fillRect(px, py, tileW, tileH);
+            function renderOpticFeed() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    if(cell === 1) {
-                        ctx.fillStyle = '#151515';
-                        ctx.fillRect(px + 1, py + 1, tileW - 2, tileH - 2);
-                        ctx.strokeStyle = '#ffb000';
-                        ctx.lineWidth = 1.5;
-                        ctx.strokeRect(px + 3, py + 3, tileW - 6, tileH - 6);
-                    } else if(cell === 2) {
-                        ctx.fillStyle = '#2c3e50';
-                        ctx.fillRect(px + 2, py + 2, tileW - 4, tileH - 4);
-                    } else if(cell === 3) {
-                        ctx.fillStyle = '#27ae60';
-                        ctx.beginPath();
-                        ctx.arc(px + tileW/2, py + tileH/2, tileW/3, 0, Math.PI * 2);
-                        ctx.fill();
-                    } else if(cell === 4) {
-                        ctx.fillStyle = '#2980b9';
-                        ctx.fillRect(px + 2, py + 2, tileW - 4, tileH - 4);
+                // --- 1. UNIQUE SECTOR BACKGROUNDS ---
+                if(currentDino.zone.includes("Canopy")) {
+                    // Deep Jungle Canopy
+                    ctx.fillStyle = '#030c05'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#061608';
+                    ctx.fillRect(0, 0, canvas.width, 40); // Canopy overhang
+                    // Hanging vines/foliage silhouettes
+                    ctx.fillStyle = '#09220c';
+                    for(let i=30; i<canvas.width; i+=60) {
+                        ctx.fillRect(i, 40, 12, 60 + Math.sin(i)*20);
+                        ctx.fillRect(i+30, 40, 8, 40);
                     }
+                } else if(currentDino.zone.includes("Security")) {
+                    // Heavy Security Concrete & Electric Fences
+                    ctx.fillStyle = '#111316'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#181d22'; ctx.fillRect(0, 240, canvas.width, 110);
+                    // Concrete pillars
+                    ctx.fillStyle = '#222830';
+                    ctx.fillRect(50, 80, 40, 160);
+                    ctx.fillRect(500, 80, 40, 160);
+                    // Electric grid wires crossing background
+                    ctx.strokeStyle = '#ffb000'; ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 100); ctx.lineTo(canvas.width, 100);
+                    ctx.moveTo(0, 160); ctx.lineTo(canvas.width, 160);
+                    ctx.stroke();
+                } else if(currentDino.zone.includes("Plains")) {
+                    // Open Savannah Grasslands & Acacia silhouettes
+                    ctx.fillStyle = '#14180a'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#1e2410'; ctx.fillRect(0, 250, canvas.width, 100);
+                    // Distant acacia tree
+                    ctx.fillStyle = '#0d1007';
+                    ctx.fillRect(450, 170, 8, 80);
+                    ctx.beginPath(); ctx.arc(454, 160, 45, 0, Math.PI * 2); ctx.fill();
+                } else if(currentDino.zone.includes("Volcanic")) {
+                    // Volcanic Ridge with glowing lava flows
+                    ctx.fillStyle = '#180505'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    // Volcanic mountain silhouette
+                    ctx.fillStyle = '#0d0202';
+                    ctx.beginPath(); ctx.moveTo(0, 260); ctx.lineTo(300, 80); ctx.lineTo(600, 260); ctx.fill();
+                    // Glowing lava fissures
+                    ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 3;
+                    ctx.beginPath(); ctx.moveTo(270, 120); ctx.lineTo(290, 180); ctx.lineTo(280, 230); ctx.stroke();
+                    ctx.strokeStyle = '#ffb000'; ctx.lineWidth = 1.5;
+                    ctx.beginPath(); ctx.moveTo(320, 140); ctx.lineTo(305, 190); ctx.lineTo(330, 240); ctx.stroke();
+                } else if(currentDino.zone.includes("Wetland")) {
+                    // Wetland Delta with marsh water and reeds
+                    ctx.fillStyle = '#040b12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#081622'; ctx.fillRect(0, 220, canvas.width, 130); // Water base
+                    // Reed silhouettes along banks
+                    ctx.fillStyle = '#102216';
+                    for(let i=20; i<canvas.width; i+=40) {
+                        ctx.fillRect(i, 180, 3, 50);
+                        ctx.fillRect(i+15, 190, 2, 40);
+                    }
+                } else if(currentDino.zone.includes("Aviary")) {
+                    // Coastal Cliff Aviary with geodesic dome wireframe & ocean view
+                    ctx.fillStyle = '#040d16'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    // Ocean horizon
+                    ctx.fillStyle = '#081c2c'; ctx.fillRect(0, 230, canvas.width, 120);
+                    // Dome netting grid overlay
+                    ctx.strokeStyle = 'rgba(26, 188, 156, 0.2)'; ctx.lineWidth = 1;
+                    for(let x=0; x<canvas.width; x+=40) {
+                        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+                    }
+                    for(let y=0; y<canvas.height; y+=40) {
+                        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+                    }
+                } else if(currentDino.zone.includes("Lagoon")) {
+                    // Deep Water Lagoon with sub-aquatic beams
+                    ctx.fillStyle = '#020a14'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    // Sub-surface light rays
+                    ctx.fillStyle = 'rgba(52, 152, 219, 0.08)';
+                    ctx.beginPath(); ctx.moveTo(100, 0); ctx.lineTo(50, 350); ctx.lineTo(150, 350); ctx.lineTo(250, 0); ctx.fill();
+                    ctx.beginPath(); ctx.moveTo(350, 0); ctx.lineTo(300, 350); ctx.lineTo(400, 350); ctx.lineTo(500, 0); ctx.fill();
+                } else if(currentDino.zone.includes("Tundra")) {
+                    // Glacial Tundra with falling snow specks
+                    ctx.fillStyle = '#0c1520'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#142232'; ctx.fillRect(0, 240, canvas.width, 110); // Snow ground
+                    // Snow specs
+                    ctx.fillStyle = '#ffffff';
+                    for(let i=0; i<30; i++) {
+                        let sx = (i * 23 + legCycle * 4) % canvas.width;
+                        let sy = (i * 37 + legCycle * 2) % canvas.height;
+                        ctx.fillRect(sx, sy, 2, 2);
+                    }
+                } else {
+                    ctx.fillStyle = '#040804'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
 
-                    ctx.strokeStyle = 'rgba(34, 51, 34, 0.4)';
-                    ctx.lineWidth = 0.5;
-                    ctx.strokeRect(px, py, tileW, tileH);
+                // Ground baseline fence posts
+                if(!currentDino.zone.includes("Aviary") && !currentDino.zone.includes("Lagoon") && !currentDino.zone.includes("Tundra")) {
+                    ctx.strokeStyle = '#1e331e'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.moveTo(0, 260); ctx.lineTo(canvas.width, 260); ctx.stroke();
+                    for(let i = 50; i < canvas.width; i += 90) {
+                        ctx.fillStyle = '#1c281c'; ctx.fillRect(i, 210, 6, 50);
+                    }
+                }
+
+                // Movement & animation
+                if(Math.abs(entityX - targetX) < 2) {
+                    targetX = Math.random() * (canvas.width - 180) + 70;
+                }
+                let moving = Math.abs(targetX - entityX) > 0.5;
+                if(moving) {
+                    entityX += (targetX > entityX) ? 1.0 : -1.0;
+                    legCycle += 0.2;
+                }
+
+                // Mood color styling
+                let skinColor = currentDino.diet === 'Carnivore' ? '#e74c3c' : '#2ecc71';
+                if(currentDino.moodState === 'agitated') skinColor = '#ff3333';
+                if(currentDino.moodState === 'alert') skinColor = '#e67e22';
+
+                ctx.save();
+                ctx.translate(entityX, 0);
+
+                // --- 2. ENHANCED PIXEL PHYSIOLOGY RENDERER ---
+                let lOffset = Math.sin(legCycle) * 4;
+
+                if(currentDino.type === 'longneck') {
+                    // Longneck (Brachiosaurus / Diplodocus / Mamenchisaurus / Amargasaurus)
+                    // Massive body
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(0, 190, 90, 45);
+                    // Long neck reaching up/forward
+                    ctx.fillRect(75, 110, 18, 90);
+                    // Head & snout
+                    ctx.fillRect(80, 100, 22, 14);
+                    // Stout legs with pixel articulation
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(10, 235, 14, 30 + lOffset);
+                    ctx.fillRect(35, 235, 14, 30 - lOffset);
+                    ctx.fillRect(65, 235, 14, 30 + lOffset);
+                    // Tail
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(-35, 200, 35, 15);
+                } else if(currentDino.type === 'trex') {
+                    // Large Apex Predator (T-Rex / Allosaurus / Giganotosaurus / Tyrannotitan)
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(0, 180, 95, 55);
+                    // Heavy tail counterbalance
+                    ctx.fillRect(-50, 185, 50, 22);
+                    // Massive head & jaw
+                    ctx.fillRect(75, 155, 38, 30);
+                    ctx.fillStyle = '#0b0f0b'; // Eye optic
+                    ctx.fillRect(98, 162, 5, 5);
+                    // Tiny arms
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(65, 205, 10, 8);
+                    // Powerful legs
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(20, 230, 18, 35 + lOffset);
+                    ctx.fillRect(55, 230, 18, 35 - lOffset);
+                } else if(currentDino.type === 'raptor' || currentDino.type === 'frilled_raptor') {
+                    // Agile Raptor (Velociraptor / Utahraptor / Atrociraptor / Dilophosaurus / Troodon)
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(0, 200, 65, 32);
+                    // Long balanced tail
+                    ctx.fillRect(-45, 205, 45, 10);
+                    // Head & snout
+                    ctx.fillRect(55, 185, 22, 18);
+                    if(currentDino.type === 'frilled_raptor') {
+                        // Dilophosaurus venom frill
+                        ctx.fillStyle = '#f1c40f';
+                        ctx.beginPath(); ctx.arc(65, 190, 16, Math.PI * 0.4, Math.PI * 1.6); ctx.fill();
+                    }
+                    // Slender legs
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(10, 228, 8, 35 + lOffset);
+                    ctx.fillRect(35, 228, 8, 35 - lOffset);
+                } else if(currentDino.type === 'ceratopsian') {
+                    // Horned Ceratopsian (Triceratops / Pentaceratops / Chasmosaurus)
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(0, 195, 85, 45);
+                    // Massive frilled head
+                    ctx.fillRect(65, 165, 32, 40);
+                    // Horns
+                    ctx.fillStyle = '#f1c40f';
+                    ctx.fillRect(90, 155, 14, 8); // Brow horns
+                    ctx.fillRect(85, 170, 12, 6); // Nasal horn
+                    // Sturdy legs
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(10, 235, 15, 28 + lOffset);
+                    ctx.fillRect(55, 235, 15, 28 - lOffset);
+                } else if(currentDino.type === 'stegosaur') {
+                    // Stegosaur / Spiked Herbivore (Stegosaurus / Kentrosaurus / Tuojiangosaurus / Wuerhosaurus)
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(0, 200, 80, 40);
+                    // Head
+                    ctx.fillRect(70, 210, 15, 14);
+                    // Back plates / spikes
+                    ctx.fillStyle = '#f1c40f';
+                    for(let p=10; p<70; p+=15) {
+                        ctx.beginPath(); ctx.moveTo(p, 200); ctx.lineTo(p+6, 175); ctx.lineTo(p+12, 200); ctx.fill();
+                    }
+                    // Legs
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(12, 235, 12, 28 + lOffset);
+                    ctx.fillRect(52, 235, 12, 28 - lOffset);
+                } else if(currentDino.type === 'ankylosaur') {
+                    // Armored Tank (Ankylosaurus / Euoplocephalus / Sauropelta)
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(-5, 205, 85, 35);
+                    // Armor plating bumps
+                    ctx.fillStyle = '#222830';
+                    for(let a=0; a<75; a+=12) {
+                        ctx.fillRect(a, 200, 8, 8);
+                    }
+                    // Club tail
+                    ctx.fillRect(75, 218, 16, 10);
+                    // Stubby legs
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(8, 235, 14, 25);
+                    ctx.fillRect(50, 235, 14, 25);
+                } else if(currentDino.type === 'hadrosaur') {
+                    // Duck-billed Herbivore (Parasaurolophus / Corythosaurus / Edmontosaurus)
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(0, 195, 75, 42);
+                    // Crest
+                    if(currentDino.name.includes("Parasaurolophus")) {
+                        ctx.fillRect(55, 170, 25, 8); // Long backward crest
+                    } else {
+                        ctx.fillRect(58, 175, 15, 15); // Rounded crest
+                    }
+                    // Head snout
+                    ctx.fillRect(60, 190, 18, 14);
+                    // Legs
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(10, 232, 12, 30 + lOffset);
+                    ctx.fillRect(48, 232, 12, 30 - lOffset);
+                } else if(currentDino.type === 'aquatic') {
+                    // Mosasaurus (Deep Water Lagoon)
+                    ctx.fillStyle = '#3498db';
+                    ctx.fillRect(-20, 210, 120, 40);
+                    // Massive jaws
+                    ctx.fillRect(90, 215, 30, 25);
+                    // Tail fluke
+                    ctx.fillRect(-45, 200, 25, 60);
+                } else if(currentDino.type === 'spinosaurus') {
+                    // Spinosaurus / Suchomimus (Sailback Predator)
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(0, 195, 85, 45);
+                    // Distinctive dorsal sail
+                    ctx.fillStyle = '#e67e22';
+                    ctx.beginPath(); ctx.moveTo(20, 195); ctx.lineTo(45, 135); ctx.lineTo(70, 195); ctx.fill();
+                    // Crocodile snout
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(75, 205, 28, 14);
+                    // Legs
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(15, 235, 14, 28 + lOffset);
+                    ctx.fillRect(55, 235, 14, 28 - lOffset);
+                } else if(currentDino.type === 'pterosaur' || currentDino.type === 'small_flyer') {
+                    // Flying Reptiles (Pteranodon / Dimorphodon / Cearadactylus)
+                    ctx.fillStyle = '#f1c40f';
+                    let wingFlap = Math.sin(legCycle * 2) * 20;
+                    ctx.fillRect(15, 65, 35, 14); // Body
+                    // Wings spread
+                    ctx.beginPath(); 
+                    ctx.moveTo(32, 72); 
+                    ctx.lineTo(-30, 45 + wingFlap); 
+                    ctx.lineTo(15, 85); 
+                    ctx.fill();
+                    ctx.beginPath(); 
+                    ctx.moveTo(32, 72); 
+                    ctx.lineTo(90, 45 + wingFlap); 
+                    ctx.lineTo(50, 85); 
+                    ctx.fill();
+                } else if(currentDino.type === 'flocky' || currentDino.type === 'tiny_ceratopsian' || currentDino.type === 'swarm') {
+                    // Small Herding / Swarming (Gallimimus / Compsognathus / Microceratus)
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(0, 210, 45, 22);
+                    ctx.fillRect(35, 190, 12, 24); // Neck & head
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(8, 228, 6, 25 + lOffset);
+                    ctx.fillRect(28, 228, 6, 25 - lOffset);
+                } else {
+                    // Standard fallback
+                    ctx.fillStyle = skinColor;
+                    ctx.fillRect(0, 200, 60, 35);
+                    ctx.fillStyle = '#1e331e';
+                    ctx.fillRect(10, 230, 10, 25);
+                    ctx.fillRect(40, 230, 10, 25);
+                }
+
+                ctx.restore();
+
+                // --- 3. OVERLAY HUD & MOOD TAGS ---
+                ctx.font = '11px Courier New';
+                ctx.fillStyle = currentDino.diet === 'Carnivore' ? '#ff3333' : '#2ecc71';
+                ctx.fillText(`ID: ${currentDino.id} // ${currentDino.name.toUpperCase()}`, 15, 25);
+                
+                // Mood / Status indicator box
+                ctx.fillStyle = currentDino.moodState === 'agitated' ? 'rgba(231, 76, 60, 0.8)' : 'rgba(0,0,0,0.8)';
+                ctx.fillRect(12, 32, 220, 20);
+                ctx.strokeStyle = currentDino.moodState === 'agitated' ? '#e74c3c' : '#ffb000';
+                ctx.strokeRect(12, 32, 220, 20);
+                
+                ctx.fillStyle = '#ffb000';
+                ctx.fillText(`MOOD: ${currentDino.statusTag}`, 18, 47);
+
+                if(document.getElementById('parkView').classList.contains('active')) {
+                    animationFrameId = requestAnimationFrame(renderOpticFeed);
                 }
             }
+            renderOpticFeed();
         }
 
-        // Simple Laser Chamber Canvas Animation
-        const canvas = document.getElementById('laserCanvas');
-        if(canvas) {
-            const ctx = canvas.getContext('2d');
+        window.onload = initApp;
+
+        // Laser chamber extraction animation
+        const laserCanvas = document.getElementById('laserCanvas');
+        if(laserCanvas) {
+            const ctx = laserCanvas.getContext('2d');
             function drawLaser() {
                 ctx.fillStyle = '#020408';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillRect(0, 0, laserCanvas.width, laserCanvas.height);
                 ctx.fillStyle = '#ffb000';
-                ctx.beginPath(); ctx.arc(canvas.width / 2, canvas.height / 2, 25, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(laserCanvas.width / 2, laserCanvas.height / 2, 25, 0, Math.PI * 2); ctx.fill();
                 ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2;
-                ctx.beginPath(); ctx.moveTo(Math.random() * canvas.width, 0); ctx.lineTo(Math.random() * canvas.width, canvas.height); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(Math.random() * laserCanvas.width, 0); ctx.lineTo(Math.random() * laserCanvas.width, laserCanvas.height); ctx.stroke();
                 requestAnimationFrame(drawLaser);
             }
             drawLaser();

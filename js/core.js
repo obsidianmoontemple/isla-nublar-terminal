@@ -425,6 +425,42 @@ function reassignPaddockFromTelemetry(newPaddock) {
     }
 }
 
+function updateWuTargetSelect() {
+    const wuSelect = document.getElementById('wuTargetSelect');
+    if(!wuSelect) return;
+    wuSelect.innerHTML = '';
+    
+    let unlocked = getUnlockedDinos();
+    if (unlocked.length === 0) {
+        let opt = document.createElement('option');
+        opt.value = "";
+        opt.innerText = "No Unlocked Specimens Available in Genome Vault";
+        wuSelect.appendChild(opt);
+        return;
+    }
+
+    unlocked.forEach(d => {
+        let record = genomeVault[d.name] || { count: d.requiredShards, required: d.requiredShards };
+        let opt = document.createElement('option');
+        opt.value = d.id;
+        opt.innerText = `${d.id}. ${d.name} [${d.rarity}] - ${record.count}/${record.required} Shards ✅`;
+        wuSelect.appendChild(opt);
+    });
+}
+
+function updateSpliceCostDisplay() {
+    const wuSelect = document.getElementById('wuTargetSelect');
+    if (!wuSelect) return;
+    let targetId = parseInt(wuSelect.value);
+    let dino = dinoDatabase.find(d => d.id === targetId);
+    if (dino) {
+        let record = genomeVault[dino.name] || { required: dino.requiredShards };
+        let cost = record.required * 3;
+        let costLabel = document.getElementById('spliceCostLabel');
+        if(costLabel) costLabel.innerText = `Target: ${dino.name} (${dino.rarity}) // Splice Cost: ${cost} DNA strands.`;
+    }
+}
+
 // CRYSTAL-CLEAR OPTIC FEED RENDERER WITH CORRECTED ANATOMY & ACTIVE SECTOR BACKGROUNDS
 function loadOpticFeed(index) {
     activeFeedIndex = index;
@@ -509,7 +545,6 @@ function loadOpticFeed(index) {
         ctx.fillStyle = skinColor;
 
         if(pType === 'longneck') {
-            // Updated Longneck with clear head structure
             ctx.fillRect(-20, 190, 90, 45); // Body
             ctx.fillRect(50, 130, 14, 70); // Long neck
             ctx.fillRect(44, 120, 24, 14); // Distinct head profile

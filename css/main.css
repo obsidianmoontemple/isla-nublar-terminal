@@ -44,8 +44,19 @@ nav button:hover, nav button.active { background: var(--neon-green); color: #000
 .log-container { background: #050805; border-top: 2px solid var(--panel-border); padding: 10px 20px; font-family: monospace; font-size: 0.8rem; }
 .log-box { color: var(--neon-green); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-select.sector-select { background: #121c12; color: var(--neon-cyan); border: 1px solid var(--panel-border); padding: 8px; font-family: monospace; font-size: 0.8rem; cursor: width: 100%; margin-top: 5px; font-weight: bold; }
+select.sector-select { background: #121c12; color: var(--neon-cyan); border: 1px solid var(--panel-border); padding: 8px; font-family: monospace; font-size: 0.8rem; cursor: pointer; width: 100%; margin-top: 5px; font-weight: bold; }
 .paddock-card { background: #0a100a; border: 1px dashed var(--neon-cyan); padding: 10px; border-radius: 4px; margin-top: 8px; }
+
+/* CRISP CANVAS RENDERING FIX */
+canvas {
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
+}
 
 .wu-container { display: flex; flex-direction: column; gap: 15px; padding-bottom: 20px; }
 .wu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }

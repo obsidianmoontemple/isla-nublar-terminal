@@ -106,6 +106,8 @@ function switchTab(tabId, event) {
         renderBiosphereRegistry();
     } else if(tabId === 'genomeVault') {
         renderGenomeVault();
+    } else if(tabId === 'genetics') {
+        updateWuTargetSelect();
     } else {
         if(animationFrameId) cancelAnimationFrame(animationFrameId);
         stopMiningSession();
@@ -119,6 +121,7 @@ function logMessage(text) {
 function initApp() {
     renderBiosphereRegistry();
     renderGenomeVault();
+    updateWuTargetSelect();
 
     const sectorBtnContainer = document.getElementById('sectorFilterButtons');
     if(sectorBtnContainer) {
@@ -188,6 +191,7 @@ function renderGenomeVault() {
     });
     document.getElementById('vaultCount').innerText = unlockedCount;
     updateFeedSelectors();
+    updateWuTargetSelect();
 }
 
 function initMiningCanvas() {
@@ -224,6 +228,7 @@ function initMiningCanvas() {
             document.getElementById('miningAmberCount').innerText = amber;
             document.getElementById('miningDnaCount').innerText = dna;
             renderGenomeVault();
+            updateWuTargetSelect();
             if (miningNodes.length === 0) spawnMiningNodes();
         } else {
             drillStability -= (15 + drillLevel * 4);
@@ -307,12 +312,41 @@ function upgradeDrillRig() {
     document.getElementById('drillLevelText').innerText = drillLevel;
 }
 
-function evaluateCompatibility(dinoA, dinoB) {
-    if (dinoA.id === dinoB.id) return { status: "Self", color: "var(--neon-green)" };
-    if (dinoA.paddock !== dinoB.paddock) return { status: "🛡️ BUFFERED", color: "var(--neon-green)" };
-    if (dinoA.diet === "Carnivore" && dinoB.diet === "Carnivore") return { status: "⚠️ CLASH", color: "var(--neon-alert)" };
-    if (dinoA.diet === "Carnivore" || dinoB.diet === "Carnivore") return { status: "❌ FATAL", color: "var(--neon-alert)" };
-    return { status: "✅ HARMONIOUS", color: "var(--neon-green)" };
+function updateWuTargetSelect() {
+    const wuSelect = document.getElementById('wuTargetSelect');
+    if(!wuSelect) return;
+    wuSelect.innerHTML = '';
+    
+    let unlocked = getUnlockedDinos();
+    if (unlocked.length === 0) {
+        let opt = document.createElement('option');
+        opt.value = "";
+        opt.innerText = "No Unlocked Specimens Available in Genome Vault";
+        wuSelect.appendChild(opt);
+        return;
+    }
+
+    unlocked.forEach(d => {
+        let record = genomeVault[d.name] || { count: d.requiredShards, required: d.requiredShards };
+        let opt = document.createElement('option');
+        opt.value = d.id;
+        opt.innerText = `${d.id}. ${d.name} [${d.rarity}] - ${record.count}/${record.required} Shards ✅`;
+        wuSelect.appendChild(opt);
+    });
+    updateSpliceCostDisplay();
+}
+
+function updateSpliceCostDisplay() {
+    const wuSelect = document.getElementById('wuTargetSelect');
+    if (!wuSelect) return;
+    let targetId = parseInt(wuSelect.value);
+    let dino = dinoDatabase.find(d => d.id === targetId);
+    if (dino) {
+        let record = genomeVault[dino.name] || { required: dino.requiredShards };
+        let cost = record.required * 3;
+        let costLabel = document.getElementById('spliceCostLabel');
+        if(costLabel) costLabel.innerText = `Target: ${dino.name} (${dino.rarity}) // Splice Cost: ${cost} DNA strands.`;
+    }
 }
 
 function renderBiosphereRegistry() {
@@ -425,43 +459,7 @@ function reassignPaddockFromTelemetry(newPaddock) {
     }
 }
 
-function updateWuTargetSelect() {
-    const wuSelect = document.getElementById('wuTargetSelect');
-    if(!wuSelect) return;
-    wuSelect.innerHTML = '';
-    
-    let unlocked = getUnlockedDinos();
-    if (unlocked.length === 0) {
-        let opt = document.createElement('option');
-        opt.value = "";
-        opt.innerText = "No Unlocked Specimens Available in Genome Vault";
-        wuSelect.appendChild(opt);
-        return;
-    }
-
-    unlocked.forEach(d => {
-        let record = genomeVault[d.name] || { count: d.requiredShards, required: d.requiredShards };
-        let opt = document.createElement('option');
-        opt.value = d.id;
-        opt.innerText = `${d.id}. ${d.name} [${d.rarity}] - ${record.count}/${record.required} Shards ✅`;
-        wuSelect.appendChild(opt);
-    });
-}
-
-function updateSpliceCostDisplay() {
-    const wuSelect = document.getElementById('wuTargetSelect');
-    if (!wuSelect) return;
-    let targetId = parseInt(wuSelect.value);
-    let dino = dinoDatabase.find(d => d.id === targetId);
-    if (dino) {
-        let record = genomeVault[dino.name] || { required: dino.requiredShards };
-        let cost = record.required * 3;
-        let costLabel = document.getElementById('spliceCostLabel');
-        if(costLabel) costLabel.innerText = `Target: ${dino.name} (${dino.rarity}) // Splice Cost: ${cost} DNA strands.`;
-    }
-}
-
-// CRYSTAL-CLEAR OPTIC FEED RENDERER WITH CORRECTED ANATOMY & ACTIVE SECTOR BACKGROUNDS
+// CRYSTAL-CLEAR OPTIC FEED RENDERER WITH SHARP CANVASES
 function loadOpticFeed(index) {
     activeFeedIndex = index;
     let currentDino = dinoDatabase[activeFeedIndex];
@@ -497,7 +495,6 @@ function loadOpticFeed(index) {
     function renderOpticFeed() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // DYNAMIC SECTOR BACKGROUND SYNC
         if(currentDino.zone.includes("Canopy")) {
             ctx.fillStyle = '#020f05'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#051f0a'; ctx.fillRect(0, 0, canvas.width, 60);
@@ -545,10 +542,10 @@ function loadOpticFeed(index) {
         ctx.fillStyle = skinColor;
 
         if(pType === 'longneck') {
-            ctx.fillRect(-20, 190, 90, 45); // Body
-            ctx.fillRect(50, 130, 14, 70); // Long neck
-            ctx.fillRect(44, 120, 24, 14); // Distinct head profile
-            ctx.fillRect(-30, 200, 70, 30); // Tail
+            ctx.fillRect(-20, 190, 90, 45);
+            ctx.fillRect(50, 130, 14, 70);
+            ctx.fillRect(44, 120, 24, 14);
+            ctx.fillRect(-30, 200, 70, 30);
         } else if(pType === 'raptor' || pType === 'frilled_raptor') {
             ctx.fillRect(-15, 205, 60, 35);
             ctx.fillRect(35, 180, 14, 30);
@@ -573,14 +570,11 @@ function loadOpticFeed(index) {
             ctx.beginPath(); ctx.arc(52, 175, 10, 0, Math.PI*2); ctx.fill();
         }
 
-        // Legs
         ctx.fillStyle = '#111d11';
         ctx.fillRect(-5, 235, 10, 35 + lOffset);
         ctx.fillRect(35, 235, 10, 35 - lOffset);
-
         ctx.restore();
 
-        // HUD OVERLAYS & STATUS ICONS
         ctx.font = '12px Courier New';
         ctx.fillStyle = '#00f0ff';
         ctx.fillText(`CAM-FEED // ID: ${currentDino.id} - ${currentDino.name.toUpperCase()}`, 15, 25);

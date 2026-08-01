@@ -57,14 +57,6 @@ dinoDatabase.forEach(d => {
 });
 genomeVault["Brachiosaurus"].count = 10;
 
-const hybridRecipes = {
-    "Velociraptor-Tree Frog-Basilisk Lizard": "Indoraptor",
-    "Tyrannosaurus Rex-Pit Viper-Wolverine": "Tyrannolochus",
-    "Spinosaurus-Cuttlefish-Electric Eel": "Spinoceratops Aquaticus",
-    "Stegosaurus-Gorgonian Coral-Scorpion": "Stegoceratops Venificus",
-    "Triceratops-Gorgonian Coral-Wolverine": "Peloroplites Hybrid"
-};
-
 const sectorList = [
     "Zone A: Canopy / Jungle",
     "Zone B: Heavy Security Pen",
@@ -81,9 +73,6 @@ const availablePaddocks = ["Paddock Alpha", "Paddock Beta", "Paddock Gamma", "Pa
 let amber = 250;
 let dna = 500;
 let labLevel = 1;
-let splicedCount = 0;
-let hybridCount = 0;
-
 let drillLevel = 1;
 let extractionTimer = 30;
 let timerInterval = null;
@@ -117,10 +106,6 @@ function switchTab(tabId, event) {
         renderBiosphereRegistry();
     } else if(tabId === 'genomeVault') {
         renderGenomeVault();
-    } else if(tabId === 'genetics') {
-        updateWuTargetSelect();
-        updateSpliceCostDisplay();
-        updateLabUI();
     } else {
         if(animationFrameId) cancelAnimationFrame(animationFrameId);
         stopMiningSession();
@@ -134,20 +119,20 @@ function logMessage(text) {
 function initApp() {
     renderBiosphereRegistry();
     renderGenomeVault();
-    updateLabUI();
 
     const sectorBtnContainer = document.getElementById('sectorFilterButtons');
-    sectorBtnContainer.innerHTML = '';
-    sectorList.forEach(sec => {
-        let sBtn = document.createElement('button');
-        sBtn.className = 'sector-btn';
-        sBtn.style.whiteSpace = 'nowrap';
-        sBtn.innerText = sec.split(':')[0];
-        sBtn.onclick = () => openSectorDetail(sec);
-        sectorBtnContainer.appendChild(sBtn);
-    });
+    if(sectorBtnContainer) {
+        sectorBtnContainer.innerHTML = '';
+        sectorList.forEach(sec => {
+            let sBtn = document.createElement('button');
+            sBtn.className = 'sector-btn';
+            sBtn.style.whiteSpace = 'nowrap';
+            sBtn.innerText = sec.split(':')[0];
+            sBtn.onclick = () => openSectorDetail(sec);
+            sectorBtnContainer.appendChild(sBtn);
+        });
+    }
 
-    updateWuTargetSelect();
     initMiningCanvas();
     loadOpticFeed(0);
 }
@@ -173,12 +158,6 @@ function updateFeedSelectors() {
         btn.onclick = () => jumpToFeed(realIdx);
         selectorContainer.appendChild(btn);
     });
-}
-
-function updateLabUI() {
-    document.getElementById('labLevelNav').innerText = labLevel;
-    document.getElementById('labLevelDisplay').innerText = labLevel;
-    document.getElementById('stationLabLevel').innerText = labLevel;
 }
 
 function renderGenomeVault() {
@@ -338,6 +317,7 @@ function evaluateCompatibility(dinoA, dinoB) {
 
 function renderBiosphereRegistry() {
     const rosterGrid = document.getElementById('masterRosterGrid');
+    if(!rosterGrid) return;
     rosterGrid.innerHTML = '';
     let unlockedDinos = getUnlockedDinos();
     document.getElementById('unlockedBiosphereCount').innerText = `Discovered & Unlocked: ${unlockedDinos.length} / ${dinoDatabase.length}`;
@@ -379,7 +359,73 @@ function triggerDinoMood(action) {
     loadOpticFeed(activeFeedIndex);
 }
 
-// DYNAMIC OPTIC FEED RENDERER WITH SPECIES PHYSIOLOGY AND SECTOR BACKGROUNDS
+function openSectorDetail(sectorName) {
+    activeSectorFilter = sectorName;
+    switchTab('sectorDetailView', null);
+    renderSectorCensus(sectorName);
+}
+
+function renderSectorCensus(sectorName) {
+    let titleEl = document.getElementById('selectedSectorTitle');
+    if(titleEl) titleEl.innerText = `Paddocks & Census // ${sectorName}`;
+    
+    let unlockedDinos = getUnlockedDinos();
+    let filteredDinos = unlockedDinos.filter(d => d.zone === sectorName);
+    
+    let popCountEl = document.getElementById('sectorPopCount');
+    if(popCountEl) popCountEl.innerText = `Registered Specimens: ${filteredDinos.length}`;
+
+    let paddocksContainer = document.getElementById('paddocksContainer');
+    if(paddocksContainer) {
+        paddocksContainer.innerHTML = '';
+        availablePaddocks.forEach(pad => {
+            let padDinos = filteredDinos.filter(d => d.paddock === pad);
+            let padDiv = document.createElement('div');
+            padDiv.className = 'paddock-card';
+            padDiv.innerHTML = `<strong style="color:var(--neon-amber);">${pad}</strong> (${padDinos.length} specimens: ${padDinos.map(d => d.name).join(', ') || 'Empty'})`;
+            paddocksContainer.appendChild(padDiv);
+        });
+    }
+
+    const censusGrid = document.getElementById('sectorCensusGrid');
+    if(censusGrid) {
+        censusGrid.innerHTML = '';
+        filteredDinos.forEach(d => {
+            let globalIdx = dinoDatabase.findIndex(item => item.id === d.id);
+            let cCard = document.createElement('div');
+            cCard.className = 'card';
+            cCard.innerHTML = `
+                <div class="sector-details">
+                    <strong style="color:var(--neon-green);">${d.name} [ID: ${d.id}]</strong>
+                    <div class="sector-row"><span>Paddock:</span> <strong style="color: var(--neon-amber);">${d.paddock}</strong></div>
+                    <div class="sector-row"><span>Diet:</span> <strong style="color: var(--neon-cyan);">${d.diet}</strong></div>
+                    <button class="sector-btn" style="margin-top:8px;" onclick="jumpToFeed(${globalIdx})">🌐 Live Optic Feed</button>
+                </div>
+            `;
+            censusGrid.appendChild(cCard);
+        });
+    }
+}
+
+function reassignSectorFromTelemetry(newSector) {
+    let dino = dinoDatabase[activeFeedIndex];
+    if(dino) {
+        dino.zone = newSector;
+        logMessage(`Telemetry Transfer: ${dino.name} moved to ${newSector}.`);
+        document.getElementById('telemetrySector').innerText = dino.zone;
+    }
+}
+
+function reassignPaddockFromTelemetry(newPaddock) {
+    let dino = dinoDatabase[activeFeedIndex];
+    if(dino) {
+        dino.paddock = newPaddock;
+        logMessage(`Telemetry Partition: ${dino.name} moved to ${newPaddock}.`);
+        document.getElementById('telemetryPaddock').innerText = dino.paddock;
+    }
+}
+
+// CRYSTAL-CLEAR OPTIC FEED RENDERER WITH CORRECTED ANATOMY & ACTIVE SECTOR BACKGROUNDS
 function loadOpticFeed(index) {
     activeFeedIndex = index;
     let currentDino = dinoDatabase[activeFeedIndex];
@@ -395,13 +441,15 @@ function loadOpticFeed(index) {
     document.getElementById('telemetryTrait').innerText = currentDino.trait || "Standard DNA";
 
     let selectEl = document.getElementById('telemetrySectorSelect');
-    selectEl.innerHTML = '';
-    sectorList.forEach(sec => {
-        let opt = document.createElement('option');
-        opt.value = sec; opt.innerText = sec;
-        if(sec === currentDino.zone) opt.selected = true;
-        selectEl.appendChild(opt);
-    });
+    if(selectEl) {
+        selectEl.innerHTML = '';
+        sectorList.forEach(sec => {
+            let opt = document.createElement('option');
+            opt.value = sec; opt.innerText = sec;
+            if(sec === currentDino.zone) opt.selected = true;
+            selectEl.appendChild(opt);
+        });
+    }
 
     const canvas = document.getElementById('uniqueOpticCanvas');
     if(!canvas) return;
@@ -413,39 +461,37 @@ function loadOpticFeed(index) {
     function renderOpticFeed() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // 1. DYNAMIC SECTOR BACKGROUND SYNC
+        // DYNAMIC SECTOR BACKGROUND SYNC
         if(currentDino.zone.includes("Canopy")) {
             ctx.fillStyle = '#020f05'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#051f0a'; ctx.fillRect(0, 0, canvas.width, 60); // Canopy layer
+            ctx.fillStyle = '#051f0a'; ctx.fillRect(0, 0, canvas.width, 60);
         } else if(currentDino.zone.includes("Security")) {
             ctx.fillStyle = '#0d0f12'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#161a22'; ctx.fillRect(0, 240, canvas.width, 110); // Security wall
+            ctx.fillStyle = '#161a22'; ctx.fillRect(0, 240, canvas.width, 110);
         } else if(currentDino.zone.includes("Plains")) {
             ctx.fillStyle = '#101407'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#1a220c'; ctx.fillRect(0, 250, canvas.width, 100); // Savannah grass
+            ctx.fillStyle = '#1a220c'; ctx.fillRect(0, 250, canvas.width, 100);
         } else if(currentDino.zone.includes("Volcanic")) {
             ctx.fillStyle = '#140303'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#ff330022'; ctx.fillRect(0, 260, canvas.width, 90); // Magma glow
+            ctx.fillStyle = '#ff330022'; ctx.fillRect(0, 260, canvas.width, 90);
         } else if(currentDino.zone.includes("Wetland")) {
             ctx.fillStyle = '#030810'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#061220'; ctx.fillRect(0, 220, canvas.width, 130); // Water marsh
+            ctx.fillStyle = '#061220'; ctx.fillRect(0, 220, canvas.width, 130);
         } else if(currentDino.zone.includes("Aviary")) {
             ctx.fillStyle = '#030b14'; ctx.fillRect(0, 0, canvas.width, canvas.height);
         } else if(currentDino.zone.includes("Lagoon")) {
             ctx.fillStyle = '#010814'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#021630'; ctx.fillRect(0, 200, canvas.width, 150); // Deep water
+            ctx.fillStyle = '#021630'; ctx.fillRect(0, 200, canvas.width, 150);
         } else if(currentDino.zone.includes("Tundra")) {
             ctx.fillStyle = '#0a121c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#ffffff11'; ctx.fillRect(0, 260, canvas.width, 90); // Snow
+            ctx.fillStyle = '#ffffff11'; ctx.fillRect(0, 260, canvas.width, 90);
         } else {
             ctx.fillStyle = '#050a05'; ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        // Ground baseline
         ctx.strokeStyle = '#1e331e'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(0, 270); ctx.lineTo(canvas.width, 270); ctx.stroke();
 
-        // Movement loop
         if(Math.abs(entityX - targetX) < 2) targetX = Math.random() * (canvas.width - 200) + 100;
         if(Math.abs(targetX - entityX) > 0.5) {
             entityX += (targetX > entityX) ? 1.0 : -1.0;
@@ -455,7 +501,6 @@ function loadOpticFeed(index) {
         let skinColor = currentDino.color || '#2ecc71';
         if(currentDino.moodState === 'agitated') skinColor = '#ff3344';
 
-        // 2. DYNAMIC SPECIES PHYSIOLOGY DRAWING
         ctx.save();
         ctx.translate(entityX, 0);
         let lOffset = Math.sin(legCycle) * 6;
@@ -464,35 +509,30 @@ function loadOpticFeed(index) {
         ctx.fillStyle = skinColor;
 
         if(pType === 'longneck') {
-            // Brachiosaurus / Diplodocus Body Profile
+            // Updated Longneck with clear head structure
             ctx.fillRect(-20, 190, 90, 45); // Body
-            ctx.fillRect(50, 130, 18, 70); // Long neck
-            ctx.beginPath(); ctx.arc(58, 125, 10, 0, Math.PI*2); ctx.fill(); // Head
+            ctx.fillRect(50, 130, 14, 70); // Long neck
+            ctx.fillRect(44, 120, 24, 14); // Distinct head profile
             ctx.fillRect(-30, 200, 70, 30); // Tail
         } else if(pType === 'raptor' || pType === 'frilled_raptor') {
-            // Agile Bipedal Predator
-            ctx.fillRect(-15, 205, 60, 35); // Body
-            ctx.fillRect(35, 180, 14, 30); // Neck
-            ctx.beginPath(); ctx.arc(44, 175, 8, 0, Math.PI*2); ctx.fill(); // Head
-            ctx.fillRect(-45, 210, 45, 12); // Balance tail
+            ctx.fillRect(-15, 205, 60, 35);
+            ctx.fillRect(35, 180, 14, 30);
+            ctx.beginPath(); ctx.arc(44, 175, 8, 0, Math.PI*2); ctx.fill();
+            ctx.fillRect(-45, 210, 45, 12);
         } else if(pType === 'trex') {
-            // Apex Theropod
-            ctx.fillRect(-25, 190, 85, 50); // Heavy body
-            ctx.fillRect(45, 160, 22, 45); // Thick neck
-            ctx.beginPath(); ctx.arc(58, 150, 14, 0, Math.PI*2); ctx.fill(); // Massive jaw
-            ctx.fillRect(-55, 205, 65, 20); // Heavy tail
+            ctx.fillRect(-25, 190, 85, 50);
+            ctx.fillRect(45, 160, 22, 45);
+            ctx.beginPath(); ctx.arc(58, 150, 14, 0, Math.PI*2); ctx.fill();
+            ctx.fillRect(-55, 205, 65, 20);
         } else if(pType === 'aquatic' || pType === 'spinosaurus') {
-            // Swimming / Sail morphology
             ctx.fillRect(-30, 200, 100, 40);
-            ctx.beginPath(); ctx.moveTo(0, 200); ctx.lineTo(20, 160); ctx.lineTo(40, 200); ctx.fill(); // Sail
+            ctx.beginPath(); ctx.moveTo(0, 200); ctx.lineTo(20, 160); ctx.lineTo(40, 200); ctx.fill();
             ctx.fillRect(55, 185, 25, 25);
         } else if(pType === 'pterosaur' || pType === 'small_flyer') {
-            // Flying Reptile
             ctx.fillRect(-15, 120, 40, 20);
-            ctx.beginPath(); ctx.moveTo(-15, 130); ctx.lineTo(-60, 100); ctx.lineTo(-10, 140); ctx.fill(); // Left Wing
-            ctx.beginPath(); ctx.moveTo(25, 130); ctx.lineTo(70, 100); ctx.lineTo(20, 140); ctx.fill(); // Right Wing
+            ctx.beginPath(); ctx.moveTo(-15, 130); ctx.lineTo(-60, 100); ctx.lineTo(-10, 140); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(25, 130); ctx.lineTo(70, 100); ctx.lineTo(20, 140); ctx.fill();
         } else {
-            // Standard Quadruped / Ceratopsian / Ankylosaur
             ctx.fillRect(-20, 200, 80, 40);
             ctx.fillRect(45, 180, 15, 30);
             ctx.beginPath(); ctx.arc(52, 175, 10, 0, Math.PI*2); ctx.fill();
@@ -505,12 +545,11 @@ function loadOpticFeed(index) {
 
         ctx.restore();
 
-        // 3. HUD STATUS OVERLAYS & ICONS ON CAMERA SCREEN
+        // HUD OVERLAYS & STATUS ICONS
         ctx.font = '12px Courier New';
         ctx.fillStyle = '#00f0ff';
         ctx.fillText(`CAM-FEED // ID: ${currentDino.id} - ${currentDino.name.toUpperCase()}`, 15, 25);
         
-        // Status Emoji Badge
         ctx.fillStyle = 'rgba(0,0,0,0.85)';
         ctx.fillRect(canvas.width - 55, 12, 42, 32);
         ctx.strokeStyle = currentDino.moodState === 'agitated' ? '#ff3344' : '#ffb000';
@@ -518,7 +557,6 @@ function loadOpticFeed(index) {
         ctx.font = '18px sans-serif';
         ctx.fillText(currentDino.emoji, canvas.width - 45, 34);
 
-        // Mood Tag Banner
         ctx.font = '11px Courier New';
         ctx.fillStyle = 'rgba(0,0,0,0.85)';
         ctx.fillRect(12, 35, 230, 22);
